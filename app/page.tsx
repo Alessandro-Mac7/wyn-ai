@@ -1,0 +1,218 @@
+'use client'
+
+import { useState, useRef, KeyboardEvent, useCallback } from 'react'
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
+import { Send, MapPin, ChevronRight } from 'lucide-react'
+import { useSession } from '@/contexts/session-context'
+import { useVenue, useRecentVenues } from '@/hooks/useVenue'
+import {
+  QuickSuggestions,
+  VenueSelector,
+} from '@/components/chat'
+import { Sidebar } from '@/components/layout'
+import { GENERAL_SUGGESTIONS } from '@/lib/prompts'
+import { cn } from '@/lib/utils'
+import { inputVariants } from '@/lib/motion'
+
+export default function HomePage() {
+  const router = useRouter()
+  const { addMessage } = useSession()
+  const { loadVenue } = useVenue()
+  const { recentVenues } = useRecentVenues()
+
+  // UI state
+  const [showVenueSelector, setShowVenueSelector] = useState(false)
+  const [input, setInput] = useState('')
+  const [isFocused, setIsFocused] = useState(false)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  // Handle venue selection - load venue to session then navigate
+  const handleVenueSelect = useCallback(async (slug: string) => {
+    setShowVenueSelector(false)
+    // Load venue into session
+    await loadVenue(slug)
+    // Navigate to chat
+    router.push('/chat')
+  }, [loadVenue, router])
+
+  // Handle send - add message to session then navigate
+  const handleSend = useCallback(() => {
+    if (input.trim()) {
+      // Add user message to session
+      addMessage({ role: 'user', content: input.trim() })
+      // Navigate to chat page
+      router.push('/chat')
+    }
+  }, [input, addMessage, router])
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSend()
+    }
+  }
+
+  // Handle quick suggestion - add to session then navigate
+  const handleSuggestionSelect = useCallback((suggestion: string) => {
+    addMessage({ role: 'user', content: suggestion })
+    router.push('/chat')
+  }, [addMessage, router])
+
+  const canSend = input.trim().length > 0
+
+  return (
+    <div className="min-h-screen">
+      {/* Sidebar */}
+      <Sidebar />
+
+      {/* Main content */}
+      <main id="main-content" className="pl-14 sm:pl-16 min-h-screen flex flex-col">
+        <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8">
+          {/* Logo and Tagline */}
+          <motion.div
+            className="flex items-center justify-center mb-2"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Image
+              src="/wyn-logo.png"
+              alt="WYN - Il tuo sommelier AI"
+              width={400}
+              height={160}
+              className="h-40 sm:h-48 w-auto"
+              priority
+            />
+          </motion.div>
+          <motion.p
+            className="mina-bold text-xl text-foreground mb-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+          >
+            Il vino, finalmente semplice.
+          </motion.p>
+
+          {/* PRIMARY CTA - Venue selection */}
+          <motion.div
+            className="w-full max-w-md mb-8"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.15 }}
+          >
+            <motion.button
+              onClick={() => setShowVenueSelector(true)}
+              className={cn(
+                'w-full flex items-center justify-center gap-3 px-6 py-4',
+                'text-base font-medium rounded-xl',
+                'bg-wine text-white',
+                'shadow-[0_4px_20px_rgba(143,36,54,0.4)]',
+                'hover:bg-wine-dark hover:shadow-[0_4px_24px_rgba(143,36,54,0.5)]',
+                'transition-all duration-200',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine focus-visible:ring-offset-2 focus-visible:ring-offset-background'
+              )}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <MapPin className="h-5 w-5" />
+              Sei in un ristorante? Inizia qui
+              <ChevronRight className="h-5 w-5" />
+            </motion.button>
+            <p className="text-xs text-muted-foreground text-center mt-3">
+              Accedi alla carta dei vini del locale
+            </p>
+          </motion.div>
+
+          {/* Divider */}
+          <motion.div
+            className="flex items-center gap-4 w-full max-w-md mb-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
+          >
+            <div className="flex-1 h-px bg-border" />
+            <span className="text-xs text-muted-foreground">oppure chat generale</span>
+            <div className="flex-1 h-px bg-border" />
+          </motion.div>
+
+          {/* SECONDARY - General chat input */}
+          <motion.div
+            className="w-full max-w-2xl"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.25 }}
+          >
+            <motion.div
+              className={cn(
+                'relative flex items-end gap-2 rounded-xl',
+                'bg-card/90 backdrop-blur-md',
+                'shadow-[0_4px_24px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.05)]'
+              )}
+              variants={inputVariants}
+              animate={isFocused ? 'focused' : 'idle'}
+            >
+              <textarea
+                ref={textareaRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                placeholder="Chiedimi qualsiasi cosa sul vino..."
+                rows={1}
+                aria-label="Scrivi un messaggio"
+                className={cn(
+                  'flex-1 resize-none bg-transparent rounded-xl px-4 py-4 pr-14',
+                  'text-sm focus:outline-none',
+                  'min-h-[56px] max-h-[120px]',
+                  'placeholder:text-muted-foreground'
+                )}
+              />
+              <button
+                onClick={handleSend}
+                disabled={!canSend}
+                aria-label="Invia messaggio"
+                className={cn(
+                  'absolute right-2 bottom-2 p-3 rounded-lg',
+                  'transition-all duration-150',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine focus-visible:ring-offset-2 focus-visible:ring-offset-card',
+                  canSend
+                    ? 'bg-wine text-white hover:bg-wine-dark cursor-pointer btn-press'
+                    : 'bg-muted/50 text-muted-foreground cursor-not-allowed'
+                )}
+              >
+                <Send className="h-5 w-5" />
+              </button>
+            </motion.div>
+            <p className="text-xs text-muted-foreground text-center mt-2">
+              Premi Invio per inviare
+            </p>
+          </motion.div>
+
+          {/* Quick Suggestions */}
+          <motion.div
+            className="mt-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.35 }}
+          >
+            <QuickSuggestions
+              suggestions={GENERAL_SUGGESTIONS}
+              onSelect={handleSuggestionSelect}
+            />
+          </motion.div>
+        </div>
+      </main>
+
+      {/* Venue Selector Modal */}
+      <VenueSelector
+        isOpen={showVenueSelector}
+        onClose={() => setShowVenueSelector(false)}
+        onSelect={handleVenueSelect}
+        recentVenues={recentVenues}
+      />
+    </div>
+  )
+}
