@@ -1,0 +1,238 @@
+// ============================================
+// WYN - Core Types
+// ============================================
+
+export type WineType = 'red' | 'white' | 'rose' | 'sparkling' | 'dessert'
+
+// ============================================
+// DATABASE ENTITIES
+// ============================================
+
+export interface Venue {
+  id: string
+  slug: string
+  name: string
+  description: string | null
+  email: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface Wine {
+  id: string
+  venue_id: string
+  name: string
+  wine_type: WineType
+  price: number
+  price_glass: number | null
+  producer: string | null
+  region: string | null
+  denomination: string | null
+  grape_varieties: string[] | null
+  year: number | null
+  description: string | null
+  available: boolean
+  recommended: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface WineRating {
+  id: string
+  wine_id: string
+  guide_id: string
+  guide_name: string
+  score: string
+  confidence: number
+  year: number | null
+  source_url: string | null
+  created_at: string
+}
+
+export interface WineWithRatings extends Wine {
+  ratings: WineRating[]
+}
+
+export interface EnrichmentJob {
+  id: string
+  wine_id: string
+  status: 'pending' | 'processing' | 'completed' | 'failed'
+  error_message: string | null
+  created_at: string
+  completed_at: string | null
+}
+
+// ============================================
+// API REQUEST/RESPONSE TYPES
+// ============================================
+
+export interface ChatMessage {
+  role: 'user' | 'assistant' | 'system'
+  content: string
+}
+
+export interface ChatRequest {
+  message: string
+  venue_slug?: string
+  history?: ChatMessage[]
+}
+
+export interface ChatResponse {
+  message: string
+  mode: 'general' | 'venue'
+  venue_name?: string
+}
+
+export interface AdminLoginRequest {
+  email: string
+  password: string
+}
+
+export interface AdminLoginResponse {
+  token: string
+  venue: {
+    id: string
+    slug: string
+    name: string
+  }
+}
+
+export interface WinesResponse {
+  wines: WineWithRatings[]
+  venue: {
+    id: string
+    name: string
+  }
+}
+
+// ============================================
+// WINE INPUT TYPES
+// ============================================
+
+export interface WineCreateInput {
+  name: string
+  wine_type: WineType
+  price: number
+  price_glass?: number
+  producer?: string
+  region?: string
+  denomination?: string
+  grape_varieties?: string[]
+  year?: number
+  description?: string
+}
+
+export interface WineUpdateInput extends Partial<WineCreateInput> {
+  available?: boolean
+  recommended?: boolean
+}
+
+// ============================================
+// LLM TYPES
+// ============================================
+
+export interface LLMConfig {
+  provider: 'groq' | 'anthropic'
+  model: string
+  maxTokens: number
+  temperature: number
+}
+
+export interface LLMResponse {
+  content: string
+  model: string
+  usage?: {
+    input_tokens: number
+    output_tokens: number
+  }
+}
+
+// ============================================
+// CONFIG TYPES
+// ============================================
+
+export interface WineGuide {
+  id: string
+  name: string
+  ratingSystem: string
+  philosophy: string
+}
+
+// ============================================
+// CSV UPLOAD TYPES
+// ============================================
+
+export interface CsvWineRow {
+  name: string
+  wine_type: string
+  price: string
+  producer: string
+  year?: string
+  region?: string
+  denomination?: string
+  grape_varieties?: string
+  description?: string
+  price_glass?: string
+}
+
+export interface CsvValidationError {
+  field: string
+  message: string
+  value?: string
+}
+
+export interface ParsedCsvWine {
+  rowNumber: number
+  data: WineCreateInput
+  errors: CsvValidationError[]
+  isValid: boolean
+}
+
+export interface CsvParseResult {
+  wines: ParsedCsvWine[]
+  totalRows: number
+  validCount: number
+  errorCount: number
+  headers: string[]
+}
+
+export interface BulkImportRequest {
+  wines: WineCreateInput[]
+}
+
+export interface BulkImportResponse {
+  imported: number
+  failed: number
+  wines: Wine[]
+  errors: Array<{
+    index: number
+    name: string
+    error: string
+  }>
+}
+
+// ============================================
+// PAGINATION TYPES
+// ============================================
+
+export interface PaginationParams {
+  limit?: number
+  cursor?: string
+  search?: string
+  wine_type?: WineType | 'all'
+  sortBy?: 'name' | 'price' | 'created_at' | 'wine_type'
+  sortOrder?: 'asc' | 'desc'
+}
+
+export interface PaginationInfo {
+  nextCursor: string | null
+  hasMore: boolean
+  total: number
+}
+
+export interface PaginatedResponse<T> {
+  data: T[]
+  pagination: PaginationInfo
+}
+
+export type WinesPaginatedResponse = PaginatedResponse<WineWithRatings>

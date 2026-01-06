@@ -1,0 +1,288 @@
+@import url('https://fonts.googleapis.com/css2?family=Mina:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Mina font for branding */
+.mina-regular {
+  font-family: "Mina", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.mina-bold {
+  font-family: "Mina", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+@layer base {
+  :root {
+    /* Background & Foreground - warm dark theme */
+    --background: 15 14% 8%;          /* #171312 */
+    --foreground: 30 20% 92%;         /* #efebe7 */
+
+    /* Card */
+    --card: 17 13% 12%;               /* #221d1b */
+    --card-foreground: 30 20% 92%;    /* #efebe7 */
+
+    /* Popover */
+    --popover: 15 11% 10%;            /* #1d1816 */
+    --popover-foreground: 30 20% 92%; /* #efebe7 */
+
+    /* Primary (Wine Red) */
+    --primary: 350 60% 35%;           /* #8f2436 */
+    --primary-foreground: 30 20% 95%; /* #f5f2f0 */
+
+    /* Secondary */
+    --secondary: 15 6% 16%;           /* #2d2725 */
+    --secondary-foreground: 30 16% 88%; /* #e7e0da */
+
+    /* Muted */
+    --muted: 22 9% 18%;               /* #322d2a */
+    --muted-foreground: 30 12% 72%;   /* #bfb5ac - WCAG AA compliant (5.1:1 contrast) */
+
+    /* Accent (Gold) */
+    --accent: 42 72% 55%;             /* #ddac3c */
+    --accent-foreground: 15 14% 8%;   /* #171312 */
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* Border/Input/Ring - warm brown tones */
+    --border: 20 11% 20%;             /* #39312d */
+    --input: 20 11% 20%;              /* #39312d */
+    --ring: 350 59% 40%;              /* #a3293d */
+
+    --radius: 0.5rem;
+
+    /* Wine-specific colors */
+    --wine: 350 60% 35%;              /* #8f2436 */
+    --wine-light: 350 40% 60%;
+    --wine-dark: 350 65% 28%;
+
+    /* Animation timing */
+    --duration-fast: 150ms;
+    --duration-normal: 200ms;
+    --duration-slow: 300ms;
+
+    /* Easing curves */
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    /* Effects */
+    --blur-glass: 12px;
+    --glow-wine: 0 0 20px hsl(345 52% 33% / 0.3);
+    --shadow-message: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Custom scrollbar for dark theme */
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--border));
+    border-radius: 3px;
+  }
+}
+
+/* Wine glass animation */
+@keyframes wine-swirl {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+
+.animate-wine-swirl {
+  animation: wine-swirl 3s ease-in-out infinite;
+}
+
+/* Toast/Brindisi animation - elegant cheers effect */
+@keyframes toast {
+  0% {
+    transform: rotate(0deg) translateY(0);
+  }
+  15% {
+    transform: rotate(-12deg) translateY(-2px);
+  }
+  30% {
+    transform: rotate(-8deg) translateY(-1px);
+  }
+  45% {
+    transform: rotate(-10deg) translateY(-2px);
+  }
+  60% {
+    transform: rotate(-4deg) translateY(-1px);
+  }
+  75% {
+    transform: rotate(-2deg) translateY(0);
+  }
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+}
+
+.animate-toast {
+  animation: toast 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  transform-origin: bottom center;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Safe area padding for notched devices (iPhone X+, etc.) */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
+  }
+  .safe-all {
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+}
+
+/* Message entry animations */
+@keyframes messageSlideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes messageSlideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+@keyframes dotBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@layer utilities {
+  /* Glass effect */
+  .glass {
+    @apply bg-secondary/80 backdrop-blur-md border border-white/5;
+  }
+
+  /* Input focus glow */
+  .input-glow {
+    @apply transition-shadow duration-150 ease-out;
+  }
+  .input-glow:focus {
+    box-shadow: var(--glow-wine);
+  }
+
+  /* Button press feedback */
+  .btn-press {
+    @apply transition-transform duration-150 ease-out active:scale-[0.95];
+  }
+
+  /* Message entry - AI (from left) */
+  .message-enter-ai {
+    animation: messageSlideInLeft var(--duration-normal) var(--ease-out) forwards;
+  }
+
+  /* Message entry - User (from right) */
+  .message-enter-user {
+    animation: messageSlideInRight var(--duration-normal) var(--ease-out) forwards;
+  }
+
+  /* Error shake */
+  .animate-shake {
+    animation: shake 0.3s ease-in-out;
+  }
+
+  /* Suggestion pill hover */
+  .pill-hover {
+    @apply transition-all duration-150 ease-out
+           hover:translate-y-[-2px] hover:shadow-lg hover:border-wine/50;
+  }
+
+  /* Staggered children animation */
+  .stagger-children > * {
+    animation: fadeInUp var(--duration-normal) var(--ease-out) forwards;
+    opacity: 0;
+  }
+  .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+  .stagger-children > *:nth-child(2) { animation-delay: 50ms; }
+  .stagger-children > *:nth-child(3) { animation-delay: 100ms; }
+  .stagger-children > *:nth-child(4) { animation-delay: 150ms; }
+  .stagger-children > *:nth-child(5) { animation-delay: 200ms; }
+  .stagger-children > *:nth-child(6) { animation-delay: 250ms; }
+
+  /* Typing indicator dots */
+  .typing-dot {
+    animation: dotBounce 0.6s ease-in-out infinite;
+  }
+  .typing-dot:nth-child(2) { animation-delay: 0.1s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.2s; }
+}
