@@ -7,10 +7,10 @@ import { cn } from '@/lib/utils'
 import { overlayVariants, modalVariants } from '@/lib/motion'
 import {
   getCurrentPosition,
-  getPositionErrorMessage,
   fetchNearbyVenues,
+  fetchMaxVenueDistance,
   formatDistance,
-  MAX_VENUE_DISTANCE_KM,
+  DEFAULT_MAX_VENUE_DISTANCE_KM,
   DEFAULT_SEARCH_RADIUS_KM,
 } from '@/lib/geolocation'
 import type { Venue, VenueWithDistance } from '@/types'
@@ -39,10 +39,13 @@ export function VenueSelector({
   const [userPosition, setUserPosition] = useState<{ lat: number; lng: number } | null>(null)
   const [nearbyVenues, setNearbyVenues] = useState<VenueWithDistance[]>([])
   const [loadingNearby, setLoadingNearby] = useState(false)
+  const [maxVenueDistance, setMaxVenueDistance] = useState<number>(DEFAULT_MAX_VENUE_DISTANCE_KM)
 
-  // Request geolocation when modal opens
+  // Fetch settings and request geolocation when modal opens
   useEffect(() => {
     if (isOpen && locationStatus === 'idle') {
+      // Fetch max distance setting
+      fetchMaxVenueDistance().then(setMaxVenueDistance)
       requestLocation()
     }
   }, [isOpen, locationStatus])
@@ -110,8 +113,8 @@ export function VenueSelector({
 
       const venueData = await response.json()
 
-      // Check distance if we have user position and venue has coordinates
-      if (userPosition && venueData.venue?.latitude && venueData.venue?.longitude) {
+      // Check distance if we have user position, venue has coordinates, and distance check is enabled
+      if (userPosition && venueData.venue?.latitude && venueData.venue?.longitude && maxVenueDistance > 0) {
         const { calculateDistance } = await import('@/lib/geolocation')
         const distance = calculateDistance(
           userPosition.lat,
@@ -120,8 +123,8 @@ export function VenueSelector({
           venueData.venue.longitude
         )
 
-        if (distance > MAX_VENUE_DISTANCE_KM) {
-          setError(`Questo locale è troppo lontano (${formatDistance(distance)}). Devi essere entro ${MAX_VENUE_DISTANCE_KM} km dal ristorante.`)
+        if (distance > maxVenueDistance) {
+          setError(`Questo locale è troppo lontano (${formatDistance(distance)}). Devi essere entro ${maxVenueDistance} km dal ristorante.`)
           setIsValidating(false)
           return
         }
