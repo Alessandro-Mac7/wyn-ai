@@ -14,12 +14,6 @@ interface VenueSelectorProps {
   recentVenues?: Venue[]
 }
 
-// Demo venue for quick access
-const DEMO_VENUE = {
-  slug: 'osteria-del-vino',
-  name: 'Osteria del Vino',
-}
-
 export function VenueSelector({
   isOpen,
   onClose,
@@ -212,20 +206,6 @@ export function VenueSelector({
                   </div>
                 )}
 
-                {/* Demo venue */}
-                <div className="p-4 bg-secondary/50 rounded-lg">
-                  <p className="text-xs text-muted-foreground mb-2">
-                    Vuoi provare? Usa il ristorante demo:
-                  </p>
-                  <button
-                    onClick={() => handleSelectVenue(DEMO_VENUE.slug)}
-                    disabled={isValidating}
-                    className="flex items-center gap-2 text-wine hover:underline disabled:opacity-50"
-                  >
-                    <Wine className="h-4 w-4" />
-                    {DEMO_VENUE.name}
-                  </button>
-                </div>
               </div>
             </div>
           </motion.div>
