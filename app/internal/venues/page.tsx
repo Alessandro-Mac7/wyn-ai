@@ -3,7 +3,7 @@
 import { useState, useEffect, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { Building2, Mail, Lock, FileText, Check, AlertCircle, LogOut } from 'lucide-react'
+import { Building2, Mail, Lock, FileText, Check, AlertCircle, LogOut, MapPin, Navigation } from 'lucide-react'
 import { createSupabaseBrowserClient } from '@/lib/supabase-auth'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
@@ -15,6 +15,10 @@ interface FormData {
   email: string
   password: string
   description: string
+  latitude: string
+  longitude: string
+  address: string
+  city: string
 }
 
 interface Result {
@@ -33,6 +37,10 @@ export default function VenueRegistrationPage() {
     email: '',
     password: '',
     description: '',
+    latitude: '',
+    longitude: '',
+    address: '',
+    city: '',
   })
   const [isLoading, setIsLoading] = useState(false)
   const [result, setResult] = useState<Result>({})
@@ -107,6 +115,10 @@ export default function VenueRegistrationPage() {
           email: '',
           password: '',
           description: '',
+          latitude: '',
+          longitude: '',
+          address: '',
+          city: '',
         })
       } else {
         setResult({
@@ -282,6 +294,81 @@ export default function VenueRegistrationPage() {
                   />
                 </div>
               </div>
+
+              {/* Location Section */}
+              <div className="border-t border-border pt-6">
+                <p className="text-sm font-medium mb-4 flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-wine" />
+                  Posizione (opzionale)
+                </p>
+              </div>
+
+              {/* Address */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Indirizzo</label>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <input
+                    name="address"
+                    value={formData.address}
+                    onChange={handleChange}
+                    placeholder="Via Roma 123"
+                    className={inputClass}
+                  />
+                </div>
+              </div>
+
+              {/* City */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Città</label>
+                <div className="relative">
+                  <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <input
+                    name="city"
+                    value={formData.city}
+                    onChange={handleChange}
+                    placeholder="Milano"
+                    className={inputClass}
+                  />
+                </div>
+              </div>
+
+              {/* Coordinates */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Latitudine</label>
+                  <div className="relative">
+                    <Navigation className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <input
+                      name="latitude"
+                      type="number"
+                      step="any"
+                      value={formData.latitude}
+                      onChange={handleChange}
+                      placeholder="45.4642"
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Longitudine</label>
+                  <div className="relative">
+                    <Navigation className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground rotate-90" />
+                    <input
+                      name="longitude"
+                      type="number"
+                      step="any"
+                      value={formData.longitude}
+                      onChange={handleChange}
+                      placeholder="9.1900"
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Trova le coordinate su Google Maps: tasto destro → "Cosa c'è qui?"
+              </p>
 
               {/* Result Message */}
               {result.message && (
