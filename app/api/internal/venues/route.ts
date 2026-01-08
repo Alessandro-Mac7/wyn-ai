@@ -39,12 +39,30 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse request body
-    const { name, slug, email, password, description } = await request.json()
+    const { name, slug, email, password, description, latitude, longitude, address, city } = await request.json()
 
     // Validate required fields
     if (!name || !slug || !email || !password) {
       return NextResponse.json(
         { error: 'Campi obbligatori mancanti: name, slug, email, password' },
+        { status: 400 }
+      )
+    }
+
+    // Validate coordinates if provided
+    const parsedLat = latitude ? parseFloat(latitude) : null
+    const parsedLng = longitude ? parseFloat(longitude) : null
+
+    if (parsedLat !== null && (parsedLat < -90 || parsedLat > 90)) {
+      return NextResponse.json(
+        { error: 'Latitudine non valida (deve essere tra -90 e 90)' },
+        { status: 400 }
+      )
+    }
+
+    if (parsedLng !== null && (parsedLng < -180 || parsedLng > 180)) {
+      return NextResponse.json(
+        { error: 'Longitudine non valida (deve essere tra -180 e 180)' },
         { status: 400 }
       )
     }
@@ -92,6 +110,10 @@ export async function POST(request: NextRequest) {
       email,
       password,
       description,
+      latitude: parsedLat,
+      longitude: parsedLng,
+      address: address || null,
+      city: city || null,
     })
 
     if (!result.success) {
@@ -140,10 +162,10 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Fetch all venues
+    // Fetch all venues with location data
     const { data: venues, error } = await supabase
       .from('venues')
-      .select('id, slug, name, email, description, created_at, owner_id')
+      .select('id, slug, name, email, description, latitude, longitude, address, city, created_at, owner_id')
       .order('created_at', { ascending: false })
 
     if (error) {
@@ -157,6 +179,97 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('Error in GET /api/internal/venues:', error)
+    return NextResponse.json(
+      { error: 'Errore interno del server' },
+      { status: 500 }
+    )
+  }
+}
+
+// PATCH: Update a venue (for super_admin)
+export async function PATCH(request: NextRequest) {
+  try {
+    const supabase = await createSupabaseServerClient()
+
+    // Verify session
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Non autenticato' },
+        { status: 401 }
+      )
+    }
+
+    // Verify super_admin role
+    const isAdmin = await isSuperAdmin(user.id)
+
+    if (!isAdmin) {
+      return NextResponse.json(
+        { error: 'Accesso negato' },
+        { status: 403 }
+      )
+    }
+
+    // Parse request body
+    const { id, name, description, latitude, longitude, address, city } = await request.json()
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'ID del locale mancante' },
+        { status: 400 }
+      )
+    }
+
+    // Validate coordinates if provided
+    const parsedLat = latitude !== undefined && latitude !== '' ? parseFloat(latitude) : null
+    const parsedLng = longitude !== undefined && longitude !== '' ? parseFloat(longitude) : null
+
+    if (parsedLat !== null && (isNaN(parsedLat) || parsedLat < -90 || parsedLat > 90)) {
+      return NextResponse.json(
+        { error: 'Latitudine non valida (deve essere tra -90 e 90)' },
+        { status: 400 }
+      )
+    }
+
+    if (parsedLng !== null && (isNaN(parsedLng) || parsedLng < -180 || parsedLng > 180)) {
+      return NextResponse.json(
+        { error: 'Longitudine non valida (deve essere tra -180 e 180)' },
+        { status: 400 }
+      )
+    }
+
+    // Build update object
+    const updateData: Record<string, unknown> = {
+      updated_at: new Date().toISOString(),
+    }
+
+    if (name !== undefined) updateData.name = name
+    if (description !== undefined) updateData.description = description || null
+    if (address !== undefined) updateData.address = address || null
+    if (city !== undefined) updateData.city = city || null
+    if (latitude !== undefined) updateData.latitude = parsedLat
+    if (longitude !== undefined) updateData.longitude = parsedLng
+
+    // Update venue
+    const { data: venue, error } = await supabase
+      .from('venues')
+      .update(updateData)
+      .eq('id', id)
+      .select('id, slug, name, email, description, latitude, longitude, address, city, created_at')
+      .single()
+
+    if (error) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json({ venue })
+
+  } catch (error) {
+    console.error('Error in PATCH /api/internal/venues:', error)
     return NextResponse.json(
       { error: 'Errore interno del server' },
       { status: 500 }
