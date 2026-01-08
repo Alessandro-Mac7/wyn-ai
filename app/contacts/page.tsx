@@ -71,6 +71,7 @@ export default function ContactsPage() {
       <MobileSidebarToggle
         isOpen={mobileSidebarOpen}
         onToggle={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+        position="top"
       />
 
       {/* Sidebar */}
