@@ -2,11 +2,28 @@
 // Geolocation Utilities
 // ============================================
 
-// Policy: Maximum distance in km for venue selection
-export const MAX_VENUE_DISTANCE_KM = 50
+// Default maximum distance in km for venue selection (fallback if API fails)
+export const DEFAULT_MAX_VENUE_DISTANCE_KM = 50
 
 // Default search radius in km
 export const DEFAULT_SEARCH_RADIUS_KM = 10
+
+// Fetch the configured max venue distance from settings
+export async function fetchMaxVenueDistance(): Promise<number> {
+  try {
+    const response = await fetch('/api/settings')
+    if (response.ok) {
+      const data = await response.json()
+      const maxDistance = data.settings?.max_venue_distance_km
+      if (typeof maxDistance === 'number' && maxDistance >= 0) {
+        return maxDistance
+      }
+    }
+  } catch {
+    // Fall back to default on error
+  }
+  return DEFAULT_MAX_VENUE_DISTANCE_KM
+}
 
 // Haversine formula to calculate distance between two points on Earth
 export function calculateDistance(
@@ -45,8 +62,10 @@ export function formatDistance(distanceKm: number): string {
 }
 
 // Check if venue is within allowed distance
-export function isVenueWithinRange(distanceKm: number): boolean {
-  return distanceKm <= MAX_VENUE_DISTANCE_KM
+export function isVenueWithinRange(distanceKm: number, maxDistanceKm: number = DEFAULT_MAX_VENUE_DISTANCE_KM): boolean {
+  // If maxDistanceKm is 0, distance check is disabled
+  if (maxDistanceKm === 0) return true
+  return distanceKm <= maxDistanceKm
 }
 
 // Get user's current position

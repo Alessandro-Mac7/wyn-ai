@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  Building2, Mail, Lock, FileText, LogOut,
-  MapPin, Navigation, Plus, Pencil, X, Loader2, Wine, Search, Save
+  Building2, Mail, LogOut, Settings,
+  MapPin, Navigation, Plus, Pencil, X, Loader2, Wine, Search, Save, Check
 } from 'lucide-react'
 import { createSupabaseBrowserClient } from '@/lib/supabase-auth'
 import { Button } from '@/components/ui/button'
@@ -108,6 +108,11 @@ export default function VenueManagementPage() {
 
   const [userEmail, setUserEmail] = useState<string | null>(null)
 
+  // Settings state
+  const [maxVenueDistance, setMaxVenueDistance] = useState<string>('50')
+  const [savingSettings, setSavingSettings] = useState(false)
+  const [settingsSaved, setSettingsSaved] = useState(false)
+
   // Fetch venues
   const fetchVenues = useCallback(async () => {
     setLoadingVenues(true)
@@ -124,13 +129,53 @@ export default function VenueManagementPage() {
     }
   }, [])
 
-  // Get user email on mount and fetch venues
+  // Fetch settings
+  const fetchSettings = useCallback(async () => {
+    try {
+      const res = await fetch('/api/internal/settings')
+      if (res.ok) {
+        const data = await res.json()
+        if (data.settings?.max_venue_distance_km !== undefined) {
+          setMaxVenueDistance(String(data.settings.max_venue_distance_km))
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching settings:', error)
+    }
+  }, [])
+
+  // Save max distance setting
+  const saveMaxDistance = async () => {
+    setSavingSettings(true)
+    setSettingsSaved(false)
+    try {
+      const res = await fetch('/api/internal/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          key: 'max_venue_distance_km',
+          value: parseFloat(maxVenueDistance) || 0
+        }),
+      })
+      if (res.ok) {
+        setSettingsSaved(true)
+        setTimeout(() => setSettingsSaved(false), 2000)
+      }
+    } catch (error) {
+      console.error('Error saving settings:', error)
+    } finally {
+      setSavingSettings(false)
+    }
+  }
+
+  // Get user email on mount and fetch venues/settings
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       setUserEmail(data.user?.email ?? null)
     })
     fetchVenues()
-  }, [supabase, fetchVenues])
+    fetchSettings()
+  }, [supabase, fetchVenues, fetchSettings])
 
   // Focus first input when sidebar opens
   useEffect(() => {
@@ -336,6 +381,61 @@ export default function VenueManagementPage() {
       </header>
 
       <main id="main-content" className="max-w-7xl mx-auto px-4 py-8">
+        {/* Settings Card */}
+        <div className="bg-card border border-border rounded-xl p-5 mb-8">
+          <div className="flex items-start justify-between gap-4 mb-4">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-wine/20">
+                <Settings className="h-5 w-5 text-wine" />
+              </div>
+              <div>
+                <h2 className="font-semibold">Impostazioni Piattaforma</h2>
+                <p className="text-sm text-muted-foreground">Configurazione globale</p>
+              </div>
+            </div>
+            <Button
+              onClick={saveMaxDistance}
+              disabled={savingSettings}
+              size="sm"
+              className={cn(
+                "transition-all",
+                settingsSaved
+                  ? "bg-green-600 hover:bg-green-700"
+                  : "bg-wine hover:bg-wine-dark"
+              )}
+            >
+              {savingSettings ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : settingsSaved ? (
+                <Check className="h-4 w-4 mr-2" />
+              ) : (
+                <Save className="h-4 w-4 mr-2" />
+              )}
+              {settingsSaved ? 'Salvato!' : 'Salva'}
+            </Button>
+          </div>
+
+          <div className="max-w-xs">
+            <label className="text-sm font-medium mb-2 block">
+              Distanza massima GPS (km)
+            </label>
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                min="0"
+                step="1"
+                value={maxVenueDistance}
+                onChange={(e) => setMaxVenueDistance(e.target.value)}
+                className="w-full h-10 px-3 bg-secondary rounded-lg border-0 text-sm focus:outline-none focus:ring-2 focus:ring-wine"
+              />
+              <span className="text-sm text-muted-foreground">km</span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              0 = controllo disabilitato
+            </p>
+          </div>
+        </div>
+
         {/* Title and Action buttons */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
