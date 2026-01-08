@@ -69,9 +69,37 @@ export default function HomePage() {
           {/* Logo and Tagline */}
           <motion.div
             className="flex items-center justify-center mb-2"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              scale: [1, 1.02, 1],
+              rotate: [0, -0.5, 0.5, 0],
+              filter: [
+                'drop-shadow(0 0 8px rgba(143, 36, 54, 0.3))',
+                'drop-shadow(0 0 16px rgba(143, 36, 54, 0.5))',
+                'drop-shadow(0 0 8px rgba(143, 36, 54, 0.3))'
+              ]
+            }}
+            transition={{
+              opacity: { duration: 0.3 },
+              y: { duration: 0.3 },
+              scale: {
+                duration: 3,
+                repeat: Infinity,
+                ease: 'easeInOut'
+              },
+              rotate: {
+                duration: 4,
+                repeat: Infinity,
+                ease: 'easeInOut'
+              },
+              filter: {
+                duration: 3,
+                repeat: Infinity,
+                ease: 'easeInOut'
+              }
+            }}
           >
             <Image
               src="/wyn-logo.png"

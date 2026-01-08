@@ -49,11 +49,11 @@ export function Sidebar({ onHomeClick }: SidebarProps) {
           <motion.div
             className="origin-bottom"
             whileHover={{
-              skewX: 8,
+              skewX: -8,
               filter: 'drop-shadow(0 0 8px rgba(143, 36, 54, 0.6))'
             }}
             whileTap={{
-              skewX: 12,
+              skewX: -12,
               filter: 'drop-shadow(0 0 12px rgba(143, 36, 54, 0.8))'
             }}
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
