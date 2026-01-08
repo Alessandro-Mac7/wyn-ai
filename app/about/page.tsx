@@ -168,34 +168,41 @@ export default function AboutPage() {
               </div>
             </motion.div>
 
-            <motion.h1
-              className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight mb-6"
+            <motion.div
+              className="mb-6"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             >
-              Il vino, finalmente{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-wine to-wine-dark">
-                semplice.
-              </span>
-            </motion.h1>
+              <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-wine to-wine-dark">
+                  Drink Smart.
+                </span>
+              </h1>
+              <p className="text-2xl sm:text-3xl md:text-4xl text-foreground mt-2">
+                Il vino giusto, al momento giusto.
+              </p>
+            </motion.div>
 
-            <motion.p
-              className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed"
+            <motion.div
+              className="mb-10 max-w-2xl mx-auto text-center"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             >
-              WYN è il tuo sommelier AI personale.
-              <br className="hidden sm:block" />
-              Consigli esperti, zero pretese.
-            </motion.p>
+              <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
+                WYN è il tuo sommelier AI personale.
+              </p>
+              <p className="text-base md:text-lg text-muted-foreground/70 italic mt-1">
+                Consigli esperti, zero pretese.
+              </p>
+            </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="flex flex-col sm:flex-row gap-4 justify-center"
+              className="flex justify-center"
             >
               <Link href="/chat">
                 <Button
@@ -204,15 +211,6 @@ export default function AboutPage() {
                 >
                   Prova WYN
                   <ChevronDown className="ml-2 h-4 w-4 rotate-[-90deg]" />
-                </Button>
-              </Link>
-              <Link href="/">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="h-12 text-base font-medium border-border/50 hover:bg-secondary/50"
-                >
-                  Scopri di più
                 </Button>
               </Link>
             </motion.div>

@@ -110,14 +110,19 @@ export default function HomePage() {
               priority
             />
           </motion.div>
-          <motion.p
-            className="mina-bold text-xl text-foreground mb-8"
+          <motion.div
+            className="text-center mb-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3, delay: 0.1 }}
           >
-            Il vino, finalmente semplice.
-          </motion.p>
+            <p className="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-wine to-wine-dark">
+              Drink Smart.
+            </p>
+            <p className="text-lg sm:text-xl text-foreground mt-1">
+              Il vino giusto, al momento giusto.
+            </p>
+          </motion.div>
 
           {/* PRIMARY CTA - Venue selection */}
           <motion.div
