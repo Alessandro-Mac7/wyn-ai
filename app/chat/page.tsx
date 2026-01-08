@@ -16,7 +16,6 @@ import {
   VenueSelector,
   WineMenuPanel,
 } from '@/components/chat'
-import { Sidebar, MobileSidebarToggle } from '@/components/layout'
 import { cn } from '@/lib/utils'
 import { inputVariants } from '@/lib/motion'
 import type { ChatMessage } from '@/types'
@@ -79,7 +78,6 @@ function ChatPageContent() {
   const [showVenueSelector, setShowVenueSelector] = useState(false)
   const [showVenueInfo, setShowVenueInfo] = useState(false)
   const [showWinePanel, setShowWinePanel] = useState(false)
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
   const [input, setInput] = useState('')
   const [isFocused, setIsFocused] = useState(false)
   const [showInputHint, setShowInputHint] = useState(false)
@@ -178,21 +176,6 @@ function ChatPageContent() {
     setShowWinePanel(prev => !prev)
   }, [])
 
-  // Toggle mobile sidebar
-  const handleMobileSidebarToggle = useCallback(() => {
-    setMobileSidebarOpen(prev => !prev)
-  }, [])
-
-  // Close mobile sidebar
-  const handleMobileSidebarClose = useCallback(() => {
-    setMobileSidebarOpen(false)
-  }, [])
-
-  // Navigate to home
-  const handleHomeClick = useCallback(() => {
-    router.push('/')
-  }, [router])
-
   // Handle send message
   const handleSend = () => {
     if (input.trim() && !isLoading) {
@@ -222,19 +205,6 @@ function ChatPageContent() {
 
   return (
     <div className="min-h-screen">
-      {/* Mobile sidebar toggle */}
-      <MobileSidebarToggle
-        isOpen={mobileSidebarOpen}
-        onToggle={handleMobileSidebarToggle}
-      />
-
-      {/* Sidebar - simplified, single Chat button */}
-      <Sidebar
-        onHomeClick={handleHomeClick}
-        isMobileOpen={mobileSidebarOpen}
-        onMobileClose={handleMobileSidebarClose}
-      />
-
       {/* Main content - no padding on mobile since sidebar is hidden */}
       <main id="main-content" className="pl-0 sm:pl-16 min-h-screen flex flex-col">
         {/* Top bar: VenueSelectionBar (general mode) or VenueHeader (venue mode) */}

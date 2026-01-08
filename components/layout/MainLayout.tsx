@@ -1,6 +1,9 @@
 'use client'
 
+import { useState } from 'react'
 import { usePathname } from 'next/navigation'
+import { Sidebar } from './Sidebar'
+import { MobileSidebarToggle } from './MobileSidebarToggle'
 
 interface MainLayoutProps {
   children: React.ReactNode
@@ -8,26 +11,42 @@ interface MainLayoutProps {
 
 export function MainLayout({ children }: MainLayoutProps) {
   const pathname = usePathname()
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
 
-  // Home page handles its own sidebar and layout
-  // Admin pages have their own layout
-  // About page uses sidebar via home pattern
-  // Venue pages redirect to home with venue param
-  const isHomePage = pathname === '/'
+  // Determine which pages should have the sidebar
   const isAdminPage = pathname.startsWith('/admin')
-  const isAboutPage = pathname === '/about'
+  const isInternalPage = pathname.startsWith('/internal')
+  const isVenuePage = pathname.startsWith('/v/')
 
-  // Home page handles everything itself (sidebar + main)
-  if (isHomePage) {
+  // Pages that don't use the shared sidebar
+  const noSidebar = isAdminPage || isInternalPage || isVenuePage
+
+  // On chat page, toggle is centered; on other pages, it's at the top
+  const isChatPage = pathname === '/chat' || pathname.startsWith('/chat/')
+  const togglePosition = isChatPage ? 'center' : 'top'
+
+  // Admin and internal pages handle their own layout
+  if (noSidebar) {
     return <>{children}</>
   }
 
-  // Admin pages - no sidebar
-  if (isAdminPage) {
-    return <>{children}</>
-  }
+  // All other pages get the shared sidebar and toggle
+  return (
+    <>
+      {/* Mobile sidebar toggle - persists across page navigations for smooth animation */}
+      <MobileSidebarToggle
+        isOpen={mobileSidebarOpen}
+        onToggle={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+        position={togglePosition}
+      />
 
-  // About and other pages - simple layout with padding for sidebar
-  // (Sidebar is rendered by the page itself if needed)
-  return <>{children}</>
+      {/* Sidebar - persists across page navigations */}
+      <Sidebar
+        isMobileOpen={mobileSidebarOpen}
+        onMobileClose={() => setMobileSidebarOpen(false)}
+      />
+
+      {children}
+    </>
+  )
 }

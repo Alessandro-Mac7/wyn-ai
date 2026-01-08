@@ -17,7 +17,6 @@ import {
   Users,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Sidebar, MobileSidebarToggle } from '@/components/layout'
 import { cn } from '@/lib/utils'
 
 // Animation variants
@@ -115,7 +114,6 @@ function AnimatedSection({
 }
 
 export default function AboutPage() {
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
   const [showScrollTop, setShowScrollTop] = useState(false)
 
   // Track scroll position to show/hide scroll-to-top button
@@ -133,18 +131,6 @@ export default function AboutPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Mobile sidebar toggle */}
-      <MobileSidebarToggle
-        isOpen={mobileSidebarOpen}
-        onToggle={() => setMobileSidebarOpen(!mobileSidebarOpen)}
-        position="top"
-      />
-
-      <Sidebar
-        isMobileOpen={mobileSidebarOpen}
-        onMobileClose={() => setMobileSidebarOpen(false)}
-      />
-
       <main id="main-content" className="pl-0 sm:pl-16 min-h-screen">
         {/* Hero Section */}
         <section className="relative min-h-screen flex flex-col items-center justify-center px-6 overflow-hidden">
