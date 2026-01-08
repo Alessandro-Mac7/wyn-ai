@@ -11,7 +11,6 @@ import {
   QuickSuggestions,
   VenueSelector,
 } from '@/components/chat'
-import { Sidebar, MobileSidebarToggle } from '@/components/layout'
 import { GENERAL_SUGGESTIONS } from '@/lib/prompts'
 import { cn } from '@/lib/utils'
 import { inputVariants } from '@/lib/motion'
@@ -23,7 +22,6 @@ export default function HomePage() {
 
   // UI state
   const [showVenueSelector, setShowVenueSelector] = useState(false)
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
   const [input, setInput] = useState('')
   const [isFocused, setIsFocused] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -61,19 +59,6 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen">
-      {/* Mobile sidebar toggle */}
-      <MobileSidebarToggle
-        isOpen={mobileSidebarOpen}
-        onToggle={() => setMobileSidebarOpen(!mobileSidebarOpen)}
-        position="top"
-      />
-
-      {/* Sidebar */}
-      <Sidebar
-        isMobileOpen={mobileSidebarOpen}
-        onMobileClose={() => setMobileSidebarOpen(false)}
-      />
-
       {/* Main content */}
       <main id="main-content" className="pl-0 sm:pl-16 min-h-screen flex flex-col">
         <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8">
