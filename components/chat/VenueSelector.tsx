@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { MapPin, Search, Wine, X, ArrowRight, AlertCircle, Loader2, Navigation, MapPinOff } from 'lucide-react'
+import { MapPin, Search, Wine, X, ArrowRight, AlertCircle, AlertTriangle, Loader2, Navigation, MapPinOff } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { overlayVariants, modalVariants } from '@/lib/motion'
 import {
@@ -33,6 +33,12 @@ export function VenueSelector({
   const [venueCode, setVenueCode] = useState('')
   const [isValidating, setIsValidating] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [distanceWarning, setDistanceWarning] = useState<{
+    venueName: string
+    venueSlug: string
+    distance: number
+    maxDistance: number
+  } | null>(null)
 
   // Geolocation state
   const [locationStatus, setLocationStatus] = useState<LocationStatus>('idle')
@@ -44,7 +50,6 @@ export function VenueSelector({
   // Fetch settings and request geolocation when modal opens
   useEffect(() => {
     if (isOpen && locationStatus === 'idle') {
-      // Fetch max distance setting
       fetchMaxVenueDistance().then(setMaxVenueDistance)
       requestLocation()
     }
@@ -67,7 +72,7 @@ export function VenueSelector({
         lng: position.coords.longitude,
       })
       setLocationStatus('granted')
-    } catch (err) {
+    } catch (err: unknown) {
       if (err instanceof GeolocationPositionError) {
         if (err.code === err.PERMISSION_DENIED) {
           setLocationStatus('denied')
@@ -84,7 +89,6 @@ export function VenueSelector({
     if (!userPosition || maxVenueDistance <= 0) return
 
     setLoadingNearby(true)
-    // Use configured max distance as the search radius
     const result = await fetchNearbyVenues(
       userPosition.lat,
       userPosition.lng,
@@ -94,8 +98,8 @@ export function VenueSelector({
     setLoadingNearby(false)
   }, [userPosition, maxVenueDistance])
 
-  // Validate venue and check distance
-  const validateAndSelect = async (slug: string) => {
+  // Validate venue exists and select it (with optional distance warning)
+  const validateAndSelect = async (slug: string, skipWarning = false) => {
     setIsValidating(true)
     setError(null)
 
@@ -114,8 +118,8 @@ export function VenueSelector({
 
       const venueData = await response.json()
 
-      // Check distance if we have user position, venue has coordinates, and distance check is enabled
-      if (userPosition && venueData.venue?.latitude && venueData.venue?.longitude && maxVenueDistance > 0) {
+      // Show distance warning (not blocking) if user is far from venue
+      if (!skipWarning && userPosition && venueData.venue?.latitude && venueData.venue?.longitude && maxVenueDistance > 0) {
         const { calculateDistance } = await import('@/lib/geolocation')
         const distance = calculateDistance(
           userPosition.lat,
@@ -125,13 +129,19 @@ export function VenueSelector({
         )
 
         if (distance > maxVenueDistance) {
-          setError(`Questo locale è troppo lontano (${formatDistance(distance)}). Devi essere entro ${maxVenueDistance} km dal ristorante.`)
+          // Show warning but allow user to proceed
+          setDistanceWarning({
+            venueName: venueData.venue.name,
+            venueSlug: slug,
+            distance: distance,
+            maxDistance: maxVenueDistance,
+          })
           setIsValidating(false)
           return
         }
       }
 
-      // Venue exists and is within range, proceed
+      // Proceed with selection
       onSelect(slug)
       setVenueCode('')
       setError(null)
@@ -150,10 +160,24 @@ export function VenueSelector({
   }
 
   const handleSelectNearbyVenue = (venue: VenueWithDistance) => {
-    // Nearby venues are already within range, select directly
+    // Nearby venues are already within configured range
     onSelect(venue.slug)
     setVenueCode('')
     setError(null)
+  }
+
+  // User confirms they want to proceed despite distance warning
+  const handleConfirmDistanceWarning = () => {
+    if (distanceWarning) {
+      onSelect(distanceWarning.venueSlug)
+      setVenueCode('')
+      setError(null)
+      setDistanceWarning(null)
+    }
+  }
+
+  const handleCancelDistanceWarning = () => {
+    setDistanceWarning(null)
   }
 
   const handleSelectRecentVenue = async (slug: string) => {
@@ -179,6 +203,7 @@ export function VenueSelector({
     if (!isOpen) {
       setError(null)
       setVenueCode('')
+      setDistanceWarning(null)
     }
   }, [isOpen])
 
@@ -368,6 +393,44 @@ export function VenueSelector({
                     )}
                   </AnimatePresence>
                 </form>
+
+                {/* Distance warning (non-blocking) */}
+                <AnimatePresence>
+                  {distanceWarning && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                      className="p-4 bg-yellow-900/20 border border-yellow-600/30 rounded-lg"
+                    >
+                      <div className="flex items-start gap-3">
+                        <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-yellow-500">
+                            Locale distante
+                          </p>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            <strong>{distanceWarning.venueName}</strong> si trova a {formatDistance(distanceWarning.distance)} dalla tua posizione.
+                          </p>
+                          <div className="flex gap-2 mt-3">
+                            <button
+                              onClick={handleConfirmDistanceWarning}
+                              className="px-3 py-1.5 text-sm bg-wine hover:bg-wine-dark text-white rounded-md transition-colors"
+                            >
+                              Continua comunque
+                            </button>
+                            <button
+                              onClick={handleCancelDistanceWarning}
+                              className="px-3 py-1.5 text-sm bg-secondary hover:bg-secondary/80 rounded-md transition-colors"
+                            >
+                              Annulla
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
                 {/* Recent venues */}
                 {recentVenues.length > 0 && (
