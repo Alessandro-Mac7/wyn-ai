@@ -84,27 +84,27 @@ function ChatPageContent() {
   const legacyMigrationDone = useRef(false)
   const hasShownHint = useRef(false)
 
-  // Handle legacy URL params (migration)
+  // Handle URL params (query from home page or legacy)
   useEffect(() => {
     if (legacyMigrationDone.current) return
 
-    const legacyVenue = searchParams.get('venue')
-    const legacyQuery = searchParams.get('q')
+    const venueParam = searchParams.get('venue')
+    const queryParam = searchParams.get('q')
 
-    if (legacyVenue || legacyQuery) {
+    if (venueParam || queryParam) {
       legacyMigrationDone.current = true
 
-      // Migrate venue to session
-      if (legacyVenue && !venueData) {
-        loadVenue(legacyVenue)
+      // Load venue if specified
+      if (venueParam && !venueData) {
+        loadVenue(venueParam)
       }
 
-      // Migrate query to session and send
-      if (legacyQuery) {
-        sendMessage(legacyQuery)
+      // Send query message (this triggers API call with loading state)
+      if (queryParam) {
+        sendMessage(queryParam)
       }
 
-      // Clear legacy params from URL
+      // Clear params from URL
       router.replace('/chat', { scroll: false })
     }
   }, [searchParams, venueData, loadVenue, sendMessage, router])

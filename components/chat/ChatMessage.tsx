@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { Wine, Sparkles } from 'lucide-react'
+import ReactMarkdown from 'react-markdown'
 import { cn } from '@/lib/utils'
 import { messageVariants } from '@/lib/motion'
 import type { ChatMessage as MessageType } from '@/types'
@@ -67,9 +68,9 @@ export function ChatMessage({ message, isNew = true }: ChatMessageProps) {
         </div>
 
         {/* Message */}
-        <p className="text-sm whitespace-pre-wrap leading-relaxed text-foreground">
-          {message.content}
-        </p>
+        <div className="text-sm leading-relaxed text-foreground prose prose-sm prose-invert max-w-none prose-p:my-1 prose-strong:text-wine prose-strong:font-semibold">
+          <ReactMarkdown>{message.content}</ReactMarkdown>
+        </div>
 
         {/* Timestamp */}
         <p className="text-xs text-muted-foreground mt-1.5">
