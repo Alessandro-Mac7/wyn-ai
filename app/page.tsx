@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Send, MapPin, ChevronRight } from 'lucide-react'
-import { useSession } from '@/contexts/session-context'
+// Session context not needed - we pass query via URL params
 import { useVenue, useRecentVenues } from '@/hooks/useVenue'
 import {
   QuickSuggestions,
@@ -18,7 +18,6 @@ import { inputVariants } from '@/lib/motion'
 
 export default function HomePage() {
   const router = useRouter()
-  const { addMessage } = useSession()
   const { loadVenue } = useVenue()
   const { recentVenues } = useRecentVenues()
 
@@ -37,15 +36,13 @@ export default function HomePage() {
     router.push('/chat')
   }, [loadVenue, router])
 
-  // Handle send - add message to session then navigate
+  // Handle send - navigate to chat with query param
   const handleSend = useCallback(() => {
     if (input.trim()) {
-      // Add user message to session
-      addMessage({ role: 'user', content: input.trim() })
-      // Navigate to chat page
-      router.push('/chat')
+      // Navigate to chat page with query param (chat page will send the message)
+      router.push(`/chat?q=${encodeURIComponent(input.trim())}`)
     }
-  }, [input, addMessage, router])
+  }, [input, router])
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -54,11 +51,10 @@ export default function HomePage() {
     }
   }
 
-  // Handle quick suggestion - add to session then navigate
+  // Handle quick suggestion - navigate to chat with query param
   const handleSuggestionSelect = useCallback((suggestion: string) => {
-    addMessage({ role: 'user', content: suggestion })
-    router.push('/chat')
-  }, [addMessage, router])
+    router.push(`/chat?q=${encodeURIComponent(suggestion)}`)
+  }, [router])
 
   const canSend = input.trim().length > 0
 
