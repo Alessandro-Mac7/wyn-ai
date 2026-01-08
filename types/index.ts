@@ -14,8 +14,16 @@ export interface Venue {
   name: string
   description: string | null
   email: string | null
+  latitude: number | null
+  longitude: number | null
+  address: string | null
+  city: string | null
   created_at: string
   updated_at: string
+}
+
+export interface VenueWithDistance extends Venue {
+  distance: number // Distance in kilometers
 }
 
 export interface Wine {
@@ -106,8 +114,40 @@ export interface WinesResponse {
 }
 
 // ============================================
-// WINE INPUT TYPES
+// VENUE INPUT TYPES
 // ============================================
+
+export interface VenueCreateInput {
+  slug: string
+  name: string
+  description?: string
+  email?: string
+  latitude?: number
+  longitude?: number
+  address?: string
+  city?: string
+}
+
+export interface VenueUpdateInput extends Partial<VenueCreateInput> {}
+
+// ============================================
+// NEARBY VENUES TYPES
+// ============================================
+
+export interface NearbyVenuesRequest {
+  latitude: number
+  longitude: number
+  radius?: number // Default 10km
+  limit?: number // Default 10
+}
+
+export interface NearbyVenuesResponse {
+  venues: VenueWithDistance[]
+  userLocation: {
+    latitude: number
+    longitude: number
+  }
+}
 
 export interface WineCreateInput {
   name: string

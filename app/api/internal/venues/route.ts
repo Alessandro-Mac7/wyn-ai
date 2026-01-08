@@ -39,12 +39,30 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse request body
-    const { name, slug, email, password, description } = await request.json()
+    const { name, slug, email, password, description, latitude, longitude, address, city } = await request.json()
 
     // Validate required fields
     if (!name || !slug || !email || !password) {
       return NextResponse.json(
         { error: 'Campi obbligatori mancanti: name, slug, email, password' },
+        { status: 400 }
+      )
+    }
+
+    // Validate coordinates if provided
+    const parsedLat = latitude ? parseFloat(latitude) : null
+    const parsedLng = longitude ? parseFloat(longitude) : null
+
+    if (parsedLat !== null && (parsedLat < -90 || parsedLat > 90)) {
+      return NextResponse.json(
+        { error: 'Latitudine non valida (deve essere tra -90 e 90)' },
+        { status: 400 }
+      )
+    }
+
+    if (parsedLng !== null && (parsedLng < -180 || parsedLng > 180)) {
+      return NextResponse.json(
+        { error: 'Longitudine non valida (deve essere tra -180 e 180)' },
         { status: 400 }
       )
     }
@@ -92,6 +110,10 @@ export async function POST(request: NextRequest) {
       email,
       password,
       description,
+      latitude: parsedLat,
+      longitude: parsedLng,
+      address: address || null,
+      city: city || null,
     })
 
     if (!result.success) {
