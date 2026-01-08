@@ -17,7 +17,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 export async function getVenueBySlug(slug: string): Promise<Venue | null> {
   const { data, error } = await supabase
     .from('venues')
-    .select('id, slug, name, description, email, created_at, updated_at')
+    .select('id, slug, name, description, email, latitude, longitude, address, city, created_at, updated_at')
     .eq('slug', slug)
     .single()
 
@@ -34,7 +34,7 @@ export async function verifyVenueCredentials(
 ): Promise<Venue | null> {
   const { data, error } = await supabase
     .from('venues')
-    .select('id, slug, name, description, email, created_at, updated_at')
+    .select('id, slug, name, description, email, latitude, longitude, address, city, created_at, updated_at')
     .eq('email', email)
     .eq('password_hash', password)
     .single()

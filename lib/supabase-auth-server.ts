@@ -130,8 +130,12 @@ export async function createVenueWithAdmin(params: {
   email: string
   password: string
   description?: string
+  latitude?: number | null
+  longitude?: number | null
+  address?: string | null
+  city?: string | null
 }): Promise<{ success: boolean; venue?: { id: string; slug: string; name: string }; error?: string }> {
-  const { name, slug, email, password, description } = params
+  const { name, slug, email, password, description, latitude, longitude, address, city } = params
 
   try {
     // 1. Create user in Supabase Auth
@@ -166,6 +170,10 @@ export async function createVenueWithAdmin(params: {
         slug,
         email,
         description: description || null,
+        latitude: latitude || null,
+        longitude: longitude || null,
+        address: address || null,
+        city: city || null,
         owner_id: userId
       })
       .select('id, slug, name')
