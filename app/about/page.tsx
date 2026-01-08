@@ -1,8 +1,8 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import Link from 'next/link'
-import { motion, useInView } from 'framer-motion'
+import { motion, useInView, AnimatePresence } from 'framer-motion'
 import {
   Wine,
   Brain,
@@ -11,12 +11,13 @@ import {
   MessageCircle,
   Sparkles,
   ChevronDown,
+  ChevronUp,
   Zap,
   Shield,
   Users,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Sidebar } from '@/components/layout'
+import { Sidebar, MobileSidebarToggle } from '@/components/layout'
 import { cn } from '@/lib/utils'
 
 // Animation variants
@@ -114,11 +115,36 @@ function AnimatedSection({
 }
 
 export default function AboutPage() {
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
+  const [showScrollTop, setShowScrollTop] = useState(false)
+
+  // Track scroll position to show/hide scroll-to-top button
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400)
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   return (
     <div className="min-h-screen bg-background">
-      <Sidebar />
+      {/* Mobile sidebar toggle */}
+      <MobileSidebarToggle
+        isOpen={mobileSidebarOpen}
+        onToggle={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+      />
 
-      <main id="main-content" className="pl-16 min-h-screen">
+      <Sidebar
+        isMobileOpen={mobileSidebarOpen}
+        onMobileClose={() => setMobileSidebarOpen(false)}
+      />
+
+      <main id="main-content" className="pl-0 sm:pl-16 min-h-screen">
         {/* Hero Section */}
         <section className="relative min-h-screen flex flex-col items-center justify-center px-6 overflow-hidden">
           {/* Animated gradient background */}
@@ -433,6 +459,24 @@ export default function AboutPage() {
         {/* Footer spacer */}
         <div className="h-16" />
       </main>
+
+      {/* Scroll to top button */}
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            onClick={scrollToTop}
+            className="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-wine text-white shadow-lg shadow-wine/25 hover:bg-wine-dark hover:shadow-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine focus-visible:ring-offset-2"
+            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 20 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            aria-label="Torna in cima"
+          >
+            <ChevronUp className="h-6 w-6" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
