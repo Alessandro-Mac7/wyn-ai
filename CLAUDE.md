@@ -426,6 +426,10 @@ refactor(lib): extract LLM client to separate module
 docs(readme): add deployment instructions
 ```
 
+**Important:**
+- NEVER add "Co-Authored-By: Claude" or any Claude/AI mention in commits
+- Keep commits clean and professional
+
 ### 8.2 Branch Strategy
 
 ```
