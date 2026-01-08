@@ -4,7 +4,7 @@ import { useState, FormEvent } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Mail, Phone, MapPin, Send, Wine, Sparkles, CheckCircle2, Building2 } from 'lucide-react'
-import { Sidebar } from '@/components/layout'
+import { Sidebar, MobileSidebarToggle } from '@/components/layout'
 import { cn } from '@/lib/utils'
 
 interface FormData {
@@ -45,6 +45,7 @@ export default function ContactsPage() {
   const [formData, setFormData] = useState<FormData>(initialFormData)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -66,11 +67,20 @@ export default function ContactsPage() {
 
   return (
     <div className="min-h-screen">
+      {/* Mobile sidebar toggle */}
+      <MobileSidebarToggle
+        isOpen={mobileSidebarOpen}
+        onToggle={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+      />
+
       {/* Sidebar */}
-      <Sidebar />
+      <Sidebar
+        isMobileOpen={mobileSidebarOpen}
+        onMobileClose={() => setMobileSidebarOpen(false)}
+      />
 
       {/* Main content */}
-      <main id="main-content" className="pl-14 sm:pl-16 min-h-screen">
+      <main id="main-content" className="pl-0 sm:pl-16 min-h-screen">
         <div className="max-w-6xl mx-auto px-4 py-12 sm:py-16">
           {/* Header */}
           <motion.div
