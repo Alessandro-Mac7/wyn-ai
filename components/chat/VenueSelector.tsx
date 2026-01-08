@@ -50,12 +50,12 @@ export function VenueSelector({
     }
   }, [isOpen, locationStatus])
 
-  // Fetch nearby venues when position is available
+  // Fetch nearby venues when position is available and settings loaded
   useEffect(() => {
-    if (userPosition && locationStatus === 'granted') {
+    if (userPosition && locationStatus === 'granted' && maxVenueDistance > 0) {
       loadNearbyVenues()
     }
-  }, [userPosition, locationStatus])
+  }, [userPosition, locationStatus, maxVenueDistance])
 
   const requestLocation = async () => {
     setLocationStatus('requesting')
@@ -81,17 +81,18 @@ export function VenueSelector({
   }
 
   const loadNearbyVenues = useCallback(async () => {
-    if (!userPosition) return
+    if (!userPosition || maxVenueDistance <= 0) return
 
     setLoadingNearby(true)
+    // Use configured max distance as the search radius
     const result = await fetchNearbyVenues(
       userPosition.lat,
       userPosition.lng,
-      DEFAULT_SEARCH_RADIUS_KM
+      maxVenueDistance
     )
     setNearbyVenues(result.venues as VenueWithDistance[])
     setLoadingNearby(false)
-  }, [userPosition])
+  }, [userPosition, maxVenueDistance])
 
   // Validate venue and check distance
   const validateAndSelect = async (slug: string) => {
@@ -296,8 +297,8 @@ export function VenueSelector({
                   </div>
                 )}
 
-                {/* Divider */}
-                {(locationStatus === 'granted' || recentVenues.length > 0) && (
+                {/* Divider - only show if there are nearby venues */}
+                {nearbyVenues.length > 0 && (
                   <div className="flex items-center gap-3">
                     <div className="flex-1 h-px bg-border" />
                     <span className="text-xs text-muted-foreground">oppure</span>
