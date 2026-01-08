@@ -2,10 +2,11 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import { useSession } from '@/contexts/session-context'
-import type { Venue, WineType } from '@/types'
+import type { Venue, WineType, WineWithRatings } from '@/types'
 
 interface UseVenueReturn {
   venue: ReturnType<typeof useSession>['venueData']
+  wines: WineWithRatings[]
   isLoading: boolean
   error: string | null
   wineStats: { total: number; types: number } | null
@@ -18,6 +19,7 @@ export function useVenue(): UseVenueReturn {
   const { venueData, venueSlug, setVenue } = useSession()
 
   // Transient state (not persisted)
+  const [wines, setWines] = useState<WineWithRatings[]>([])
   const [wineStats, setWineStats] = useState<{ total: number; types: number } | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -47,8 +49,9 @@ export function useVenue(): UseVenueReturn {
       // Update session with venue data
       setVenue(data.venue)
 
-      // Calculate wine stats from wines
+      // Store wines and calculate wine stats
       if (data.wines) {
+        setWines(data.wines)
         const types = new Set<WineType>()
         data.wines.forEach((wine: { wine_type: WineType }) => types.add(wine.wine_type))
         setWineStats({
@@ -59,6 +62,7 @@ export function useVenue(): UseVenueReturn {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Errore sconosciuto')
       setVenue(null)
+      setWines([])
       setWineStats(null)
     } finally {
       setIsLoading(false)
@@ -67,11 +71,12 @@ export function useVenue(): UseVenueReturn {
 
   const clearVenue = useCallback(() => {
     setVenue(null)
+    setWines([])
     setWineStats(null)
     setError(null)
   }, [setVenue])
 
-  return { venue: venueData, isLoading, error, wineStats, loadVenue, clearVenue }
+  return { venue: venueData, wines, isLoading, error, wineStats, loadVenue, clearVenue }
 }
 
 // LocalStorage key for recent venues

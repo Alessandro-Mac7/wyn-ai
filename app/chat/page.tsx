@@ -11,10 +11,12 @@ import { useVenue, useRecentVenues } from '@/hooks/useVenue'
 import {
   ChatMessages,
   VenueHeader,
+  VenueInfoCard,
   VenueSelectionBar,
   VenueSelector,
+  WineMenuPanel,
 } from '@/components/chat'
-import { Sidebar } from '@/components/layout'
+import { Sidebar, MobileSidebarToggle } from '@/components/layout'
 import { cn } from '@/lib/utils'
 import { inputVariants } from '@/lib/motion'
 import type { ChatMessage } from '@/types'
@@ -70,11 +72,14 @@ function ChatPageContent() {
 
   // Chat and venue hooks
   const { messages, isLoading, error, sendMessage } = useChat()
-  const { venue, wineStats, loadVenue, clearVenue, isLoading: venueLoading, error: venueError } = useVenue()
+  const { venue, wines, wineStats, loadVenue, clearVenue, isLoading: venueLoading, error: venueError } = useVenue()
   const { recentVenues, addRecentVenue } = useRecentVenues()
 
   // UI state
   const [showVenueSelector, setShowVenueSelector] = useState(false)
+  const [showVenueInfo, setShowVenueInfo] = useState(false)
+  const [showWinePanel, setShowWinePanel] = useState(false)
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
   const [input, setInput] = useState('')
   const [isFocused, setIsFocused] = useState(false)
   const [showInputHint, setShowInputHint] = useState(false)
@@ -159,7 +164,29 @@ function ChatPageContent() {
   const handleCloseVenue = useCallback(() => {
     clearVenue()
     clearConversation()
+    setShowVenueInfo(false)
+    setShowWinePanel(false)
   }, [clearVenue, clearConversation])
+
+  // Toggle venue info card
+  const handleInfoToggle = useCallback(() => {
+    setShowVenueInfo(prev => !prev)
+  }, [])
+
+  // Toggle wine menu panel
+  const handleWineMenuToggle = useCallback(() => {
+    setShowWinePanel(prev => !prev)
+  }, [])
+
+  // Toggle mobile sidebar
+  const handleMobileSidebarToggle = useCallback(() => {
+    setMobileSidebarOpen(prev => !prev)
+  }, [])
+
+  // Close mobile sidebar
+  const handleMobileSidebarClose = useCallback(() => {
+    setMobileSidebarOpen(false)
+  }, [])
 
   // Navigate to home
   const handleHomeClick = useCallback(() => {
@@ -195,11 +222,21 @@ function ChatPageContent() {
 
   return (
     <div className="min-h-screen">
-      {/* Sidebar - simplified, single Chat button */}
-      <Sidebar onHomeClick={handleHomeClick} />
+      {/* Mobile sidebar toggle */}
+      <MobileSidebarToggle
+        isOpen={mobileSidebarOpen}
+        onToggle={handleMobileSidebarToggle}
+      />
 
-      {/* Main content */}
-      <main id="main-content" className="pl-14 sm:pl-16 min-h-screen flex flex-col">
+      {/* Sidebar - simplified, single Chat button */}
+      <Sidebar
+        onHomeClick={handleHomeClick}
+        isMobileOpen={mobileSidebarOpen}
+        onMobileClose={handleMobileSidebarClose}
+      />
+
+      {/* Main content - no padding on mobile since sidebar is hidden */}
+      <main id="main-content" className="pl-0 sm:pl-16 min-h-screen flex flex-col">
         {/* Top bar: VenueSelectionBar (general mode) or VenueHeader (venue mode) */}
         <AnimatePresence mode="wait">
           {venue ? (
@@ -210,6 +247,9 @@ function ChatPageContent() {
               selectedTypes={filters.wineTypes}
               onFilterChange={(types) => setFilters({ wineTypes: types })}
               onClose={handleCloseVenue}
+              onInfoToggle={handleInfoToggle}
+              onWineMenuToggle={handleWineMenuToggle}
+              isInfoExpanded={showVenueInfo}
             />
           ) : !venueLoading && (
             <VenueSelectionBar
@@ -218,6 +258,14 @@ function ChatPageContent() {
             />
           )}
         </AnimatePresence>
+
+        {/* Venue Info Card - collapsible venue description */}
+        {venue && (
+          <VenueInfoCard
+            venue={venue}
+            isExpanded={showVenueInfo}
+          />
+        )}
 
         {/* Venue Error Display - when venue code is invalid */}
         <AnimatePresence>
@@ -438,6 +486,16 @@ function ChatPageContent() {
         onSelect={handleVenueSelect}
         recentVenues={recentVenues}
       />
+
+      {/* Wine Menu Panel - slide-in from right */}
+      {venue && (
+        <WineMenuPanel
+          isOpen={showWinePanel}
+          onClose={() => setShowWinePanel(false)}
+          wines={wines}
+          venueName={venue.name}
+        />
+      )}
     </div>
   )
 }
