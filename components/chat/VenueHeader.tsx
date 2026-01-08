@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { MapPin, Wine, X } from 'lucide-react'
+import { MapPin, Wine, X, Info, BookOpen } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { Venue, WineType } from '@/types'
 
@@ -11,6 +11,9 @@ interface VenueHeaderProps {
   selectedTypes: WineType[]
   onFilterChange: (types: WineType[]) => void
   onClose: () => void
+  onInfoToggle?: () => void
+  onWineMenuToggle?: () => void
+  isInfoExpanded?: boolean
 }
 
 const wineTypeFilters: { value: WineType; label: string }[] = [
@@ -27,6 +30,9 @@ export function VenueHeader({
   selectedTypes,
   onFilterChange,
   onClose,
+  onInfoToggle,
+  onWineMenuToggle,
+  isInfoExpanded,
 }: VenueHeaderProps) {
   const toggleFilter = (type: WineType) => {
     if (selectedTypes.includes(type)) {
@@ -57,7 +63,7 @@ export function VenueHeader({
             <h1 className="mina-regular text-lg uppercase">{venue.name}</h1>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             {/* Stats */}
             {wineStats && (
               <div className="hidden sm:flex items-center gap-3 text-sm">
@@ -66,6 +72,37 @@ export function VenueHeader({
                 <span className="text-wine font-semibold">{wineStats.types}</span>
                 <span className="text-muted-foreground">Tipi</span>
               </div>
+            )}
+
+            {/* Info toggle button */}
+            {onInfoToggle && (
+              <button
+                onClick={onInfoToggle}
+                className={cn(
+                  "p-2 rounded-lg transition-colors btn-press",
+                  isInfoExpanded
+                    ? "bg-wine/20 text-wine"
+                    : "hover:bg-secondary text-muted-foreground hover:text-foreground"
+                )}
+                aria-label={isInfoExpanded ? "Nascondi info locale" : "Mostra info locale"}
+                aria-expanded={isInfoExpanded}
+              >
+                <Info className="h-4 w-4" />
+              </button>
+            )}
+
+            {/* Wine menu button */}
+            {onWineMenuToggle && (
+              <button
+                onClick={onWineMenuToggle}
+                className="p-2 hover:bg-secondary rounded-lg transition-colors btn-press text-muted-foreground hover:text-foreground flex items-center gap-1.5"
+                aria-label="Apri carta dei vini"
+              >
+                <BookOpen className="h-4 w-4" />
+                {wineStats && (
+                  <span className="text-xs font-medium hidden sm:inline">{wineStats.total}</span>
+                )}
+              </button>
             )}
 
             {/* Close button */}

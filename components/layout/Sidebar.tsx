@@ -3,13 +3,15 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { MessageCircle, Sparkles, Mail, Plus } from 'lucide-react'
 import { Tooltip } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 
 interface SidebarProps {
   onHomeClick?: () => void
+  isMobileOpen?: boolean
+  onMobileClose?: () => void
 }
 
 // Navigation items (excluding New Conversation which is handled separately)
@@ -18,7 +20,7 @@ const navItems = [
   { icon: Sparkles, label: 'Scopri WYN', href: '/about', tooltip: 'Scopri le funzionalità di WYN' },
 ]
 
-export function Sidebar({ onHomeClick }: SidebarProps) {
+export function Sidebar({ onHomeClick, isMobileOpen, onMobileClose }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
 
@@ -30,15 +32,44 @@ export function Sidebar({ onHomeClick }: SidebarProps) {
       e.preventDefault()
       onHomeClick()
     }
+    // Close mobile sidebar when navigating
+    onMobileClose?.()
   }
 
   const handleNewConversation = () => {
     // Always navigate to home page for new conversation
     router.push('/')
+    // Close mobile sidebar
+    onMobileClose?.()
+  }
+
+  const handleNavClick = () => {
+    // Close mobile sidebar when navigating
+    onMobileClose?.()
   }
 
   return (
-    <aside className="fixed left-0 top-0 z-40 h-screen w-14 sm:w-16 flex flex-col bg-card shadow-[4px_0_12px_rgba(0,0,0,0.2)]">
+    <>
+      {/* Mobile backdrop */}
+      <AnimatePresence>
+        {isMobileOpen && (
+          <motion.div
+            className="fixed inset-0 z-30 bg-black/60 sm:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onMobileClose}
+          />
+        )}
+      </AnimatePresence>
+
+      <aside className={cn(
+        "fixed left-0 top-0 z-40 h-screen w-14 sm:w-16 flex flex-col bg-card shadow-[4px_0_12px_rgba(0,0,0,0.2)]",
+        // Mobile: hidden by default, shown when open
+        "transition-transform duration-200 ease-out",
+        "sm:translate-x-0", // Always visible on desktop
+        isMobileOpen ? "translate-x-0" : "-translate-x-full sm:translate-x-0"
+      )}>
       {/* Logo - Home button */}
       <div className="flex items-center justify-center pt-5 pb-3">
         <Link
@@ -97,6 +128,7 @@ export function Sidebar({ onHomeClick }: SidebarProps) {
             <Tooltip key={item.href} content={item.tooltip} side="right">
               <Link
                 href={item.href}
+                onClick={handleNavClick}
                 className={cn(
                   'flex flex-col items-center justify-center',
                   'w-11 h-11 sm:w-[52px] sm:h-[52px] rounded-lg transition-colors relative',
@@ -130,6 +162,7 @@ export function Sidebar({ onHomeClick }: SidebarProps) {
         <Tooltip content="Attiva WYN per il tuo ristorante" side="right">
           <Link
             href="/contacts"
+            onClick={handleNavClick}
             className={cn(
               'flex flex-col items-center justify-center',
               'w-11 h-11 sm:w-[52px] sm:h-[52px] rounded-lg transition-colors relative',
@@ -144,5 +177,6 @@ export function Sidebar({ onHomeClick }: SidebarProps) {
         </Tooltip>
       </div>
     </aside>
+    </>
   )
 }
