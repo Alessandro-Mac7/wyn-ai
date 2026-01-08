@@ -65,6 +65,7 @@ export default function HomePage() {
       <MobileSidebarToggle
         isOpen={mobileSidebarOpen}
         onToggle={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+        position="top"
       />
 
       {/* Sidebar */}

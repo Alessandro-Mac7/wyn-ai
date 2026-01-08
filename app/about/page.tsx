@@ -137,6 +137,7 @@ export default function AboutPage() {
       <MobileSidebarToggle
         isOpen={mobileSidebarOpen}
         onToggle={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+        position="top"
       />
 
       <Sidebar

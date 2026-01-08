@@ -7,19 +7,20 @@ import { cn } from '@/lib/utils'
 interface MobileSidebarToggleProps {
   isOpen: boolean
   onToggle: () => void
+  position?: 'center' | 'top' // center for chat, top for other pages
 }
 
-export function MobileSidebarToggle({ isOpen, onToggle }: MobileSidebarToggleProps) {
+export function MobileSidebarToggle({ isOpen, onToggle, position = 'center' }: MobileSidebarToggleProps) {
   return (
     <motion.button
       onClick={onToggle}
       className={cn(
-        // Vertically centered on left edge
-        'fixed left-0 top-1/2 -translate-y-1/2 z-50',
+        // Fixed on left edge
+        'fixed left-0 z-50',
         // Tab shape: rounded on right side only
         'p-2 rounded-r-xl',
         'bg-card/90 backdrop-blur-md border border-l-0 border-border',
-        'shadow-lg hover:bg-secondary transition-all duration-200',
+        'shadow-lg hover:bg-secondary transition-colors duration-200',
         'sm:hidden', // Only show on mobile
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine'
       )}
@@ -28,8 +29,14 @@ export function MobileSidebarToggle({ isOpen, onToggle }: MobileSidebarTogglePro
       whileTap={{ scale: 0.95 }}
       animate={{
         left: isOpen ? 56 : 0, // 56px = sidebar width (w-14)
+        top: position === 'center' ? '50%' : '1rem',
+        y: position === 'center' ? '-50%' : 0,
       }}
-      transition={{ duration: 0.2, ease: 'easeOut' }}
+      transition={{
+        type: 'spring',
+        stiffness: 300,
+        damping: 30,
+      }}
     >
       <motion.div
         animate={{
