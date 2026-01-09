@@ -448,6 +448,31 @@ main                    # Production-ready
 - [ ] Reviewed by AGENT_REVIEWER
 - [ ] Documentation updated if needed
 
+### 8.4 Pre-Push Checklist (MANDATORY)
+
+**NEVER push code without running these checks first:**
+
+```bash
+# 1. Run linter (catches JSX issues, unused vars, etc.)
+npm run lint
+
+# 2. Run TypeScript check (catches type errors)
+npx tsc --noEmit
+
+# 3. For significant changes, also run build
+npm run build
+```
+
+**Rules:**
+- ❌ NEVER push if lint has errors
+- ❌ NEVER push if TypeScript has errors
+- ⚠️ Warnings are acceptable but should be reviewed
+- ✅ All checks must pass before `git push`
+
+**For non-trivial changes:**
+- Use Reviewer agent to validate implementation
+- Test critical flows manually if possible
+
 ---
 
 ## 9. ENVIRONMENT VARIABLES
@@ -700,6 +725,7 @@ pnpm typecheck    # TypeScript check
 |---------|------|--------|---------|
 | 1.0.0 | 2024-12-30 | Initial | Baseline |
 | 1.1.0 | 2025-01-05 | Claude | Supabase Auth migration, two-tier roles, RLS policies |
+| 1.2.0 | 2025-01-09 | Claude | Added mandatory pre-push checklist (lint, tsc, build) |
 
 ---
 
