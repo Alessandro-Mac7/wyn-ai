@@ -10,6 +10,9 @@ const inter = Inter({ subsets: ['latin'] })
 export const viewport: Viewport = {
   themeColor: '#8f2436',
   viewportFit: 'cover', // Enable safe area insets for notched devices
+  maximumScale: 1,
+  minimumScale: 1,
+  userScalable: false, // Disable pinch zoom for native app feel
 }
 
 export const metadata: Metadata = {
