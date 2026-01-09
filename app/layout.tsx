@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import { MainLayout } from '@/components/layout'
 import { Providers } from '@/components/Providers'
+import { ServiceWorkerRegistration } from '@/components/pwa'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -41,6 +42,8 @@ export default function RootLayout({
         >
           Vai al contenuto principale
         </a>
+        {/* Service Worker Registration for PWA */}
+        <ServiceWorkerRegistration />
         <Providers>
           <MainLayout>{children}</MainLayout>
         </Providers>
