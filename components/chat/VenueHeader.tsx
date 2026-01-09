@@ -61,7 +61,7 @@ export function VenueHeader({
         <div className="flex items-center justify-between gap-2 mb-2">
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <MapPin className="h-4 w-4 text-wine shrink-0" />
-            <h1 className="mina-regular text-base sm:text-lg uppercase truncate">
+            <h1 className="mina-regular text-lg sm:text-xl uppercase truncate">
               {venue.name}
             </h1>
             <AnimatePresence>
