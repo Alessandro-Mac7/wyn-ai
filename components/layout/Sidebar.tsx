@@ -18,6 +18,7 @@ interface SidebarProps {
 const navItems = [
   { icon: MessageCircle, label: 'Chat', href: '/chat', tooltip: 'Parla con il sommelier AI' },
   { icon: Sparkles, label: 'Scopri WYN', href: '/about', tooltip: 'Scopri le funzionalità di WYN' },
+  { icon: Mail, label: 'Contatti', href: '/contacts', tooltip: 'Attiva WYN per il tuo ristorante' },
 ]
 
 export function Sidebar({ onHomeClick, isMobileOpen, onMobileClose }: SidebarProps) {
@@ -156,26 +157,6 @@ export function Sidebar({ onHomeClick, isMobileOpen, onMobileClose }: SidebarPro
           )
         })}
       </nav>
-
-      {/* Bottom - Contacts */}
-      <div className="flex flex-col items-center py-3 pb-4">
-        <Tooltip content="Attiva WYN per il tuo ristorante" side="right">
-          <Link
-            href="/contacts"
-            onClick={handleNavClick}
-            className={cn(
-              'flex flex-col items-center justify-center',
-              'w-11 h-11 sm:w-[52px] sm:h-[52px] rounded-lg transition-colors relative',
-              'hover:bg-secondary',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine',
-              pathname === '/contacts' && 'bg-secondary text-wine'
-            )}
-          >
-            <Mail className="h-5 w-5" />
-            <span className="text-[10px] mt-0.5 relative z-10 text-center leading-tight">Contatti</span>
-          </Link>
-        </Tooltip>
-      </div>
     </aside>
     </>
   )

@@ -174,7 +174,7 @@ export function WineSidebar({ isOpen, onClose, onSave, editWine }: WineSidebarPr
         <>
           {/* Backdrop */}
           <motion.div
-            className="fixed inset-0 z-50 bg-black/60"
+            className="fixed inset-0 z-[60] bg-black/60"
             variants={backdropVariants}
             initial="hidden"
             animate="visible"
@@ -184,7 +184,7 @@ export function WineSidebar({ isOpen, onClose, onSave, editWine }: WineSidebarPr
 
           {/* Sidebar */}
           <motion.div
-            className="fixed top-0 right-0 z-50 h-full w-full max-w-md bg-card border-l border-border shadow-2xl"
+            className="fixed top-0 right-0 z-[60] h-full w-full max-w-md bg-card border-l border-border shadow-2xl"
             variants={sidebarVariants}
             initial="hidden"
             animate="visible"
