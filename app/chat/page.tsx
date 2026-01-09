@@ -16,7 +16,7 @@ import {
   VenueSelector,
   WineMenuPanel,
 } from '@/components/chat'
-import { InstallPrompt } from '@/components/pwa'
+import { InstallPrompt, PWAOpenBanner } from '@/components/pwa'
 import { cn } from '@/lib/utils'
 import { inputVariants } from '@/lib/motion'
 import type { ChatMessage } from '@/types'
@@ -84,6 +84,7 @@ function ChatPageContent() {
   const [showInputHint, setShowInputHint] = useState(false)
   const [errorDismissed, setErrorDismissed] = useState(false)
   const [venueErrorDismissed, setVenueErrorDismissed] = useState(false)
+  const [isFromQR, setIsFromQR] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const legacyMigrationDone = useRef(false)
   const hasShownHint = useRef(false)
@@ -94,6 +95,12 @@ function ChatPageContent() {
 
     const venueParam = searchParams.get('venue')
     const queryParam = searchParams.get('q')
+    const fromParam = searchParams.get('from')
+
+    // Track if coming from QR scan
+    if (fromParam === 'qr') {
+      setIsFromQR(true)
+    }
 
     if (venueParam || queryParam) {
       legacyMigrationDone.current = true
@@ -119,6 +126,18 @@ function ChatPageContent() {
       addRecentVenue(venue)
     }
   }, [venue, addRecentVenue])
+
+  // Check for pending venue from PWA banner (on mount only)
+  useEffect(() => {
+    const checkPendingVenue = async () => {
+      const { getPendingVenue } = await import('@/lib/venue-flow')
+      const pendingVenue = getPendingVenue()
+      if (pendingVenue && !venue) {
+        loadVenue(pendingVenue)
+      }
+    }
+    checkPendingVenue()
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Reset error dismissed when error changes
   useEffect(() => {
@@ -211,6 +230,12 @@ function ChatPageContent() {
     <div className="fixed inset-0 flex flex-col overflow-hidden">
       {/* Main content - no padding on mobile since sidebar is hidden */}
       <main id="main-content" className="pl-0 sm:pl-16 flex-1 flex flex-col min-h-0 pt-[env(safe-area-inset-top)]">
+        {/* PWA Open Banner - shows for QR scans when user is in browser but PWA is available */}
+        <PWAOpenBanner
+          venueSlug={venue?.slug ?? null}
+          isFromQR={isFromQR}
+        />
+
         {/* Top bar: VenueSelectionBar (general mode) or VenueHeader (venue mode) */}
         <AnimatePresence mode="wait">
           {venue ? (

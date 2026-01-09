@@ -12,9 +12,10 @@ import { initInstallPrompt, showInstallPrompt, isAppInstalled } from '@/lib/pwa'
 
 interface InstallPromptProps {
   messageCount: number // Number of user chat messages sent
+  isFromQR?: boolean // Whether user arrived via QR scan
 }
 
-export function InstallPrompt({ messageCount }: InstallPromptProps) {
+export function InstallPrompt({ messageCount, isFromQR }: InstallPromptProps) {
   const [canInstall, setCanInstall] = useState(false)
   const [dismissed, setDismissed] = useState(false)
   const [timeOnSite, setTimeOnSite] = useState(0)
@@ -42,12 +43,13 @@ export function InstallPrompt({ messageCount }: InstallPromptProps) {
   // Show conditions: ALL must be true
   // 1. Browser fired beforeinstallprompt (canInstall)
   // 2. User has not dismissed in this session
-  // 3. User has sent at least 2 messages
+  // 3. User has sent at least N messages (2 for QR users, 3 for others)
   // 4. User has been on site for at least 60 seconds
+  const messageThreshold = isFromQR ? 2 : 3
   const shouldShow =
     canInstall &&
     !dismissed &&
-    messageCount >= 2 &&
+    messageCount >= messageThreshold &&
     timeOnSite >= 60
 
   const handleInstall = async () => {

@@ -1,7 +1,8 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { MapPin, Wine, X, Info, BookOpen } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { MapPin, Wine, X, Info, BookOpen, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { Venue, WineType } from '@/types'
 
@@ -14,6 +15,7 @@ interface VenueHeaderProps {
   onInfoToggle?: () => void
   onWineMenuToggle?: () => void
   isInfoExpanded?: boolean
+  isFromQR?: boolean
 }
 
 const wineTypeFilters: { value: WineType; label: string }[] = [
@@ -33,7 +35,19 @@ export function VenueHeader({
   onInfoToggle,
   onWineMenuToggle,
   isInfoExpanded,
+  isFromQR,
 }: VenueHeaderProps) {
+  const [showQRBadge, setShowQRBadge] = useState(isFromQR)
+
+  // Auto-hide QR badge after 3 seconds
+  useEffect(() => {
+    if (isFromQR) {
+      setShowQRBadge(true)
+      const timer = setTimeout(() => setShowQRBadge(false), 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [isFromQR])
+
   const toggleFilter = (type: WineType) => {
     if (selectedTypes.includes(type)) {
       onFilterChange(selectedTypes.filter((t) => t !== type))
@@ -59,8 +73,29 @@ export function VenueHeader({
               <MapPin className="h-3 w-3" />
               Locale
             </span>
-            {/* Venue name */}
-            <h1 className="mina-regular text-lg uppercase">{venue.name}</h1>
+            {/* Venue name with QR badge */}
+            <div className="flex items-center gap-2">
+              <h1 className="mina-regular text-lg uppercase">{venue.name}</h1>
+              <AnimatePresence>
+                {showQRBadge && (
+                  <motion.span
+                    className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-500/20"
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{
+                      scale: [0, 1.2, 1],
+                      opacity: 1
+                    }}
+                    exit={{ opacity: 0 }}
+                    transition={{
+                      scale: { duration: 0.5, ease: [0.34, 1.56, 0.64, 1] },
+                      opacity: { duration: 0.3 }
+                    }}
+                  >
+                    <Check className="h-3 w-3 text-green-500" />
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-4">

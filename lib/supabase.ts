@@ -14,6 +14,15 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 // VENUE FUNCTIONS
 // ============================================
 
+export async function checkVenueExists(slug: string): Promise<boolean> {
+  const { count } = await supabase
+    .from('venues')
+    .select('id', { count: 'exact', head: true })
+    .eq('slug', slug)
+
+  return (count ?? 0) > 0
+}
+
 export async function getVenueBySlug(slug: string): Promise<Venue | null> {
   const { data, error } = await supabase
     .from('venues')
