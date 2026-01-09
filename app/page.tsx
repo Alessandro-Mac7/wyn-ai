@@ -58,10 +58,10 @@ export default function HomePage() {
   const canSend = input.trim().length > 0
 
   return (
-    <div className="min-h-screen">
+    <div className="fixed inset-0 overflow-hidden">
       {/* Main content */}
-      <main id="main-content" className="pl-0 sm:pl-16 min-h-screen flex flex-col">
-        <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8">
+      <main id="main-content" className="pl-0 sm:pl-16 h-full flex flex-col pt-[env(safe-area-inset-top)]">
+        <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 overflow-hidden">
           {/* Logo and Tagline */}
           <motion.div
             className="flex items-center justify-center mb-2"
@@ -190,10 +190,10 @@ export default function HomePage() {
                 rows={1}
                 aria-label="Scrivi un messaggio"
                 className={cn(
-                  'flex-1 resize-none bg-transparent rounded-2xl px-4 py-3 pr-14',
-                  'text-base focus:outline-none', // text-base (16px) prevents iOS zoom
-                  'min-h-[48px] max-h-[120px]',
-                  'placeholder:text-muted-foreground/70'
+                  'flex-1 resize-none bg-transparent rounded-2xl px-4 py-2.5 pr-12',
+                  'text-[15px] leading-tight focus:outline-none',
+                  'min-h-[40px] max-h-[40px]', // Fixed single line height
+                  'placeholder:text-muted-foreground/70 placeholder:truncate'
                 )}
               />
               <button
@@ -201,7 +201,7 @@ export default function HomePage() {
                 disabled={!canSend}
                 aria-label="Invia messaggio"
                 className={cn(
-                  'absolute right-2 bottom-[6px] p-2.5 rounded-full',
+                  'absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full',
                   'transition-all duration-150',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine',
                   canSend
