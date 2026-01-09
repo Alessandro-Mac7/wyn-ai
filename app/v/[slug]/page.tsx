@@ -153,7 +153,7 @@ export default function VenuePage({ params }: VenuePageProps) {
           transition={{ duration: 0.3, delay: 0.25 }}
           className="text-lg text-muted-foreground max-w-md mb-8"
         >
-          Scopri i vini di questo locale con l'aiuto del tuo sommelier AI personale.
+          Scopri i vini di questo locale con l&apos;aiuto del tuo sommelier AI personale.
         </motion.p>
 
         {/* CTA Button */}
@@ -194,7 +194,7 @@ export default function VenuePage({ params }: VenuePageProps) {
           transition={{ duration: 0.3, delay: 0.35 }}
           className="text-sm text-muted-foreground mt-4"
         >
-          Chatta con l'AI per trovare il vino perfetto
+          Chatta con l&apos;AI per trovare il vino perfetto
         </motion.p>
       </div>
 
