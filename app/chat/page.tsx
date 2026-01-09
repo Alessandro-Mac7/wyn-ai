@@ -16,6 +16,7 @@ import {
   VenueSelector,
   WineMenuPanel,
 } from '@/components/chat'
+import { InstallPrompt } from '@/components/pwa'
 import { cn } from '@/lib/utils'
 import { inputVariants } from '@/lib/motion'
 import type { ChatMessage } from '@/types'
@@ -202,6 +203,9 @@ function ChatPageContent() {
     : isVenueMode && venue
       ? [getVenueWelcomeMessage(venue.name)]
       : [INITIAL_MESSAGE]
+
+  // Calculate user message count for install prompt
+  const userMessageCount = messages.filter(m => m.role === 'user').length
 
   return (
     <div className="min-h-screen">
@@ -466,6 +470,9 @@ function ChatPageContent() {
           venueName={venue.name}
         />
       )}
+
+      {/* PWA Install Prompt - appears after engagement */}
+      <InstallPrompt messageCount={userMessageCount} />
     </div>
   )
 }

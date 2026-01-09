@@ -1,11 +1,16 @@
 {
+  "id": "wyn-sommelier",
   "name": "WYN - AI Sommelier",
   "short_name": "WYN",
   "description": "Il tuo sommelier AI personale",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait",
+  "lang": "it",
   "background_color": "#171312",
   "theme_color": "#8f2436",
+  "categories": ["food", "lifestyle"],
   "icons": [
     {
       "src": "/icon-192.png",
