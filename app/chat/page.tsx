@@ -208,9 +208,9 @@ function ChatPageContent() {
   const userMessageCount = messages.filter(m => m.role === 'user').length
 
   return (
-    <div className="h-screen overflow-hidden">
+    <div className="fixed inset-0 flex flex-col overflow-hidden">
       {/* Main content - no padding on mobile since sidebar is hidden */}
-      <main id="main-content" className="pl-0 sm:pl-16 h-full flex flex-col">
+      <main id="main-content" className="pl-0 sm:pl-16 flex-1 flex flex-col min-h-0 pt-[env(safe-area-inset-top)]">
         {/* Top bar: VenueSelectionBar (general mode) or VenueHeader (venue mode) */}
         <AnimatePresence mode="wait">
           {venue ? (
@@ -345,10 +345,10 @@ function ChatPageContent() {
 
         {/* Chat Area (hidden during loading) */}
         {!venueLoading && (
-          <div className="flex-1 flex flex-col min-h-0">
-            {/* Messages area - scrollable */}
-            <div className="flex-1 overflow-y-auto scrollbar-thin px-4 min-h-0">
-              <div className="max-w-3xl mx-auto py-4">
+          <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+            {/* Messages area - ONLY scrollable section */}
+            <div className="flex-1 overflow-y-auto overscroll-contain scrollbar-thin px-4 min-h-0">
+              <div className="max-w-3xl mx-auto">
                 <ChatMessages messages={displayMessages} isLoading={isLoading} />
               </div>
             </div>
@@ -381,72 +381,54 @@ function ChatPageContent() {
               )}
             </AnimatePresence>
 
-            {/* Input area - fixed at bottom with safe area insets */}
-            <div className="shrink-0 px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
+            {/* Floating glass input - iOS style */}
+            <div className="shrink-0 px-3 sm:px-4 pb-[max(1.5rem,calc(env(safe-area-inset-bottom)+1.5rem))]">
               <div className="max-w-3xl mx-auto">
-                <div className="relative">
-                  {/* Input hint tooltip */}
-                  <AnimatePresence>
-                    {showInputHint && (
-                      <motion.div
-                        className="absolute -top-10 left-4 text-xs text-muted-foreground bg-card/95 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-border shadow-lg z-10"
-                        initial={{ opacity: 0, y: 4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 4 }}
-                      >
-                        Shift+Invio per nuova riga
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  <motion.div
+                <motion.div
+                  className={cn(
+                    'relative flex items-end gap-2 rounded-2xl w-full',
+                    'bg-card/80 backdrop-blur-xl',
+                    'border border-white/10',
+                    'shadow-[0_8px_32px_rgba(0,0,0,0.4),0_0_0_1px_rgba(255,255,255,0.05)_inset]',
+                    error && !errorDismissed && 'ring-1 ring-destructive'
+                  )}
+                  variants={inputVariants}
+                  animate={error && !errorDismissed ? 'error' : isFocused ? 'focused' : 'idle'}
+                >
+                  <textarea
+                    ref={textareaRef}
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    onFocus={handleInputFocus}
+                    onBlur={() => setIsFocused(false)}
+                    placeholder={placeholder}
+                    disabled={isLoading}
+                    rows={1}
+                    aria-label="Scrivi un messaggio"
                     className={cn(
-                      'relative flex items-end gap-2 rounded-xl w-full',
-                      'bg-card/90 backdrop-blur-md',
-                      'shadow-[0_4px_24px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.05)]',
-                      error && !errorDismissed && 'ring-1 ring-destructive'
+                      'flex-1 resize-none bg-transparent rounded-2xl px-4 py-3 pr-14',
+                      'text-sm focus:outline-none disabled:opacity-50',
+                      'min-h-[44px] max-h-[120px]',
+                      'placeholder:text-muted-foreground/70'
                     )}
-                    variants={inputVariants}
-                    animate={error && !errorDismissed ? 'error' : isFocused ? 'focused' : 'idle'}
+                  />
+                  <button
+                    onClick={handleSend}
+                    disabled={!canSend}
+                    aria-label="Invia messaggio"
+                    className={cn(
+                      'absolute right-2 bottom-[6px] p-2 rounded-full',
+                      'transition-all duration-150',
+                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine',
+                      canSend
+                        ? 'bg-wine text-white hover:bg-wine-dark cursor-pointer btn-press'
+                        : 'bg-muted/30 text-muted-foreground/50 cursor-not-allowed'
+                    )}
                   >
-                    <textarea
-                      ref={textareaRef}
-                      value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                      onKeyDown={handleKeyDown}
-                      onFocus={handleInputFocus}
-                      onBlur={() => setIsFocused(false)}
-                      placeholder={placeholder}
-                      disabled={isLoading}
-                      rows={1}
-                      aria-label="Scrivi un messaggio"
-                      className={cn(
-                        'flex-1 resize-none bg-transparent rounded-xl px-4 py-3 pr-14',
-                        'text-sm focus:outline-none disabled:opacity-50',
-                        'min-h-[48px] max-h-[120px]',
-                        'placeholder:text-muted-foreground'
-                      )}
-                    />
-                    <button
-                      onClick={handleSend}
-                      disabled={!canSend}
-                      aria-label="Invia messaggio"
-                      className={cn(
-                        'absolute right-2 bottom-2 p-2.5 rounded-lg',
-                        'transition-all duration-150',
-                        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine focus-visible:ring-offset-2 focus-visible:ring-offset-card',
-                        canSend
-                          ? 'bg-wine text-white hover:bg-wine-dark cursor-pointer btn-press'
-                          : 'bg-muted/50 text-muted-foreground cursor-not-allowed'
-                      )}
-                    >
-                      <Send className="h-4 w-4" />
-                    </button>
-                  </motion.div>
-                </div>
-                <p className="text-xs text-muted-foreground mt-2 text-center">
-                  Premi Invio per inviare
-                </p>
+                    <Send className="h-4 w-4" />
+                  </button>
+                </motion.div>
               </div>
             </div>
           </div>
