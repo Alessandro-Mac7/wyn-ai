@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MapPin, Search, Wine, X, ArrowRight, AlertCircle, AlertTriangle, Loader2, Navigation, MapPinOff } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useRegisterPanel } from '@/contexts/panel-context'
 import {
   getCurrentPosition,
   fetchNearbyVenues,
@@ -65,6 +66,9 @@ export function VenueSelector({
   onSelect,
   recentVenues = [],
 }: VenueSelectorProps) {
+  // Register panel for z-index coordination
+  useRegisterPanel('venue-selector', isOpen)
+
   const [venueCode, setVenueCode] = useState('')
   const [isValidating, setIsValidating] = useState(false)
   const [error, setError] = useState<string | null>(null)

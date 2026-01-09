@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Upload, X, FileText, AlertCircle, Download } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { parseCsvFile, downloadSampleCsv } from '@/lib/csv-parser'
+import { useRegisterPanel } from '@/contexts/panel-context'
 import type { CsvParseResult } from '@/types'
 import { cn } from '@/lib/utils'
 
@@ -54,6 +55,9 @@ const panelVariants = {
 }
 
 export function CsvUploadDialog({ isOpen, onClose, onParsed }: CsvUploadDialogProps) {
+  // Register panel for z-index coordination
+  useRegisterPanel('csv-upload-dialog', isOpen)
+
   const [isDragging, setIsDragging] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError] = useState<string | null>(null)

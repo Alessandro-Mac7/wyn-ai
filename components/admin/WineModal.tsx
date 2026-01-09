@@ -4,6 +4,7 @@ import { useState, FormEvent } from 'react'
 import { X, Wine } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { parseGrapeVarieties } from '@/lib/utils'
+import { useRegisterPanel } from '@/contexts/panel-context'
 import type { WineCreateInput, WineType } from '@/types'
 
 interface WineModalProps {
@@ -20,6 +21,9 @@ const wineTypes: { value: WineType; label: string }[] = [
 ]
 
 export function WineModal({ onClose, onSave }: WineModalProps) {
+  // Register panel for z-index coordination (always true when mounted)
+  useRegisterPanel('wine-modal', true)
+
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
