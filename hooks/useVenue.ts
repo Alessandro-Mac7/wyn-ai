@@ -36,9 +36,46 @@ export function useVenue(): UseVenueReturn {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Auto-reload wines when venue is restored from session but wines are missing
+  useEffect(() => {
+    if (venueSlug && venueData && wines.length === 0 && !isLoading) {
+      // Venue restored from session but wines not loaded - fetch them
+      const fetchWines = async () => {
+        setIsLoading(true)
+        try {
+          const response = await fetch(`/api/venue/${venueSlug}`)
+          if (response.ok) {
+            const data = await response.json()
+            if (data.wines) {
+              setWines(data.wines)
+              const types = new Set<WineType>()
+              const byType = { red: 0, white: 0, rose: 0, sparkling: 0, dessert: 0 }
+              data.wines.forEach((wine: { wine_type: WineType }) => {
+                types.add(wine.wine_type)
+                if (wine.wine_type in byType) {
+                  byType[wine.wine_type]++
+                }
+              })
+              setWineStats({
+                total: data.wines.length,
+                types: types.size,
+                byType,
+              })
+            }
+          }
+        } catch {
+          // Silently fail - venue data is still available
+        } finally {
+          setIsLoading(false)
+        }
+      }
+      fetchWines()
+    }
+  }, [venueSlug, venueData, wines.length, isLoading])
+
   const loadVenue = useCallback(async (slug: string) => {
-    // Return cached if same venue
-    if (venueSlug === slug && venueData) {
+    // Return cached if same venue AND wines are loaded
+    if (venueSlug === slug && venueData && wines.length > 0) {
       return
     }
 
@@ -86,7 +123,7 @@ export function useVenue(): UseVenueReturn {
     } finally {
       setIsLoading(false)
     }
-  }, [venueSlug, venueData, setVenue])
+  }, [venueSlug, venueData, wines.length, setVenue])
 
   const clearVenue = useCallback(() => {
     setVenue(null)
