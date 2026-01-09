@@ -16,7 +16,7 @@ import {
   VenueSelector,
   WineMenuPanel,
 } from '@/components/chat'
-import { InstallPrompt, PWAOpenBanner } from '@/components/pwa'
+import { InstallPrompt } from '@/components/pwa'
 import { cn } from '@/lib/utils'
 import { inputVariants } from '@/lib/motion'
 import type { ChatMessage } from '@/types'
@@ -230,21 +230,13 @@ function ChatPageContent() {
     <div className="fixed inset-0 flex flex-col overflow-hidden">
       {/* Main content - no padding on mobile since sidebar is hidden */}
       <main id="main-content" className="pl-0 sm:pl-16 flex-1 flex flex-col min-h-0 pt-[env(safe-area-inset-top)]">
-        {/* PWA Open Banner - shows for QR scans when user is in browser but PWA is available */}
-        <PWAOpenBanner
-          venueSlug={venue?.slug ?? null}
-          isFromQR={isFromQR}
-        />
-
-        {/* Top bar: VenueSelectionBar (general mode) or VenueHeader (venue mode) */}
+          {/* Top bar: VenueSelectionBar (general mode) or VenueHeader (venue mode) */}
         <AnimatePresence mode="wait">
           {venue ? (
             <VenueHeader
               key="venue-header"
               venue={venue}
               wineStats={wineStats || undefined}
-              selectedTypes={filters.wineTypes}
-              onFilterChange={(types) => setFilters({ wineTypes: types })}
               onClose={handleCloseVenue}
               onInfoToggle={handleInfoToggle}
               onWineMenuToggle={handleWineMenuToggle}
@@ -482,7 +474,7 @@ function ChatPageContent() {
       )}
 
       {/* PWA Install Prompt - appears after engagement */}
-      <InstallPrompt messageCount={userMessageCount} />
+      <InstallPrompt messageCount={userMessageCount} isFromQR={isFromQR} />
     </div>
   )
 }
