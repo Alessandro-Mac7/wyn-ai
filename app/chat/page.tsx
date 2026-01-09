@@ -208,9 +208,9 @@ function ChatPageContent() {
   const userMessageCount = messages.filter(m => m.role === 'user').length
 
   return (
-    <div className="min-h-screen">
+    <div className="h-screen overflow-hidden">
       {/* Main content - no padding on mobile since sidebar is hidden */}
-      <main id="main-content" className="pl-0 sm:pl-16 min-h-screen flex flex-col">
+      <main id="main-content" className="pl-0 sm:pl-16 h-full flex flex-col">
         {/* Top bar: VenueSelectionBar (general mode) or VenueHeader (venue mode) */}
         <AnimatePresence mode="wait">
           {venue ? (
@@ -345,10 +345,10 @@ function ChatPageContent() {
 
         {/* Chat Area (hidden during loading) */}
         {!venueLoading && (
-          <div className="flex-1 flex flex-col">
-            {/* Messages area */}
-            <div className="flex-1 overflow-y-auto scrollbar-thin px-4">
-              <div className="max-w-3xl mx-auto">
+          <div className="flex-1 flex flex-col min-h-0">
+            {/* Messages area - scrollable */}
+            <div className="flex-1 overflow-y-auto scrollbar-thin px-4 min-h-0">
+              <div className="max-w-3xl mx-auto py-4">
                 <ChatMessages messages={displayMessages} isLoading={isLoading} />
               </div>
             </div>
@@ -381,8 +381,8 @@ function ChatPageContent() {
               )}
             </AnimatePresence>
 
-            {/* Floating Input at bottom */}
-            <div className="px-4 pb-6">
+            {/* Input area - fixed at bottom with safe area insets */}
+            <div className="shrink-0 px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
               <div className="max-w-3xl mx-auto">
                 <div className="relative">
                   {/* Input hint tooltip */}
