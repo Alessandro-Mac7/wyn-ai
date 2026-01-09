@@ -13,6 +13,24 @@ interface TooltipProps {
 export function Tooltip({ content, children, side = 'right', className }: TooltipProps) {
   const [isVisible, setIsVisible] = React.useState(false)
 
+  // Hide tooltip on window resize (device view switch) and touch devices
+  React.useEffect(() => {
+    const handleResize = () => setIsVisible(false)
+    const handleScroll = () => setIsVisible(false)
+
+    window.addEventListener('resize', handleResize)
+    window.addEventListener('scroll', handleScroll, true)
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      window.removeEventListener('scroll', handleScroll, true)
+    }
+  }, [])
+
+  // Check if device supports hover (not touch-only)
+  const isTouchDevice = typeof window !== 'undefined' &&
+    (window.matchMedia('(hover: none)').matches || 'ontouchstart' in window)
+
   const positionClasses = {
     top: 'bottom-full left-1/2 -translate-x-1/2 mb-2',
     right: 'left-full top-1/2 -translate-y-1/2 ml-2',
@@ -27,6 +45,9 @@ export function Tooltip({ content, children, side = 'right', className }: Toolti
     left: 'left-full top-1/2 -translate-y-1/2 border-l-popover border-y-transparent border-r-transparent',
   }
 
+  // Don't show tooltips on touch devices
+  const showTooltip = isVisible && !isTouchDevice
+
   return (
     <div
       className="relative inline-flex"
@@ -36,7 +57,7 @@ export function Tooltip({ content, children, side = 'right', className }: Toolti
       onBlur={() => setIsVisible(false)}
     >
       {children}
-      {isVisible && (
+      {showTooltip && (
         <div
           role="tooltip"
           className={cn(
