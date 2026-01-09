@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { RefreshCcw, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useRegisterPanel } from '@/contexts/panel-context'
 import { overlayVariants, modalVariants } from '@/lib/motion'
 
 interface NewConversationDialogProps {
@@ -18,6 +19,9 @@ export function NewConversationDialog({
   onCancel,
   messageCount,
 }: NewConversationDialogProps) {
+  // Register panel for z-index coordination
+  useRegisterPanel('new-conversation-dialog', isOpen)
+
   return (
     <AnimatePresence>
       {isOpen && (

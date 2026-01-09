@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Download, Printer, Copy, X, Check, QrCode } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { useRegisterPanel } from '@/contexts/panel-context'
 import {
   getVenueChatUrl,
   downloadQrCode,
@@ -60,6 +61,9 @@ const panelVariants = {
 }
 
 export function QrCodeDialog({ isOpen, onClose, venue }: QrCodeDialogProps) {
+  // Register panel for z-index coordination
+  useRegisterPanel('qr-code-dialog', isOpen)
+
   const [copied, setCopied] = useState(false)
 
   const venueUrl = getVenueChatUrl(venue.slug)

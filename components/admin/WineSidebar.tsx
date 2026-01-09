@@ -6,6 +6,7 @@ import { X, Wine, Plus, Save } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { parseGrapeVarieties } from '@/lib/utils'
 import { cn } from '@/lib/utils'
+import { useRegisterPanel } from '@/contexts/panel-context'
 import type { WineCreateInput, WineType, WineWithRatings } from '@/types'
 
 interface WineSidebarProps {
@@ -61,6 +62,9 @@ const sidebarVariants = {
 }
 
 export function WineSidebar({ isOpen, onClose, onSave, editWine }: WineSidebarProps) {
+  // Register panel for z-index coordination
+  useRegisterPanel('wine-sidebar', isOpen)
+
   const [isLoading, setIsLoading] = useState(false)
   const firstInputRef = useRef<HTMLInputElement>(null)
   const isEditMode = !!editWine

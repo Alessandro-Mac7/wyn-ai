@@ -1,8 +1,9 @@
 'use client'
 
 import Image from 'next/image'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { usePanelContext } from '@/contexts/panel-context'
 
 interface MobileSidebarToggleProps {
   isOpen: boolean
@@ -11,6 +12,13 @@ interface MobileSidebarToggleProps {
 }
 
 export function MobileSidebarToggle({ isOpen, onToggle, position = 'center' }: MobileSidebarToggleProps) {
+  const { isPanelOpen } = usePanelContext()
+
+  // Hide toggle when any slide-in panel is open (z-index stacking context issue)
+  if (isPanelOpen) {
+    return null
+  }
+
   return (
     <motion.button
       onClick={onToggle}

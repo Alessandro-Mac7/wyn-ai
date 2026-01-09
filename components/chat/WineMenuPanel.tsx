@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Wine } from 'lucide-react'
 import { WineMenuItem } from './WineMenuItem'
+import { useRegisterPanel } from '@/contexts/panel-context'
 import type { WineWithRatings } from '@/types'
 
 interface WineMenuPanelProps {
@@ -35,6 +36,9 @@ const panelVariants = {
 }
 
 export function WineMenuPanel({ isOpen, onClose, wines, venueName }: WineMenuPanelProps) {
+  // Register panel for z-index coordination
+  useRegisterPanel('wine-menu-panel', isOpen)
+
   // Handle escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {

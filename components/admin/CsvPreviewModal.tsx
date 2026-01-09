@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, CheckCircle2, AlertTriangle, Upload, FileWarning } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useRegisterPanel } from '@/contexts/panel-context'
 import type { CsvParseResult, ParsedCsvWine, BulkImportResponse } from '@/types'
 import { cn } from '@/lib/utils'
 
@@ -30,6 +31,9 @@ export function CsvPreviewModal({
   parseResult,
   onImportComplete,
 }: CsvPreviewModalProps) {
+  // Register panel for z-index coordination
+  useRegisterPanel('csv-preview-modal', isOpen)
+
   const [importState, setImportState] = useState<ImportState>('preview')
   const [importResult, setImportResult] = useState<BulkImportResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
