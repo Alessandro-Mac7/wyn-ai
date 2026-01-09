@@ -2,13 +2,25 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { MapPin, X, Info, BookOpen, Check } from 'lucide-react'
+import { MapPin, X, Info, BookOpen, Check, Wine } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { Venue } from '@/types'
 
+interface WineStats {
+  total: number
+  types: number
+  byType: {
+    red: number
+    white: number
+    rose: number
+    sparkling: number
+    dessert: number
+  }
+}
+
 interface VenueHeaderProps {
   venue: Venue
-  wineStats?: { total: number; types: number }
+  wineStats?: WineStats
   onClose: () => void
   onInfoToggle?: () => void
   onWineMenuToggle?: () => void
@@ -44,10 +56,9 @@ export function VenueHeader({
       exit={{ opacity: 0, height: 0 }}
       transition={{ duration: 0.25, ease: [0, 0, 0.2, 1] }}
     >
-      <div className="px-3 sm:px-4 py-2.5">
-        {/* Single row: Venue name + action buttons */}
-        <div className="flex items-center justify-between gap-2">
-          {/* Left: Venue name with badge */}
+      <div className="px-3 sm:px-4 py-2">
+        {/* Row 1: Venue name + close button */}
+        <div className="flex items-center justify-between gap-2 mb-2">
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <MapPin className="h-4 w-4 text-wine shrink-0" />
             <h1 className="mina-regular text-base sm:text-lg uppercase truncate">
@@ -70,51 +81,85 @@ export function VenueHeader({
               )}
             </AnimatePresence>
           </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 hover:bg-secondary rounded-lg transition-colors btn-press shrink-0"
+            aria-label="Esci dal locale"
+          >
+            <X className="h-4 w-4 text-muted-foreground" />
+          </button>
+        </div>
 
-          {/* Right: Action buttons */}
-          <div className="flex items-center gap-1 shrink-0">
-            {/* Info button */}
-            {onInfoToggle && (
-              <button
-                onClick={onInfoToggle}
-                className={cn(
-                  "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-colors btn-press text-sm",
-                  isInfoExpanded
-                    ? "bg-wine/20 text-wine"
-                    : "hover:bg-secondary text-muted-foreground hover:text-foreground"
-                )}
-                aria-label={isInfoExpanded ? "Nascondi info" : "Mostra info"}
-                aria-expanded={isInfoExpanded}
-              >
-                <Info className="h-4 w-4" />
-                <span className="hidden sm:inline text-xs font-medium">Info</span>
-              </button>
-            )}
-
-            {/* Wine menu button */}
-            {onWineMenuToggle && (
-              <button
-                onClick={onWineMenuToggle}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 hover:bg-secondary rounded-lg transition-colors btn-press text-muted-foreground hover:text-foreground text-sm"
-                aria-label="Apri carta dei vini"
-              >
-                <BookOpen className="h-4 w-4" />
-                <span className="text-xs font-medium">Carta</span>
-                {wineStats && (
-                  <span className="text-xs text-wine font-semibold">{wineStats.total}</span>
-                )}
-              </button>
-            )}
-
-            {/* Close button */}
+        {/* Row 2: Action buttons with wine counts */}
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Info button */}
+          {onInfoToggle && (
             <button
-              onClick={onClose}
-              className="p-1.5 hover:bg-secondary rounded-lg transition-colors btn-press"
-              aria-label="Esci dal locale"
+              onClick={onInfoToggle}
+              className={cn(
+                "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition-colors btn-press",
+                isInfoExpanded
+                  ? "bg-wine/20 border-wine text-wine"
+                  : "border-border hover:border-wine/50 text-muted-foreground hover:text-foreground"
+              )}
+              aria-label={isInfoExpanded ? "Nascondi info" : "Mostra info"}
+              aria-expanded={isInfoExpanded}
             >
-              <X className="h-4 w-4 text-muted-foreground" />
+              <Info className="h-3.5 w-3.5" />
+              Info
             </button>
-          </div>
+          )}
+
+          {/* Wine menu button */}
+          {onWineMenuToggle && (
+            <button
+              onClick={onWineMenuToggle}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border hover:border-wine/50 text-xs font-medium transition-colors btn-press text-muted-foreground hover:text-foreground"
+              aria-label="Apri carta dei vini"
+            >
+              <BookOpen className="h-3.5 w-3.5" />
+              Carta
+              {wineStats && (
+                <span className="text-wine font-semibold">{wineStats.total}</span>
+              )}
+            </button>
+          )}
+
+          {/* Wine type counts */}
+          {wineStats && wineStats.byType && (
+            <>
+              {wineStats.byType.red > 0 && (
+                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-500/10 text-red-400 text-xs">
+                  <Wine className="h-3 w-3" />
+                  {wineStats.byType.red}
+                </span>
+              )}
+              {wineStats.byType.white > 0 && (
+                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-amber-500/10 text-amber-400 text-xs">
+                  <Wine className="h-3 w-3" />
+                  {wineStats.byType.white}
+                </span>
+              )}
+              {wineStats.byType.rose > 0 && (
+                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-pink-500/10 text-pink-400 text-xs">
+                  <Wine className="h-3 w-3" />
+                  {wineStats.byType.rose}
+                </span>
+              )}
+              {wineStats.byType.sparkling > 0 && (
+                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-purple-500/10 text-purple-400 text-xs">
+                  <Wine className="h-3 w-3" />
+                  {wineStats.byType.sparkling}
+                </span>
+              )}
+              {wineStats.byType.dessert > 0 && (
+                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-orange-500/10 text-orange-400 text-xs">
+                  <Wine className="h-3 w-3" />
+                  {wineStats.byType.dessert}
+                </span>
+              )}
+            </>
+          )}
         </div>
       </div>
     </motion.header>
