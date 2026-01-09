@@ -15,8 +15,8 @@ export function MobileSidebarToggle({ isOpen, onToggle, position = 'center' }: M
     <motion.button
       onClick={onToggle}
       className={cn(
-        // Fixed on left edge (z-40 to stay below slide-in panels which are z-[60])
-        'fixed left-0 z-40',
+        // Fixed on left edge (z-30 to stay below sidebar z-40 and panels z-[70])
+        'fixed left-0 z-30',
         // Tab shape: rounded on right side only
         'p-2 rounded-r-xl',
         'bg-card/90 backdrop-blur-md border border-l-0 border-border',

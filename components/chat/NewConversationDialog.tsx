@@ -24,7 +24,7 @@ export function NewConversationDialog({
         <>
           {/* Backdrop */}
           <motion.div
-            className="fixed inset-0 z-[60] bg-black/70"
+            className="fixed inset-0 z-[70] bg-black/70"
             variants={overlayVariants}
             initial="hidden"
             animate="visible"
@@ -34,7 +34,7 @@ export function NewConversationDialog({
 
           {/* Modal */}
           <motion.div
-            className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+            className="fixed inset-0 z-[70] flex items-center justify-center p-4"
             variants={modalVariants}
             initial="hidden"
             animate="visible"

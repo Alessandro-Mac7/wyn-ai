@@ -55,7 +55,7 @@ export function WineMenuPanel({ isOpen, onClose, wines, venueName }: WineMenuPan
         <>
           {/* Backdrop */}
           <motion.div
-            className="fixed inset-0 z-[60] bg-black/60"
+            className="fixed inset-0 z-[70] bg-black/60"
             variants={backdropVariants}
             initial="hidden"
             animate="visible"
@@ -65,7 +65,7 @@ export function WineMenuPanel({ isOpen, onClose, wines, venueName }: WineMenuPan
 
           {/* Panel */}
           <motion.div
-            className="fixed top-0 right-0 z-[60] h-full w-full sm:max-w-md bg-card border-l border-border shadow-2xl flex flex-col"
+            className="fixed top-0 right-0 z-[70] h-full w-full sm:max-w-md bg-card border-l border-border shadow-2xl flex flex-col"
             variants={panelVariants}
             initial="hidden"
             animate="visible"
