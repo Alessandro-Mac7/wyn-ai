@@ -162,7 +162,7 @@ export default function HomePage() {
             <div className="flex-1 h-px bg-border" />
           </motion.div>
 
-          {/* SECONDARY - General chat input */}
+          {/* SECONDARY - General chat input (iOS glass style) */}
           <motion.div
             className="w-full max-w-2xl"
             initial={{ opacity: 0, y: 10 }}
@@ -171,9 +171,10 @@ export default function HomePage() {
           >
             <motion.div
               className={cn(
-                'relative flex items-end gap-2 rounded-xl',
-                'bg-card/90 backdrop-blur-md',
-                'shadow-[0_4px_24px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.05)]'
+                'relative flex items-end gap-2 rounded-2xl',
+                'bg-card/80 backdrop-blur-xl',
+                'border border-white/10',
+                'shadow-[0_8px_32px_rgba(0,0,0,0.4),0_0_0_1px_rgba(255,255,255,0.05)_inset]'
               )}
               variants={inputVariants}
               animate={isFocused ? 'focused' : 'idle'}
@@ -189,10 +190,10 @@ export default function HomePage() {
                 rows={1}
                 aria-label="Scrivi un messaggio"
                 className={cn(
-                  'flex-1 resize-none bg-transparent rounded-xl px-4 py-4 pr-14',
+                  'flex-1 resize-none bg-transparent rounded-2xl px-4 py-3 pr-14',
                   'text-sm focus:outline-none',
-                  'min-h-[56px] max-h-[120px]',
-                  'placeholder:text-muted-foreground'
+                  'min-h-[48px] max-h-[120px]',
+                  'placeholder:text-muted-foreground/70'
                 )}
               />
               <button
@@ -200,18 +201,18 @@ export default function HomePage() {
                 disabled={!canSend}
                 aria-label="Invia messaggio"
                 className={cn(
-                  'absolute right-2 bottom-2 p-3 rounded-lg',
+                  'absolute right-2 bottom-[6px] p-2.5 rounded-full',
                   'transition-all duration-150',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine focus-visible:ring-offset-2 focus-visible:ring-offset-card',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine',
                   canSend
                     ? 'bg-wine text-white hover:bg-wine-dark cursor-pointer btn-press'
-                    : 'bg-muted/50 text-muted-foreground cursor-not-allowed'
+                    : 'bg-muted/30 text-muted-foreground/50 cursor-not-allowed'
                 )}
               >
-                <Send className="h-5 w-5" />
+                <Send className="h-4 w-4" />
               </button>
             </motion.div>
-            <p className="text-xs text-muted-foreground text-center mt-2">
+            <p className="hidden sm:block text-xs text-muted-foreground text-center mt-2">
               Premi Invio per inviare
             </p>
           </motion.div>

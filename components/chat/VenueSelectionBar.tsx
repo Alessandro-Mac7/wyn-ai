@@ -11,13 +11,13 @@ interface VenueSelectionBarProps {
 export function VenueSelectionBar({ onSelectVenue }: VenueSelectionBarProps) {
   return (
     <motion.header
-      className="sticky top-0 z-20 glass shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+      className="shrink-0 z-20 glass shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.25, ease: [0, 0, 0.2, 1] }}
     >
-      <div className="px-4 py-3">
+      <div className="px-4 py-2 sm:py-3">
         <div className="flex items-center justify-between gap-4">
           {/* Left side - Mode indicator */}
           <div className="flex items-center gap-3">

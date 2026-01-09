@@ -47,7 +47,7 @@ export function ChatMessages({ messages, isLoading }: ChatMessagesProps) {
     <div
       ref={containerRef}
       onScroll={handleScroll}
-      className="flex flex-col gap-4 p-4 pt-6"
+      className="flex flex-col gap-4 py-3 sm:py-4"
       role="log"
       aria-label="Conversazione"
       aria-live="polite"
