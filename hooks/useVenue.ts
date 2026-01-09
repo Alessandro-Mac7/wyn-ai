@@ -4,12 +4,24 @@ import { useState, useCallback, useEffect } from 'react'
 import { useSession } from '@/contexts/session-context'
 import type { Venue, WineType, WineWithRatings } from '@/types'
 
+interface WineStats {
+  total: number
+  types: number
+  byType: {
+    red: number
+    white: number
+    rose: number
+    sparkling: number
+    dessert: number
+  }
+}
+
 interface UseVenueReturn {
   venue: ReturnType<typeof useSession>['venueData']
   wines: WineWithRatings[]
   isLoading: boolean
   error: string | null
-  wineStats: { total: number; types: number } | null
+  wineStats: WineStats | null
   loadVenue: (slug: string) => Promise<void>
   clearVenue: () => void
 }
@@ -20,7 +32,7 @@ export function useVenue(): UseVenueReturn {
 
   // Transient state (not persisted)
   const [wines, setWines] = useState<WineWithRatings[]>([])
-  const [wineStats, setWineStats] = useState<{ total: number; types: number } | null>(null)
+  const [wineStats, setWineStats] = useState<WineStats | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -53,10 +65,17 @@ export function useVenue(): UseVenueReturn {
       if (data.wines) {
         setWines(data.wines)
         const types = new Set<WineType>()
-        data.wines.forEach((wine: { wine_type: WineType }) => types.add(wine.wine_type))
+        const byType = { red: 0, white: 0, rose: 0, sparkling: 0, dessert: 0 }
+        data.wines.forEach((wine: { wine_type: WineType }) => {
+          types.add(wine.wine_type)
+          if (wine.wine_type in byType) {
+            byType[wine.wine_type]++
+          }
+        })
         setWineStats({
           total: data.wines.length,
           types: types.size,
+          byType,
         })
       }
     } catch (err) {
