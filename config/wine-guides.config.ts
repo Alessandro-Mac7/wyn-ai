@@ -1,6 +1,7 @@
 import type { WineGuide } from '@/types'
 
 export const WINE_GUIDES: WineGuide[] = [
+  // === GUIDE ITALIANE ===
   {
     id: 'gambero-rosso',
     name: 'Gambero Rosso',
@@ -20,6 +21,13 @@ export const WINE_GUIDES: WineGuide[] = [
     philosophy: 'Technical precision and consistent quality assessment',
   },
   {
+    id: 'doctorwine',
+    name: 'DoctorWine (Cernilli)',
+    ratingSystem: '50-100 points',
+    philosophy: 'Italian wine expertise with focus on authenticity and value',
+  },
+  // === GUIDE INTERNAZIONALI ===
+  {
     id: 'wine-spectator',
     name: 'Wine Spectator',
     ratingSystem: '50-100 points',
@@ -30,6 +38,36 @@ export const WINE_GUIDES: WineGuide[] = [
     name: 'Robert Parker Wine Advocate',
     ratingSystem: '50-100 points',
     philosophy: 'Power, concentration, and intensity focused',
+  },
+  {
+    id: 'james-suckling',
+    name: 'James Suckling',
+    ratingSystem: '50-100 points',
+    philosophy: 'Fresh, vibrant wines with elegance and finesse',
+  },
+  {
+    id: 'jancis-robinson',
+    name: 'Jancis Robinson',
+    ratingSystem: '0-20 points',
+    philosophy: 'Academic approach, terroir-driven, balanced assessment',
+  },
+  {
+    id: 'decanter',
+    name: 'Decanter',
+    ratingSystem: '50-100 points',
+    philosophy: 'British perspective, classic style appreciation',
+  },
+  {
+    id: 'vinous',
+    name: 'Vinous (Antonio Galloni)',
+    ratingSystem: '50-100 points',
+    philosophy: 'Detail-oriented, emphasis on site expression and aging potential',
+  },
+  {
+    id: 'wine-enthusiast',
+    name: 'Wine Enthusiast',
+    ratingSystem: '50-100 points',
+    philosophy: 'Consumer-friendly ratings, value-conscious approach',
   },
 ]
 
