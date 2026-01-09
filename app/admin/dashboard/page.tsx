@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Plus, ArrowLeft, Search, Upload } from 'lucide-react'
+import { Plus, ArrowLeft, Search, Upload, QrCode } from 'lucide-react'
 import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { useAdminSession } from '@/hooks/useAdminSession'
 import { usePaginatedWines } from '@/hooks/usePaginatedWines'
@@ -15,6 +15,7 @@ import {
   WineSidebar,
   CsvUploadDialog,
   CsvPreviewModal,
+  QrCodeDialog,
 } from '@/components/admin'
 import { Button } from '@/components/ui/button'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
@@ -56,6 +57,9 @@ export default function AdminDashboardPage() {
   // CSV Upload state
   const [showCsvUpload, setShowCsvUpload] = useState(false)
   const [csvParseResult, setCsvParseResult] = useState<CsvParseResult | null>(null)
+
+  // QR Code dialog state
+  const [showQrCode, setShowQrCode] = useState(false)
 
   // Infinite scroll observer
   const observerRef = useRef<IntersectionObserver | null>(null)
@@ -194,6 +198,14 @@ export default function AdminDashboardPage() {
             </p>
           </div>
           <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowQrCode(true)}
+              className="gap-2"
+            >
+              <QrCode className="h-4 w-4" />
+              <span className="hidden sm:inline">QR Code</span>
+            </Button>
             <Button
               variant="outline"
               onClick={() => setShowCsvUpload(true)}
@@ -352,6 +364,13 @@ export default function AdminDashboardPage() {
           onImportComplete={handleImportComplete}
         />
       )}
+
+      {/* QR Code Dialog */}
+      <QrCodeDialog
+        isOpen={showQrCode}
+        onClose={() => setShowQrCode(false)}
+        venue={{ slug: venue.slug, name: venue.name }}
+      />
     </div>
   )
 }
