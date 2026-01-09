@@ -382,7 +382,7 @@ function ChatPageContent() {
             </AnimatePresence>
 
             {/* Floating glass input - iOS style */}
-            <div className="shrink-0 px-3 sm:px-4 pb-[max(1.5rem,calc(env(safe-area-inset-bottom)+1.5rem))]">
+            <div className="shrink-0 px-3 sm:px-4 pb-[max(0.5rem,calc(env(safe-area-inset-bottom)+0.5rem))]">
               <div className="max-w-3xl mx-auto">
                 <motion.div
                   className={cn(
@@ -408,7 +408,7 @@ function ChatPageContent() {
                     aria-label="Scrivi un messaggio"
                     className={cn(
                       'flex-1 resize-none bg-transparent rounded-2xl px-4 py-3 pr-14',
-                      'text-sm focus:outline-none disabled:opacity-50',
+                      'text-base focus:outline-none disabled:opacity-50', // text-base (16px) prevents iOS zoom
                       'min-h-[44px] max-h-[120px]',
                       'placeholder:text-muted-foreground/70'
                     )}
@@ -429,6 +429,9 @@ function ChatPageContent() {
                     <Send className="h-4 w-4" />
                   </button>
                 </motion.div>
+                <p className="text-[10px] text-muted-foreground/60 text-center mt-2 px-2">
+                  WYN può commettere errori. Verifica la scelta con il personale o usa il tuo giudizio.
+                </p>
               </div>
             </div>
           </div>

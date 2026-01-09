@@ -191,7 +191,7 @@ export default function HomePage() {
                 aria-label="Scrivi un messaggio"
                 className={cn(
                   'flex-1 resize-none bg-transparent rounded-2xl px-4 py-3 pr-14',
-                  'text-sm focus:outline-none',
+                  'text-base focus:outline-none', // text-base (16px) prevents iOS zoom
                   'min-h-[48px] max-h-[120px]',
                   'placeholder:text-muted-foreground/70'
                 )}
