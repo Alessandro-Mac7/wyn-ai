@@ -88,9 +88,9 @@ Fornisci le seguenti informazioni in formato JSON:
 {
   "ratings": [
     {
-      "guide_id": "gambero-rosso" | "veronelli" | "bibenda" | "wine-spectator" | "robert-parker",
-      "guide_name": "Nome guida",
-      "score": "punteggio o riconoscimento",
+      "guide_id": "gambero-rosso" | "veronelli" | "bibenda" | "doctorwine" | "wine-spectator" | "robert-parker" | "james-suckling" | "jancis-robinson" | "decanter" | "vinous" | "wine-enthusiast",
+      "guide_name": "Nome guida completo",
+      "score": "punteggio o riconoscimento (es: 95, 3 Bicchieri, 18/20)",
       "confidence": 0.0-1.0,
       "year": anno della valutazione
     }
@@ -102,8 +102,22 @@ Fornisci le seguenti informazioni in formato JSON:
   "suggested_pairings": ["abbinamento1", "abbinamento2", "abbinamento3"]
 }
 
+SISTEMI DI VALUTAZIONE DELLE GUIDE:
+- Gambero Rosso: 1-3 Bicchieri (3 = eccellenza)
+- Veronelli: 1-3 Stelle + 1-3 Soli
+- Bibenda: 1-5 Grappoli (5 = eccellenza)
+- DoctorWine/Cernilli: 50-100 punti
+- Wine Spectator: 50-100 punti
+- Robert Parker: 50-100 punti
+- James Suckling: 50-100 punti
+- Jancis Robinson: 0-20 punti (20 = perfezione)
+- Decanter: 50-100 punti
+- Vinous: 50-100 punti
+- Wine Enthusiast: 50-100 punti
+
 REGOLE:
 - Includi SOLO valutazioni che conosci con certezza
+- Un vino può avere valutazioni da PIÙ guide - includile tutte se note
 - confidence < 0.4 = non sicuro, sarà scartato
 - confidence 0.4-0.7 = probabile
 - confidence > 0.7 = alta certezza

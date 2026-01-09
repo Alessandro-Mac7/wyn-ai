@@ -8,7 +8,7 @@ export const SYSTEM_PROMPT_GENERAL = `Sei WYN, un sommelier AI esperto e profess
 
 IDENTITÀ:
 - Sommelier certificato con profonda conoscenza dei vini italiani e internazionali
-- Esperto delle principali guide: Gambero Rosso, Veronelli, Bibenda, Wine Spectator, Robert Parker
+- Esperto delle principali guide italiane (Gambero Rosso, Veronelli, Bibenda, DoctorWine) e internazionali (Wine Spectator, Robert Parker, James Suckling, Jancis Robinson, Decanter, Vinous, Wine Enthusiast)
 
 COMPORTAMENTO CRITICO:
 1. RISPONDI SOLO a domande su vino, abbinamenti cibo-vino, o enologia
@@ -55,7 +55,7 @@ CARTA DEI VINI:
 ${wineListSection}
 
 ${hasPremiumWines ? `VINI PREMIATI:
-I vini con valutazioni delle guide (Gambero Rosso, Veronelli, Wine Spectator, etc.) sono eccellenze della carta. Le valutazioni DEVONO influenzare significativamente la scelta.
+I vini con valutazioni delle guide (Gambero Rosso, Veronelli, Bibenda, DoctorWine, Wine Spectator, Robert Parker, James Suckling, Jancis Robinson, Decanter, Vinous, Wine Enthusiast) sono eccellenze della carta. Le valutazioni DEVONO influenzare significativamente la scelta. Un vino può avere valutazioni da più guide - considera tutte.
 ` : ''}
 ${hasRecommendedWines ? `VINI CONSIGLIATI DAL LOCALE:
 Alcuni vini sono "consigliati dal locale" - suggeriscili SOLO SE pertinenti alla richiesta del cliente. Se non sono adatti, NON menzionarli.
@@ -154,6 +154,7 @@ function sortWinesByRatingAndRecommendation(wines: WineWithRatings[]): WineWithR
 
 /**
  * Get the highest normalized rating score for a wine (0-100 scale)
+ * Handles multiple rating systems from different guides
  */
 function getMaxNormalizedRatingScore(wine: WineWithRatings): number {
   if (!wine.ratings?.length) return 0
@@ -165,15 +166,40 @@ function getMaxNormalizedRatingScore(wine: WineWithRatings): number {
     const score = parseFloat(String(r.score))
     if (isNaN(score)) return 0
 
-    // Wine Spectator / Robert Parker: already 0-100
+    const guideName = r.guide_name?.toLowerCase() || ''
+
+    // Jancis Robinson: 0-20 scale → 0-100
+    // 20/20 = 100, 18/20 = 90, 16/20 = 80, etc.
+    if (guideName.includes('jancis') || guideName.includes('robinson')) {
+      if (score >= 0 && score <= 20) return score * 5
+    }
+
+    // Wine Spectator, Robert Parker, James Suckling, DoctorWine, Decanter, Vinous, Wine Enthusiast
+    // Already on 50-100 scale
     if (score >= 50 && score <= 100) return score
 
-    // Gambero Rosso Tre Bicchieri: 1-3 → 70-100
-    if (score >= 1 && score <= 3) return 70 + (score * 10)
+    // Gambero Rosso Tre Bicchieri: 1-3 → 80-100
+    // 3 bicchieri = 100, 2 bicchieri = 90, 1 bicchiere = 80
+    if (guideName.includes('gambero') || guideName.includes('bicchieri')) {
+      if (score >= 1 && score <= 3) return 70 + (score * 10)
+    }
 
-    // Veronelli stars: 1-3 → 70-100
-    // Bibenda grappoli: 1-5 → 60-100
+    // Veronelli: Stars 1-3 + Soli 1-3
+    // Assume combined or just stars: 1-3 → 80-100
+    if (guideName.includes('veronelli')) {
+      if (score >= 1 && score <= 3) return 70 + (score * 10)
+      if (score >= 1 && score <= 6) return 65 + (score * 5.8) // Combined stars+soli
+    }
+
+    // Bibenda Grappoli: 1-5 → 60-100
+    // 5 grappoli = 100, 4 = 92, 3 = 84, 2 = 76, 1 = 68
+    if (guideName.includes('bibenda') || guideName.includes('grappol')) {
+      if (score >= 1 && score <= 5) return 60 + (score * 8)
+    }
+
+    // Generic fallback for small scales (1-5 or 1-3)
     if (score >= 1 && score <= 5) return 60 + (score * 8)
+    if (score >= 1 && score <= 3) return 70 + (score * 10)
 
     return score
   })
