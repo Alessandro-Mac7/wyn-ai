@@ -382,7 +382,7 @@ function ChatPageContent() {
             </AnimatePresence>
 
             {/* Floating glass input - iOS style */}
-            <div className="shrink-0 px-3 sm:px-4 pb-[max(0.5rem,calc(env(safe-area-inset-bottom)+0.5rem))]">
+            <div className="shrink-0 px-3 sm:px-4 pb-[max(0.25rem,env(safe-area-inset-bottom))]">
               <div className="max-w-3xl mx-auto">
                 <motion.div
                   className={cn(
@@ -407,10 +407,10 @@ function ChatPageContent() {
                     rows={1}
                     aria-label="Scrivi un messaggio"
                     className={cn(
-                      'flex-1 resize-none bg-transparent rounded-2xl px-4 py-3 pr-14',
-                      'text-base focus:outline-none disabled:opacity-50', // text-base (16px) prevents iOS zoom
-                      'min-h-[44px] max-h-[120px]',
-                      'placeholder:text-muted-foreground/70'
+                      'flex-1 resize-none bg-transparent rounded-2xl px-4 py-2.5 pr-12',
+                      'text-[15px] leading-tight focus:outline-none disabled:opacity-50',
+                      'min-h-[40px] max-h-[40px]', // Fixed single line height
+                      'placeholder:text-muted-foreground/70 placeholder:truncate'
                     )}
                   />
                   <button
@@ -418,7 +418,7 @@ function ChatPageContent() {
                     disabled={!canSend}
                     aria-label="Invia messaggio"
                     className={cn(
-                      'absolute right-2 bottom-[6px] p-2 rounded-full',
+                      'absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full',
                       'transition-all duration-150',
                       'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine',
                       canSend
