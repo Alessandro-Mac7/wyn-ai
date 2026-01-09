@@ -93,7 +93,7 @@ export function QrCodeDialog({ isOpen, onClose, venue }: QrCodeDialogProps) {
         <>
           {/* Backdrop */}
           <motion.div
-            className="fixed inset-0 z-[60] bg-black/60"
+            className="fixed inset-0 z-[70] bg-black/60"
             variants={backdropVariants}
             initial="hidden"
             animate="visible"
@@ -104,7 +104,7 @@ export function QrCodeDialog({ isOpen, onClose, venue }: QrCodeDialogProps) {
           {/* Slide-in Panel */}
           <motion.div
             className={cn(
-              'fixed inset-y-0 right-0 z-[60]',
+              'fixed inset-y-0 right-0 z-[70]',
               'w-full sm:w-[380px] max-w-full',
               'bg-card border-l border-border',
               'flex flex-col',
