@@ -6,21 +6,28 @@ import { Send } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { inputVariants } from '@/lib/motion'
 import { CHAT_MAX_CHARACTERS } from '@/config/constants'
+import { ScanButton } from '@/components/scan/ScanButton'
 
 interface ChatInputProps {
   onSend: (message: string) => void
+  onScan?: (imageDataUrl: string) => void
   isLoading: boolean
+  isScanLoading?: boolean
   placeholder: string
   hasError?: boolean
   autoFocus?: boolean
+  showScanButton?: boolean
 }
 
 export function ChatInput({
   onSend,
+  onScan,
   isLoading,
+  isScanLoading = false,
   placeholder,
   hasError = false,
   autoFocus = false,
+  showScanButton = false,
 }: ChatInputProps) {
   const [input, setInput] = useState('')
   const [isFocused, setIsFocused] = useState(false)
@@ -90,21 +97,30 @@ export function ChatInput({
             'placeholder:text-muted-foreground'
           )}
         />
-        <button
-          onClick={handleSend}
-          disabled={!canSend}
-          aria-label="Invia messaggio"
-          className={cn(
-            'shrink-0 p-3 rounded-lg mr-1 mb-1',
-            'transition-all duration-150',
-            'btn-press',
-            canSend
-              ? 'bg-wine text-white hover:bg-wine-dark'
-              : 'text-muted-foreground'
+        <div className="flex items-center gap-1 mr-1 mb-1">
+          {showScanButton && onScan && (
+            <ScanButton
+              onScan={onScan}
+              disabled={isLoading}
+              isLoading={isScanLoading}
+            />
           )}
-        >
-          <Send className="h-5 w-5" />
-        </button>
+          <button
+            onClick={handleSend}
+            disabled={!canSend}
+            aria-label="Invia messaggio"
+            className={cn(
+              'shrink-0 p-3 rounded-lg',
+              'transition-all duration-150',
+              'btn-press',
+              canSend
+                ? 'bg-wine text-white hover:bg-wine-dark'
+                : 'text-muted-foreground'
+            )}
+          >
+            <Send className="h-5 w-5" />
+          </button>
+        </div>
       </motion.div>
       <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
         <p>Premi Invio per inviare, Shift+Invio per nuova riga</p>
