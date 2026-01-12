@@ -157,6 +157,24 @@ export function Sidebar({ onHomeClick, isMobileOpen, onMobileClose }: SidebarPro
           )
         })}
       </nav>
+
+      {/* Footer links */}
+      <div className="mt-auto pb-3 flex flex-col items-center gap-1">
+        <Link
+          href="/privacy"
+          onClick={handleNavClick}
+          className="text-[9px] text-muted-foreground hover:text-foreground transition-colors"
+        >
+          Privacy
+        </Link>
+        <Link
+          href="/terms"
+          onClick={handleNavClick}
+          className="text-[9px] text-muted-foreground hover:text-foreground transition-colors"
+        >
+          Termini
+        </Link>
+      </div>
     </aside>
     </>
   )
