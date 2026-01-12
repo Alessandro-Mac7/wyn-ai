@@ -95,8 +95,19 @@ export async function scanWineLabel(
 
   if (!response.ok) {
     const errorText = await response.text()
-    console.error('Anthropic Vision API error:', errorText)
-    throw new Error(`Vision API error: ${response.status}`)
+    console.error('Anthropic Vision API error:', response.status, errorText)
+
+    // Map status codes to user-friendly messages
+    const errorMessages: Record<number, string> = {
+      400: 'Immagine non valida. Prova con un\'altra foto.',
+      401: 'Errore di configurazione del servizio.',
+      429: 'Troppe richieste. Riprova tra qualche secondo.',
+      500: 'Servizio temporaneamente non disponibile.',
+      503: 'Servizio temporaneamente non disponibile.',
+    }
+
+    const userMessage = errorMessages[response.status] || 'Errore nella scansione dell\'etichetta.'
+    throw new Error(`Vision API error: ${userMessage}`)
   }
 
   const data = await response.json()

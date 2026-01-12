@@ -11,6 +11,7 @@ import { ScanButton } from '@/components/scan/ScanButton'
 interface ChatInputProps {
   onSend: (message: string) => void
   onScan?: (imageDataUrl: string) => void
+  onScanError?: (error: string) => void
   isLoading: boolean
   isScanLoading?: boolean
   placeholder: string
@@ -22,6 +23,7 @@ interface ChatInputProps {
 export function ChatInput({
   onSend,
   onScan,
+  onScanError,
   isLoading,
   isScanLoading = false,
   placeholder,
@@ -101,6 +103,7 @@ export function ChatInput({
           {showScanButton && onScan && (
             <ScanButton
               onScan={onScan}
+              onError={onScanError}
               disabled={isLoading}
               isLoading={isScanLoading}
             />

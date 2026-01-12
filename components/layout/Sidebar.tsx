@@ -168,6 +168,13 @@ export function Sidebar({ onHomeClick, isMobileOpen, onMobileClose }: SidebarPro
           Privacy
         </Link>
         <Link
+          href="/cookie-policy"
+          onClick={handleNavClick}
+          className="text-[9px] text-muted-foreground hover:text-foreground transition-colors"
+        >
+          Cookie
+        </Link>
+        <Link
           href="/terms"
           onClick={handleNavClick}
           className="text-[9px] text-muted-foreground hover:text-foreground transition-colors"

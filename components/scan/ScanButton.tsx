@@ -8,6 +8,7 @@ import { Tooltip } from '@/components/ui/tooltip'
 
 interface ScanButtonProps {
   onScan: (imageDataUrl: string) => void
+  onError?: (error: string) => void
   disabled?: boolean
   isLoading?: boolean
   className?: string
@@ -15,6 +16,7 @@ interface ScanButtonProps {
 
 export function ScanButton({
   onScan,
+  onError,
   disabled = false,
   isLoading = false,
   className
@@ -33,7 +35,13 @@ export function ScanButton({
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      console.error('File selected is not an image')
+      onError?.('Per favore seleziona un\'immagine valida')
+      return
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      onError?.('Immagine troppo grande. Massimo 5MB.')
       return
     }
 
@@ -44,7 +52,7 @@ export function ScanButton({
       onScan(dataUrl)
     }
     reader.onerror = () => {
-      console.error('Error reading file')
+      onError?.('Errore nella lettura del file. Riprova.')
     }
     reader.readAsDataURL(file)
 

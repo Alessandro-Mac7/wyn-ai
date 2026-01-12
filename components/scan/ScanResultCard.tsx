@@ -42,11 +42,11 @@ export function ScanResultCard({ result, onClose, onSelectWine }: ScanResultCard
           exit={{ opacity: 0, y: 20 }}
           transition={{ duration: 0.3 }}
         >
-          <Card className="relative bg-slate-900 border-slate-700">
+          <Card className="relative bg-card border-border">
             <Button
               variant="ghost"
               size="icon"
-              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
               onClick={onClose}
             >
               <X className="h-4 w-4" />
@@ -60,7 +60,7 @@ export function ScanResultCard({ result, onClose, onSelectWine }: ScanResultCard
             </CardHeader>
 
             <CardContent>
-              <p className="text-gray-400 text-sm">
+              <p className="text-muted-foreground text-sm">
                 {message || 'Prova a scattare una foto più nitida con buona illuminazione, assicurandoti che l\'etichetta sia ben visibile.'}
               </p>
             </CardContent>
@@ -85,18 +85,18 @@ export function ScanResultCard({ result, onClose, onSelectWine }: ScanResultCard
         exit={{ opacity: 0, y: 20 }}
         transition={{ duration: 0.3 }}
       >
-        <Card className="relative bg-slate-900 border-slate-700">
+        <Card className="relative bg-card border-border">
           <Button
             variant="ghost"
             size="icon"
-            className="absolute top-4 right-4 text-gray-400 hover:text-white"
+            className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
             onClick={onClose}
           >
             <X className="h-4 w-4" />
           </Button>
 
           <CardHeader>
-            <CardTitle className="text-white pr-8">
+            <CardTitle className="text-foreground pr-8">
               {scannedWineName}
             </CardTitle>
             <div className="flex flex-wrap gap-2 mt-2">
@@ -109,7 +109,7 @@ export function ScanResultCard({ result, onClose, onSelectWine }: ScanResultCard
                 </span>
               )}
               {scannedYear && (
-                <span className="px-2 py-1 rounded text-xs font-medium bg-slate-700 text-gray-300">
+                <span className="px-2 py-1 rounded text-xs font-medium bg-secondary text-muted-foreground">
                   {scannedYear}
                 </span>
               )}
@@ -120,30 +120,30 @@ export function ScanResultCard({ result, onClose, onSelectWine }: ScanResultCard
             {/* Scanned wine info */}
             <div className="text-sm space-y-1">
               {scannedProducer && (
-                <p className="text-gray-300">
-                  <span className="font-medium">Produttore:</span> {scannedProducer}
+                <p className="text-muted-foreground">
+                  <span className="font-medium text-foreground">Produttore:</span> {scannedProducer}
                 </p>
               )}
               {scannedRegion && (
-                <p className="text-gray-300">
-                  <span className="font-medium">Regione:</span> {scannedRegion}
+                <p className="text-muted-foreground">
+                  <span className="font-medium text-foreground">Regione:</span> {scannedRegion}
                 </p>
               )}
               {scanned.denomination && (
-                <p className="text-gray-300">
-                  <span className="font-medium">Denominazione:</span> {scanned.denomination}
+                <p className="text-muted-foreground">
+                  <span className="font-medium text-foreground">Denominazione:</span> {scanned.denomination}
                 </p>
               )}
               {scanned.grape_varieties && scanned.grape_varieties.length > 0 && (
-                <p className="text-gray-300">
-                  <span className="font-medium">Uve:</span> {scanned.grape_varieties.join(', ')}
+                <p className="text-muted-foreground">
+                  <span className="font-medium text-foreground">Uve:</span> {scanned.grape_varieties.join(', ')}
                 </p>
               )}
             </div>
 
             {/* Match result */}
             {match ? (
-              <div className="border-t border-slate-700 pt-4">
+              <div className="border-t border-border pt-4">
                 <div className="flex items-center gap-2 mb-3">
                   <CheckCircle2 className="h-5 w-5 text-green-500" />
                   <h3 className="text-green-400 font-semibold">Questo vino è in carta!</h3>
@@ -156,7 +156,7 @@ export function ScanResultCard({ result, onClose, onSelectWine }: ScanResultCard
                 />
               </div>
             ) : alternatives && alternatives.length > 0 ? (
-              <div className="border-t border-slate-700 pt-4">
+              <div className="border-t border-border pt-4">
                 <div className="flex items-center gap-2 mb-3">
                   <Sparkles className="h-5 w-5 text-blue-400" />
                   <h3 className="text-blue-400 font-semibold">Non in carta, ma ti consiglio:</h3>
@@ -175,7 +175,7 @@ export function ScanResultCard({ result, onClose, onSelectWine }: ScanResultCard
                 </div>
               </div>
             ) : (
-              <div className="border-t border-slate-700 pt-4">
+              <div className="border-t border-border pt-4">
                 <p className="text-amber-400 text-sm flex items-center gap-2">
                   <AlertCircle className="h-4 w-4" />
                   Questo vino non è nella carta di questo locale.
@@ -204,18 +204,18 @@ function WineMatchCard({ wine, matchQuality, onSelect, isAlternative }: WineMatc
   }
 
   return (
-    <div className="bg-slate-800 rounded-lg p-4 space-y-2">
+    <div className="bg-secondary rounded-lg p-4 space-y-2">
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1">
-          <h4 className="font-semibold text-white">{wine.name}</h4>
+          <h4 className="font-semibold text-foreground">{wine.name}</h4>
           {wine.producer && (
-            <p className="text-sm text-gray-400">{wine.producer}</p>
+            <p className="text-sm text-muted-foreground">{wine.producer}</p>
           )}
         </div>
         <div className="text-right">
-          <p className="text-lg font-bold text-[#8b2942]">€{wine.price.toFixed(2)}</p>
+          <p className="text-lg font-bold text-wine">€{wine.price.toFixed(2)}</p>
           {wine.price_glass && (
-            <p className="text-xs text-gray-400">€{wine.price_glass.toFixed(2)} al calice</p>
+            <p className="text-xs text-muted-foreground">€{wine.price_glass.toFixed(2)} al calice</p>
           )}
         </div>
       </div>
@@ -228,7 +228,7 @@ function WineMatchCard({ wine, matchQuality, onSelect, isAlternative }: WineMatc
           {wineTypeLabels[wine.wine_type]}
         </span>
         {wine.year && (
-          <span className="px-2 py-1 rounded text-xs font-medium bg-slate-700 text-gray-300">
+          <span className="px-2 py-1 rounded text-xs font-medium bg-card text-muted-foreground">
             {wine.year}
           </span>
         )}
@@ -240,8 +240,8 @@ function WineMatchCard({ wine, matchQuality, onSelect, isAlternative }: WineMatc
       </div>
 
       {wine.region && (
-        <p className="text-xs text-gray-400">
-          <span className="font-medium">Regione:</span> {wine.region}
+        <p className="text-xs text-muted-foreground">
+          <span className="font-medium text-foreground">Regione:</span> {wine.region}
         </p>
       )}
 
@@ -250,7 +250,7 @@ function WineMatchCard({ wine, matchQuality, onSelect, isAlternative }: WineMatc
           {wine.ratings.map((rating) => (
             <span
               key={rating.id}
-              className="px-2 py-1 rounded text-xs font-medium bg-slate-700/50 text-yellow-400 border border-slate-600"
+              className="px-2 py-1 rounded text-xs font-medium bg-card/50 text-yellow-400 border border-border"
             >
               ⭐ {rating.guide_name}: {rating.score}
             </span>
@@ -259,13 +259,13 @@ function WineMatchCard({ wine, matchQuality, onSelect, isAlternative }: WineMatc
       )}
 
       {wine.description && (
-        <p className="text-sm text-gray-400 mt-2">{wine.description}</p>
+        <p className="text-sm text-muted-foreground mt-2">{wine.description}</p>
       )}
 
       {onSelect && (
         <Button
           onClick={() => onSelect(wine)}
-          className="w-full mt-3 bg-[#8b2942] hover:bg-[#6d1f33] text-white"
+          className="w-full mt-3 bg-wine hover:bg-wine-dark text-white"
         >
           Scopri di più
         </Button>
