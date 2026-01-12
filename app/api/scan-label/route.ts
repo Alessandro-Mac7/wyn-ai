@@ -52,6 +52,18 @@ export async function POST(request: NextRequest) {
     // Scan the wine label using vision API
     const scanResult = await scanWineLabel(body.image)
 
+    // Check confidence threshold (as per PLAN-STRATEGIC-FEATURES.md)
+    if (scanResult.confidence < 0.3) {
+      const response: ScanLabelResponse = {
+        success: false,
+        message: 'Non riesco a leggere bene l\'etichetta. Prova con più luce e inquadra meglio.',
+        scanned: scanResult,
+        match: null,
+        alternatives: [],
+      }
+      return NextResponse.json(response)
+    }
+
     // If no venue_slug provided, return scan result only
     if (!body.venue_slug) {
       const response: ScanLabelResponse = {

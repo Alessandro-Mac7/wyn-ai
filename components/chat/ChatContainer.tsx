@@ -62,6 +62,11 @@ export function ChatContainer({ venueName }: ChatContainerProps) {
     setScanError(null)
   }, [])
 
+  // Handle scan validation errors from ScanButton
+  const handleScanError = useCallback((error: string) => {
+    setScanError(error)
+  }, [])
+
   // Handle selecting a wine from scan results
   const handleSelectWine = useCallback((wine: WineWithRatings) => {
     // Send a message about the selected wine
@@ -86,7 +91,7 @@ export function ChatContainer({ venueName }: ChatContainerProps) {
 
       {/* Scan result display */}
       {scanResult && (
-        <div className="px-4 py-2">
+        <div className="px-4 py-2 safe-bottom">
           <ScanResultCard
             result={scanResult}
             onClose={handleCloseScanResult}
@@ -106,6 +111,7 @@ export function ChatContainer({ venueName }: ChatContainerProps) {
       <ChatInput
         onSend={sendMessage}
         onScan={handleScan}
+        onScanError={handleScanError}
         isLoading={isLoading}
         isScanLoading={isScanLoading}
         hasError={!!error || !!scanError}
