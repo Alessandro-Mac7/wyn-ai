@@ -62,11 +62,6 @@ export function ChatContainer({ venueName }: ChatContainerProps) {
     setScanError(null)
   }, [])
 
-  // Handle scan validation errors from ScanButton
-  const handleScanError = useCallback((error: string) => {
-    setScanError(error)
-  }, [])
-
   // Handle selecting a wine from scan results
   const handleSelectWine = useCallback((wine: WineWithRatings) => {
     // Send a message about the selected wine
@@ -123,12 +118,11 @@ export function ChatContainer({ venueName }: ChatContainerProps) {
       {/* Input area */}
       <ChatInput
         onSend={sendMessage}
-        onScan={handleScan}
-        onScanError={handleScanError}
+        onImageScan={handleScan}
         isLoading={isLoading}
         isScanLoading={isScanLoading}
         hasError={!!error || !!scanError}
-        showScanButton={true}
+        showImageAttachment={true}
         placeholder={
           venueSlug
             ? `Chiedimi dei vini di ${venueName || 'questo ristorante'}...`

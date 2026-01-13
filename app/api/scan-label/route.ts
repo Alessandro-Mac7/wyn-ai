@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { scanWineLabel, validateImageData } from '@/lib/vision'
+import { scanWineLabel, validateImageData, validateWineImage } from '@/lib/vision'
 import { findMatchingWine, findSimilarWines } from '@/lib/wine-matcher'
 import { getVenueBySlug, getWinesWithRatings } from '@/lib/supabase'
 import { checkRateLimit, getClientIdentifier, RATE_LIMITS } from '@/lib/rate-limit'
@@ -45,6 +45,25 @@ export async function POST(request: NextRequest) {
     if (!imageValidation.isValid) {
       return NextResponse.json(
         { error: imageValidation.error || 'Invalid image data' },
+        { status: 400 }
+      )
+    }
+
+    // Validate that the image contains wine-related content
+    const wineValidation = await validateWineImage(
+      imageValidation.base64,
+      imageValidation.mediaType
+    )
+
+    if (!wineValidation.isWineRelated && wineValidation.confidence > 0.7) {
+      return NextResponse.json(
+        {
+          error: 'Questa immagine non sembra contenere un\'etichetta di vino. Per favore scatta o carica una foto di un\'etichetta, bottiglia o carta dei vini.',
+          validation: {
+            detected: wineValidation.detected,
+            confidence: wineValidation.confidence,
+          }
+        },
         { status: 400 }
       )
     }
