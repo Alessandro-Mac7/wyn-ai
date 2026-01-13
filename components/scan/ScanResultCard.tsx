@@ -1,16 +1,18 @@
 'use client'
 
-import { ScanLabelResponse, WineWithRatings, WineType } from '@/types'
+import { ScanLabelResponse, ScanResult, WineWithRatings, WineType } from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { X, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react'
+import { X, CheckCircle2, AlertCircle, Sparkles, MessageCircle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface ScanResultCardProps {
   result: ScanLabelResponse
   onClose: () => void
   onSelectWine?: (wine: WineWithRatings) => void
+  onAskAboutScannedWine?: (scanned: ScanResult) => void
+  isVenueMode?: boolean
 }
 
 const wineTypeColors: Record<WineType, string> = {
@@ -29,7 +31,13 @@ const wineTypeLabels: Record<WineType, string> = {
   dessert: 'Dolce',
 }
 
-export function ScanResultCard({ result, onClose, onSelectWine }: ScanResultCardProps) {
+export function ScanResultCard({
+  result,
+  onClose,
+  onSelectWine,
+  onAskAboutScannedWine,
+  isVenueMode = false
+}: ScanResultCardProps) {
   const { scanned, match, alternatives, success, message } = result
 
   // Low confidence or error case
@@ -141,45 +149,60 @@ export function ScanResultCard({ result, onClose, onSelectWine }: ScanResultCard
               )}
             </div>
 
-            {/* Match result */}
-            {match ? (
-              <div className="border-t border-border pt-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <CheckCircle2 className="h-5 w-5 text-green-500" />
-                  <h3 className="text-green-400 font-semibold">Questo vino è in carta!</h3>
-                </div>
+            {/* Match result - only in venue mode */}
+            {isVenueMode ? (
+              match ? (
+                <div className="border-t border-border pt-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <CheckCircle2 className="h-5 w-5 text-green-500" />
+                    <h3 className="text-green-400 font-semibold">Questo vino è in carta!</h3>
+                  </div>
 
-                <WineMatchCard
-                  wine={match.wine}
-                  matchQuality={match.matchQuality}
-                  onSelect={onSelectWine}
-                />
-              </div>
-            ) : alternatives && alternatives.length > 0 ? (
-              <div className="border-t border-border pt-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <Sparkles className="h-5 w-5 text-blue-400" />
-                  <h3 className="text-blue-400 font-semibold">Non in carta, ma ti consiglio:</h3>
+                  <WineMatchCard
+                    wine={match.wine}
+                    matchQuality={match.matchQuality}
+                    onSelect={onSelectWine}
+                  />
                 </div>
+              ) : alternatives && alternatives.length > 0 ? (
+                <div className="border-t border-border pt-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Sparkles className="h-5 w-5 text-blue-400" />
+                    <h3 className="text-blue-400 font-semibold">Non in carta, ma ti consiglio:</h3>
+                  </div>
 
-                <div className="space-y-3">
-                  {alternatives.map((alt, index) => (
-                    <WineMatchCard
-                      key={alt.wine.id}
-                      wine={alt.wine}
-                      matchQuality={alt.matchQuality}
-                      onSelect={onSelectWine}
-                      isAlternative
-                    />
-                  ))}
+                  <div className="space-y-3">
+                    {alternatives.map((alt) => (
+                      <WineMatchCard
+                        key={alt.wine.id}
+                        wine={alt.wine}
+                        matchQuality={alt.matchQuality}
+                        onSelect={onSelectWine}
+                        isAlternative
+                      />
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="border-t border-border pt-4">
+                  <p className="text-amber-400 text-sm flex items-center gap-2">
+                    <AlertCircle className="h-4 w-4" />
+                    Questo vino non è nella carta di questo locale.
+                  </p>
+                </div>
+              )
             ) : (
+              /* General mode - ask about scanned wine */
               <div className="border-t border-border pt-4">
-                <p className="text-amber-400 text-sm flex items-center gap-2">
-                  <AlertCircle className="h-4 w-4" />
-                  Questo vino non è nella carta di questo locale.
-                </p>
+                {onAskAboutScannedWine && (
+                  <Button
+                    onClick={() => onAskAboutScannedWine(scanned)}
+                    className="w-full bg-wine hover:bg-wine-dark text-white"
+                  >
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    Chiedi al sommelier
+                  </Button>
+                )}
               </div>
             )}
           </CardContent>
