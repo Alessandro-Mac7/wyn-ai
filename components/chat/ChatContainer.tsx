@@ -8,7 +8,7 @@ import { ChatInput } from './ChatInput'
 import { QuickSuggestions } from './QuickSuggestions'
 import { ScanResultCard } from '@/components/scan/ScanResultCard'
 import { GENERAL_SUGGESTIONS, VENUE_SUGGESTIONS } from '@/lib/prompts'
-import type { ScanLabelResponse, WineWithRatings } from '@/types'
+import type { ScanLabelResponse, ScanResult, WineWithRatings } from '@/types'
 
 interface ChatContainerProps {
   venueName?: string
@@ -74,6 +74,17 @@ export function ChatContainer({ venueName }: ChatContainerProps) {
     setScanResult(null)
   }, [sendMessage])
 
+  // Handle asking about a scanned wine (general mode)
+  const handleAskAboutScannedWine = useCallback((scanned: ScanResult) => {
+    const parts = [scanned.name || 'questo vino']
+    if (scanned.producer) parts.push(`di ${scanned.producer}`)
+    if (scanned.year) parts.push(`(${scanned.year})`)
+    if (scanned.region) parts.push(`dalla regione ${scanned.region}`)
+
+    sendMessage(`Ho scansionato un'etichetta. Parlami di ${parts.join(' ')}. Quali sono le sue caratteristiche e con cosa lo abbineresti?`)
+    setScanResult(null)
+  }, [sendMessage])
+
   return (
     <div className="flex flex-col h-full">
       {/* Messages area */}
@@ -96,6 +107,8 @@ export function ChatContainer({ venueName }: ChatContainerProps) {
             result={scanResult}
             onClose={handleCloseScanResult}
             onSelectWine={handleSelectWine}
+            onAskAboutScannedWine={handleAskAboutScannedWine}
+            isVenueMode={!!venueSlug}
           />
         </div>
       )}
@@ -115,7 +128,7 @@ export function ChatContainer({ venueName }: ChatContainerProps) {
         isLoading={isLoading}
         isScanLoading={isScanLoading}
         hasError={!!error || !!scanError}
-        showScanButton={!!venueSlug}
+        showScanButton={true}
         placeholder={
           venueSlug
             ? `Chiedimi dei vini di ${venueName || 'questo ristorante'}...`
