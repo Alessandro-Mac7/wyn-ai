@@ -147,6 +147,130 @@ export async function scanWineLabel(
 }
 
 // ============================================
+// WINE IMAGE VALIDATION
+// ============================================
+
+const WINE_VALIDATION_PROMPT = `Analizza questa immagine e determina se contiene:
+- Un'etichetta di vino
+- Una bottiglia di vino
+- Un bicchiere di vino
+- Una carta dei vini
+- Qualsiasi altro contenuto relativo al vino
+
+Rispondi SOLO con un JSON valido nel formato:
+{
+  "is_wine_related": true/false,
+  "confidence": 0.0-1.0,
+  "detected": "label|bottle|glass|menu|other|none"
+}
+
+Se l'immagine NON è relativa al vino (es: cibo, persone, paesaggi, altri prodotti),
+rispondi con is_wine_related: false.`
+
+export interface WineImageValidation {
+  isWineRelated: boolean
+  confidence: number
+  detected: 'label' | 'bottle' | 'glass' | 'menu' | 'other' | 'none'
+  error?: string
+}
+
+/**
+ * Validates if an image contains wine-related content
+ * Uses a quick Vision API call to check before full processing
+ */
+export async function validateWineImage(
+  imageBase64: string,
+  mediaType: 'image/jpeg' | 'image/png' | 'image/webp' | 'image/gif' = 'image/jpeg'
+): Promise<WineImageValidation> {
+  const apiKey = process.env.ANTHROPIC_API_KEY
+  if (!apiKey) {
+    throw new Error('ANTHROPIC_API_KEY not configured')
+  }
+
+  // Remove data URL prefix if present
+  const cleanBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, '')
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'claude-3-haiku-20240307', // Use Haiku for faster, cheaper validation
+        max_tokens: 256,
+        messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'image',
+                source: {
+                  type: 'base64',
+                  media_type: mediaType,
+                  data: cleanBase64,
+                },
+              },
+              {
+                type: 'text',
+                text: WINE_VALIDATION_PROMPT,
+              },
+            ],
+          },
+        ],
+      }),
+    })
+
+    if (!response.ok) {
+      console.error('Wine validation API error:', response.status)
+      // If validation fails, allow through but with low confidence
+      return {
+        isWineRelated: true,
+        confidence: 0.5,
+        detected: 'other',
+        error: 'Validation service unavailable',
+      }
+    }
+
+    const data = await response.json()
+    const rawText = data.content?.[0]?.text?.trim() || ''
+
+    // Parse JSON response
+    let jsonText = rawText
+    if (rawText.startsWith('```')) {
+      jsonText = rawText.replace(/```json?\n?/g, '').replace(/```$/g, '').trim()
+    }
+
+    const parsed = JSON.parse(jsonText)
+
+    return {
+      isWineRelated: parsed.is_wine_related === true,
+      confidence: typeof parsed.confidence === 'number' ? parsed.confidence : 0.5,
+      detected: validateDetectedType(parsed.detected),
+    }
+  } catch (error) {
+    console.error('Wine validation error:', error)
+    // On error, be permissive but flag it
+    return {
+      isWineRelated: true,
+      confidence: 0.3,
+      detected: 'other',
+      error: 'Validation failed',
+    }
+  }
+}
+
+function validateDetectedType(type: unknown): WineImageValidation['detected'] {
+  const validTypes = ['label', 'bottle', 'glass', 'menu', 'other', 'none']
+  if (typeof type === 'string' && validTypes.includes(type)) {
+    return type as WineImageValidation['detected']
+  }
+  return 'none'
+}
+
+// ============================================
 // HELPERS
 // ============================================
 
