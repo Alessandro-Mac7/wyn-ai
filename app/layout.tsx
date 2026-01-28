@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import { MainLayout } from '@/components/layout'
 import { Providers } from '@/components/Providers'
 import { ServiceWorkerRegistration } from '@/components/pwa'
+import { ConsentBanner } from '@/components/gdpr/ConsentBanner'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -49,6 +50,7 @@ export default function RootLayout({
         <ServiceWorkerRegistration />
         <Providers>
           <MainLayout>{children}</MainLayout>
+          <ConsentBanner />
         </Providers>
       </body>
     </html>

@@ -276,3 +276,38 @@ export interface PaginatedResponse<T> {
 }
 
 export type WinesPaginatedResponse = PaginatedResponse<WineWithRatings>
+
+// ============================================
+// LABEL SCAN TYPES
+// ============================================
+
+export interface ScanResult {
+  name: string | null
+  producer: string | null
+  year: number | null
+  wine_type: 'red' | 'white' | 'rose' | 'sparkling' | 'dessert' | null
+  region: string | null
+  denomination: string | null
+  grape_varieties: string[] | null
+  confidence: number
+}
+
+export interface WineMatch<T = Wine> {
+  wine: T
+  confidence: number
+  matchQuality: 'exact' | 'high' | 'partial'
+  yearMatches: boolean
+}
+
+export interface ScanLabelRequest {
+  image: string // Base64 encoded image data URL
+  venue_slug?: string // Optional venue for matching
+}
+
+export interface ScanLabelResponse {
+  success: boolean
+  message?: string
+  scanned?: ScanResult
+  match?: WineMatch<WineWithRatings> | null
+  alternatives?: WineMatch<WineWithRatings>[]
+}

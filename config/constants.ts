@@ -60,6 +60,9 @@ export const RATE_LIMITS = {
   /** Bulk operations: requests per minute */
   bulk: { limit: 5, windowSeconds: 60 },
 
+  /** Scan label endpoint: requests per minute (vision API is expensive) */
+  scan: { limit: 10, windowSeconds: 60 },
+
   /** General API: requests per minute */
   general: { limit: 60, windowSeconds: 60 },
 } as const

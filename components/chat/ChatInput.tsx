@@ -6,25 +6,42 @@ import { Send } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { inputVariants } from '@/lib/motion'
 import { CHAT_MAX_CHARACTERS } from '@/config/constants'
+import { ImageAttachment } from './ImageAttachment'
 
 interface ChatInputProps {
   onSend: (message: string) => void
+  onImageScan?: (imageDataUrl: string) => void
   isLoading: boolean
+  isScanLoading?: boolean
   placeholder: string
   hasError?: boolean
   autoFocus?: boolean
+  showImageAttachment?: boolean
+  attachedImage?: string | null
+  onImageAttach?: (imageDataUrl: string) => void
+  onImageClear?: () => void
 }
 
 export function ChatInput({
   onSend,
+  onImageScan,
   isLoading,
+  isScanLoading = false,
   placeholder,
   hasError = false,
   autoFocus = false,
+  showImageAttachment = true,
+  attachedImage = null,
+  onImageAttach,
+  onImageClear,
 }: ChatInputProps) {
   const [input, setInput] = useState('')
   const [isFocused, setIsFocused] = useState(false)
+  const [localImage, setLocalImage] = useState<string | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  // Use attached image from parent or local state
+  const imagePreview = attachedImage ?? localImage
 
   useEffect(() => {
     if (autoFocus && textareaRef.current) {
@@ -44,7 +61,20 @@ export function ChatInput({
   }, [input])
 
   const handleSend = () => {
-    if (input.trim() && !isLoading) {
+    // Can send if there's text OR an attached image
+    const canSendMessage = (input.trim() || imagePreview) && !isLoading && input.length <= CHAT_MAX_CHARACTERS
+
+    if (!canSendMessage) return
+
+    // If there's an image, trigger scan
+    if (imagePreview && onImageScan) {
+      onImageScan(imagePreview)
+      // Clear the image after sending
+      handleImageClear()
+    }
+
+    // If there's text, send it
+    if (input.trim()) {
       onSend(input.trim())
       setInput('')
     }
@@ -57,7 +87,24 @@ export function ChatInput({
     }
   }
 
-  const canSend = input.trim() && !isLoading && input.length <= CHAT_MAX_CHARACTERS
+  const handleImageSelect = (imageDataUrl: string) => {
+    if (onImageAttach) {
+      onImageAttach(imageDataUrl)
+    } else {
+      setLocalImage(imageDataUrl)
+    }
+  }
+
+  const handleImageClear = () => {
+    if (onImageClear) {
+      onImageClear()
+    } else {
+      setLocalImage(null)
+    }
+  }
+
+  // Can send if there's text OR an image attached
+  const canSend = (input.trim() || imagePreview) && !isLoading && input.length <= CHAT_MAX_CHARACTERS
   const isNearLimit = input.length > CHAT_MAX_CHARACTERS * 0.8
   const isOverLimit = input.length > CHAT_MAX_CHARACTERS
 
@@ -79,7 +126,7 @@ export function ChatInput({
           onKeyDown={handleKeyDown}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          placeholder={placeholder}
+          placeholder={imagePreview ? 'Aggiungi un messaggio (opzionale)...' : placeholder}
           disabled={isLoading}
           rows={1}
           aria-label="Scrivi un messaggio"
@@ -90,24 +137,39 @@ export function ChatInput({
             'placeholder:text-muted-foreground'
           )}
         />
-        <button
-          onClick={handleSend}
-          disabled={!canSend}
-          aria-label="Invia messaggio"
-          className={cn(
-            'shrink-0 p-3 rounded-lg mr-1 mb-1',
-            'transition-all duration-150',
-            'btn-press',
-            canSend
-              ? 'bg-wine text-white hover:bg-wine-dark'
-              : 'text-muted-foreground'
+        <div className="flex items-center gap-1 mr-1 mb-1">
+          {showImageAttachment && (
+            <ImageAttachment
+              onImageSelect={handleImageSelect}
+              onImageClear={handleImageClear}
+              imagePreview={imagePreview}
+              isLoading={isScanLoading}
+              disabled={isLoading}
+            />
           )}
-        >
-          <Send className="h-5 w-5" />
-        </button>
+          <button
+            onClick={handleSend}
+            disabled={!canSend}
+            aria-label={imagePreview ? 'Analizza immagine' : 'Invia messaggio'}
+            className={cn(
+              'shrink-0 p-3 rounded-lg',
+              'transition-all duration-150',
+              'btn-press',
+              canSend
+                ? 'bg-wine text-white hover:bg-wine-dark'
+                : 'text-muted-foreground'
+            )}
+          >
+            <Send className="h-5 w-5" />
+          </button>
+        </div>
       </motion.div>
       <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
-        <p>Premi Invio per inviare, Shift+Invio per nuova riga</p>
+        <p>
+          {imagePreview
+            ? 'Premi Invio per analizzare l\'etichetta'
+            : 'Premi Invio per inviare, Shift+Invio per nuova riga'}
+        </p>
         {input.length > 0 && (
           <span className={cn(
             'tabular-nums',
