@@ -4,19 +4,20 @@ import { useState, useRef, useEffect, KeyboardEvent, useCallback, Suspense } fro
 import { useSearchParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Send, X, CheckCircle, Loader2 } from 'lucide-react'
+import { Send, X, CheckCircle, Loader2, History } from 'lucide-react'
 import { useSession } from '@/contexts/session-context'
 import { useChat } from '@/hooks/useChat'
 import { useVenue, useRecentVenues } from '@/hooks/useVenue'
 import {
   ChatMessages,
+  ModeToggle,
   VenueHeader,
   VenueInfoCard,
-  VenueSelectionBar,
   VenueSelector,
   WineMenuPanel,
 } from '@/components/chat'
 import { InstallPrompt } from '@/components/pwa'
+import { RegisterPrompt } from '@/components/auth'
 import { cn } from '@/lib/utils'
 import { inputVariants } from '@/lib/motion'
 import type { ChatMessage } from '@/types'
@@ -68,7 +69,7 @@ function ChatPageContent() {
   const searchParams = useSearchParams()
 
   // Session state (persisted)
-  const { mode, venueData, filters, setFilters, clearConversation } = useSession()
+  const { mode, venueData, filters, setFilters, setMode, clearConversation } = useSession()
 
   // Chat and venue hooks
   const { messages, isLoading, error, sendMessage } = useChat()
@@ -88,6 +89,8 @@ function ChatPageContent() {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const legacyMigrationDone = useRef(false)
   const hasShownHint = useRef(false)
+
+
 
   // Handle URL params (query from home page or legacy)
   useEffect(() => {
@@ -153,6 +156,23 @@ function ChatPageContent() {
     }
   }, [venueError])
 
+  // Auto-resize textarea based on content
+  useEffect(() => {
+    const textarea = textareaRef.current
+    if (!textarea) return
+
+    // Reset height to auto to get accurate scrollHeight
+    textarea.style.height = 'auto'
+
+    // Calculate max height based on screen width (smaller on mobile)
+    const isMobileScreen = window.innerWidth < 768
+    const maxHeight = isMobileScreen ? 100 : 120
+
+    // Set new height, capped at maxHeight
+    const newHeight = Math.min(Math.max(textarea.scrollHeight, 48), maxHeight)
+    textarea.style.height = `${newHeight}px`
+  }, [input])
+
   // Handle input focus - show hint only on first focus
   const handleInputFocus = useCallback(() => {
     setIsFocused(true)
@@ -178,8 +198,24 @@ function ChatPageContent() {
     await loadVenue(slug)
   }, [loadVenue])
 
-  // Close venue mode - clears venue and starts fresh conversation
-  const handleCloseVenue = useCallback(() => {
+  // Switch to general chat — keeps venue in memory
+  const handleSwitchToChat = useCallback(() => {
+    setMode('general')
+    setShowVenueInfo(false)
+    setShowWinePanel(false)
+  }, [setMode])
+
+  // Switch back to venue mode (venue still loaded)
+  const handleSwitchToVenue = useCallback(() => {
+    if (venue) {
+      setMode('venue')
+    } else {
+      setShowVenueSelector(true)
+    }
+  }, [venue, setMode])
+
+  // Clear venue entirely (X button) — clears venue and opens selector
+  const handleClearVenue = useCallback(() => {
     clearVenue()
     clearConversation()
     setShowVenueInfo(false)
@@ -198,10 +234,17 @@ function ChatPageContent() {
 
   // Handle send message
   const handleSend = () => {
-    if (input.trim() && !isLoading) {
-      sendMessage(input.trim())
-      setInput('')
-    }
+    if (!input.trim() || isLoading) return
+
+    sendMessage(input.trim())
+    setInput('')
+
+    // Reset textarea height after sending
+    requestAnimationFrame(() => {
+      if (textareaRef.current) {
+        textareaRef.current.style.height = '48px'
+      }
+    })
   }
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -213,7 +256,7 @@ function ChatPageContent() {
 
   const canSend = input.trim() && !isLoading
   const placeholder = venue
-    ? `Chiedi della carta dei vini di ${venue.name}...`
+    ? 'Chiedi dei vini del locale...'
     : 'Chiedimi del vino, abbinamenti, regioni...'
 
   // Show initial message for both chat modes when no messages
@@ -230,28 +273,34 @@ function ChatPageContent() {
     <div className="fixed inset-0 flex flex-col overflow-hidden">
       {/* Main content - no padding on mobile since sidebar is hidden */}
       <main id="main-content" className="pl-0 sm:pl-16 flex-1 flex flex-col min-h-0 pt-[env(safe-area-inset-top)]">
-          {/* Top bar: VenueSelectionBar (general mode) or VenueHeader (venue mode) */}
+          {/* Top bar: ModeToggle + VenueHeader */}
+        {!venueLoading && (
+          <div className="shrink-0 z-20 flex items-center justify-center px-4 py-2">
+            <ModeToggle
+              isVenueMode={isVenueMode}
+              venueName={venue?.name}
+              onSelectVenue={handleSwitchToVenue}
+              onCloseVenue={handleSwitchToChat}
+              onClearVenue={handleClearVenue}
+            />
+          </div>
+        )}
         <AnimatePresence mode="wait">
-          {venue ? (
+          {venue && isVenueMode && (
             <VenueHeader
               key="venue-header"
               venue={venue}
               wineStats={wineStats || undefined}
-              onClose={handleCloseVenue}
+              onClose={handleClearVenue}
               onInfoToggle={handleInfoToggle}
               onWineMenuToggle={handleWineMenuToggle}
               isInfoExpanded={showVenueInfo}
-            />
-          ) : !venueLoading && (
-            <VenueSelectionBar
-              key="venue-selection"
-              onSelectVenue={handleOpenVenueSelector}
             />
           )}
         </AnimatePresence>
 
         {/* Venue Info Card - collapsible venue description */}
-        {venue && (
+        {venue && isVenueMode && (
           <VenueInfoCard
             venue={venue}
             isExpanded={showVenueInfo}
@@ -399,14 +448,12 @@ function ChatPageContent() {
             </AnimatePresence>
 
             {/* Floating glass input - iOS style */}
-            <div className="shrink-0 px-3 sm:px-4 pb-[max(0.25rem,env(safe-area-inset-bottom))]">
+            <div className="shrink-0 px-3 sm:px-4 pb-16 sm:pb-[max(0.25rem,env(safe-area-inset-bottom))]">
               <div className="max-w-3xl mx-auto">
                 <motion.div
                   className={cn(
                     'relative flex items-end gap-2 rounded-2xl w-full',
-                    'bg-card/80 backdrop-blur-xl',
-                    'border border-white/10',
-                    'shadow-[0_8px_32px_rgba(0,0,0,0.4),0_0_0_1px_rgba(255,255,255,0.05)_inset]',
+                    'glass-ios',
                     error && !errorDismissed && 'ring-1 ring-destructive'
                   )}
                   variants={inputVariants}
@@ -423,11 +470,14 @@ function ChatPageContent() {
                     disabled={isLoading}
                     rows={1}
                     aria-label="Scrivi un messaggio"
+                    aria-multiline="true"
                     className={cn(
-                      'flex-1 resize-none bg-transparent rounded-2xl px-4 py-2.5 pr-12',
-                      'text-[15px] leading-tight focus:outline-none disabled:opacity-50',
-                      'min-h-[40px] max-h-[40px]', // Fixed single line height
-                      'placeholder:text-muted-foreground/70 placeholder:truncate'
+                      'flex-1 resize-none bg-transparent rounded-2xl py-2.5 pl-4 pr-12',
+                      'text-[15px] leading-relaxed focus:outline-none disabled:opacity-50',
+                      'min-h-[48px] max-h-[100px] sm:max-h-[120px]',
+                      'transition-[height] duration-150 ease-out motion-reduce:transition-none',
+                      'overflow-y-auto scrollbar-thin scrollbar-thumb-wine/20 scrollbar-track-transparent',
+                      'placeholder:text-muted-foreground/70'
                     )}
                   />
                   <button
@@ -435,7 +485,7 @@ function ChatPageContent() {
                     disabled={!canSend}
                     aria-label="Invia messaggio"
                     className={cn(
-                      'absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full',
+                      'absolute right-2 bottom-2 p-2 rounded-full',
                       'transition-all duration-150',
                       'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine',
                       canSend
@@ -446,8 +496,8 @@ function ChatPageContent() {
                     <Send className="h-4 w-4" />
                   </button>
                 </motion.div>
-                <p className="text-[10px] text-muted-foreground/60 text-center mt-2 px-2">
-                  WYN può commettere errori. Verifica la scelta con il personale o usa il tuo giudizio.
+                <p className="text-[10px] text-muted-foreground/60 text-center mt-2 px-2 whitespace-nowrap">
+                  WYN può commettere errori. Verifica col tuo giudizio.
                 </p>
               </div>
             </div>
@@ -475,6 +525,9 @@ function ChatPageContent() {
 
       {/* PWA Install Prompt - appears after engagement */}
       <InstallPrompt messageCount={userMessageCount} isFromQR={isFromQR} />
+
+      {/* Registration Prompt - soft prompt for anonymous users */}
+      <RegisterPrompt messageCount={userMessageCount} />
     </div>
   )
 }

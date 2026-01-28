@@ -1,70 +1,80 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { MessageCircle, MapPin } from 'lucide-react'
+import { MessageCircle, MapPin, Check, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface ModeToggleProps {
-  mode: 'chat' | 'venue'
-  onChange: (mode: 'chat' | 'venue') => void
+  isVenueMode: boolean
+  venueName?: string
+  onSelectVenue: () => void
+  onCloseVenue: () => void
+  onClearVenue?: () => void
 }
 
-export function ModeToggle({ mode, onChange }: ModeToggleProps) {
+export function ModeToggle({ isVenueMode, venueName, onSelectVenue, onCloseVenue, onClearVenue }: ModeToggleProps) {
   return (
-    <div className="relative inline-flex items-center gap-1 p-1 bg-secondary rounded-lg">
-      {/* Sliding background pill */}
-      <motion.div
-        className="absolute top-1 bottom-1 w-[calc(50%-2px)] bg-background rounded-md shadow-sm"
-        initial={false}
-        animate={{
-          x: mode === 'chat' ? 0 : '100%',
-        }}
-        transition={{
-          type: 'spring',
-          stiffness: 300,
-          damping: 30,
-        }}
-      />
-
+    <div className="relative inline-flex items-center rounded-full glass-ios-subtle p-0.5">
+      {/* Chat button */}
       <button
-        onClick={() => onChange('chat')}
+        onClick={() => { if (isVenueMode) onCloseVenue() }}
         className={cn(
-          'relative z-10 flex items-center gap-2 px-4 py-2 rounded-md text-sm transition-colors min-h-[44px]',
-          'btn-press',
-          mode === 'chat'
-            ? 'text-foreground'
-            : 'text-muted-foreground hover:text-foreground'
+          'relative z-10 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm transition-colors min-h-[36px]',
+          !isVenueMode ? 'text-white' : 'text-muted-foreground'
         )}
-        aria-pressed={mode === 'chat'}
       >
-        <motion.div
-          animate={{ rotate: mode === 'chat' ? 0 : -10 }}
-          transition={{ duration: 0.2 }}
-        >
-          <MessageCircle className="h-4 w-4" />
-        </motion.div>
-        Chat
+        {!isVenueMode && (
+          <motion.div
+            layoutId="mode-pill"
+            className="absolute inset-0 bg-wine rounded-full"
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          />
+        )}
+        <MessageCircle className="h-3.5 w-3.5 relative z-10" />
+        <span className="relative z-10">Chat</span>
       </button>
 
+      {/* Locale button */}
       <button
-        onClick={() => onChange('venue')}
+        onClick={() => { if (!isVenueMode) onSelectVenue() }}
         className={cn(
-          'relative z-10 flex items-center gap-2 px-4 py-2 rounded-md text-sm transition-colors min-h-[44px]',
-          'btn-press',
-          mode === 'venue'
-            ? 'text-foreground'
-            : 'text-muted-foreground hover:text-foreground'
+          'relative z-10 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm transition-colors min-h-[36px]',
+          isVenueMode ? 'text-white' : 'text-muted-foreground'
         )}
-        aria-pressed={mode === 'venue'}
       >
-        <motion.div
-          animate={{ rotate: mode === 'venue' ? 0 : 10 }}
-          transition={{ duration: 0.2 }}
-        >
-          <MapPin className="h-4 w-4" />
-        </motion.div>
-        Venue
+        {isVenueMode && (
+          <motion.div
+            layoutId="mode-pill"
+            className="absolute inset-0 bg-wine rounded-full"
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          />
+        )}
+        {isVenueMode ? (
+          <>
+            <Check className="h-3.5 w-3.5 relative z-10" />
+            <span className="relative z-10 max-w-[80px] truncate">{venueName || 'Locale'}</span>
+          </>
+        ) : (
+          <>
+            <MapPin className="h-3.5 w-3.5 relative z-10" />
+            <span className="relative z-10">Locale</span>
+          </>
+        )}
       </button>
+
+      {/* X button — clears venue entirely and reopens selector */}
+      {isVenueMode && onClearVenue && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            onClearVenue()
+          }}
+          className="relative z-10 flex items-center justify-center w-7 h-7 rounded-full text-muted-foreground hover:text-foreground hover:bg-white/10 transition-colors mr-0.5"
+          aria-label="Cambia locale"
+        >
+          <X className="h-3.5 w-3.5" />
+        </button>
+      )}
     </div>
   )
 }

@@ -130,7 +130,7 @@ export default function AboutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-16 sm:pb-0">
       <main id="main-content" className="pl-0 sm:pl-16 min-h-screen">
         {/* Hero Section */}
         <section className="relative min-h-screen flex flex-col items-center justify-center px-6 overflow-hidden">
@@ -452,7 +452,7 @@ export default function AboutPage() {
         {showScrollTop && (
           <motion.button
             onClick={scrollToTop}
-            className="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-wine text-white shadow-lg shadow-wine/25 hover:bg-wine-dark hover:shadow-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine focus-visible:ring-offset-2"
+            className="fixed bottom-20 sm:bottom-6 right-6 z-50 p-3 rounded-full bg-wine text-white shadow-lg shadow-wine/25 hover:bg-wine-dark hover:shadow-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine focus-visible:ring-offset-2"
             initial={{ opacity: 0, scale: 0.8, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
