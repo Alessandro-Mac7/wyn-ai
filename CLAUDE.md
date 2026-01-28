@@ -624,12 +624,11 @@ EXPLORE → PLAN → IMPLEMENT → REVIEW → DEPLOY
 
 | Agent | Does | Does NOT |
 |-------|------|----------|
-| Architect | Plans, designs | Write code |
-| Prompt Engineer | AI prompts, anti-hallucination | Implementation code |
-| Implementer BE | Backend code | Change architecture |
-| Implementer FE | Frontend code | Change API contracts |
-| Reviewer | Validate, check | Write new code |
-| Ops | Deploy, monitor | Business logic |
+| Architect | Plans, designs, API contracts, DB schema | Write implementation code |
+| Prompt Engineer | AI prompts, anti-hallucination | Implementation code, backend/frontend logic |
+| Implementer BE | Backend code (API, DB, lib) | Change architecture, modify frontend |
+| Implementer FE | Frontend code + UX/animations | Change API contracts, modify backend |
+| Reviewer | Validate, check quality | Write or modify any code |
 
 ### 13.3 Communication Protocol
 
@@ -637,7 +636,7 @@ EXPLORE → PLAN → IMPLEMENT → REVIEW → DEPLOY
 2. Architects produce plans in `plans/`
 3. Implementers follow approved plans
 4. Reviewers validate against plans
-5. Ops deploys after approval
+5. Human decides merge/deploy
 
 ---
 

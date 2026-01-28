@@ -4,6 +4,9 @@
 
 export type WineType = 'red' | 'white' | 'rose' | 'sparkling' | 'dessert'
 
+// Re-export user types
+export * from './user'
+
 // ============================================
 // DATABASE ENTITIES
 // ============================================
@@ -172,7 +175,7 @@ export interface WineUpdateInput extends Partial<WineCreateInput> {
 // ============================================
 
 export interface LLMConfig {
-  provider: 'groq' | 'anthropic'
+  provider: 'groq' | 'openai' | 'anthropic'
   model: string
   maxTokens: number
   temperature: number
@@ -310,4 +313,69 @@ export interface ScanLabelResponse {
   scanned?: ScanResult
   match?: WineMatch<WineWithRatings> | null
   alternatives?: WineMatch<WineWithRatings>[]
+}
+
+// ============================================
+// WINE ANALYSIS TYPES (Label Scan → Full Analysis)
+// ============================================
+
+export interface WineAnalysis {
+  basic: ScanResult
+  evaluation: {
+    quality_score: number
+    style: string | null
+    aging_potential: string | null
+    complexity: string | null
+    summary: string
+  }
+  aromatic_profile: {
+    intensity: string | null
+    primary_aromas: string[]
+    secondary_aromas: string[] | null
+    tertiary_aromas: string[] | null
+  }
+  characteristics: {
+    body: string | null
+    tannins: string | null
+    acidity: string | null
+    sweetness: string | null
+    alcohol: string | null
+    finish: string | null
+  }
+  food_pairings: FoodPairing[]
+  guide_ratings: GuideRating[]
+  user_ratings: UserRating[]
+  price_info: {
+    estimated_range: { min: number; max: number } | null
+    value_rating: string | null
+    market_position: string | null
+  }
+  confidence: number
+}
+
+export interface FoodPairing {
+  category: string
+  dishes: string[]
+  match_quality: 'excellent' | 'very_good' | 'good'
+  notes?: string
+}
+
+export interface GuideRating {
+  guide: string
+  rating: string
+  year?: number
+  confidence: number
+}
+
+export interface UserRating {
+  platform: string
+  rating: number
+  review_count?: number
+  confidence: number
+}
+
+export interface AnalyzeWineResponse {
+  success: boolean
+  message?: string
+  analysis?: WineAnalysis
 }
