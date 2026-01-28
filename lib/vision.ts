@@ -1,6 +1,11 @@
 /**
  * Vision LLM module for wine label recognition
- * Uses Claude Vision API to extract wine information from label images
+ * Supports multiple providers: OpenAI (primary), Anthropic, Mock (dev)
+ *
+ * Priority order:
+ * 1. OpenAI GPT-4 Vision (OPENAI_API_KEY)
+ * 2. Anthropic Claude Vision (ANTHROPIC_API_KEY)
+ * 3. Mock data (development only, no API keys)
  */
 
 import type { ScanResult } from '@/types'
@@ -9,7 +14,32 @@ import type { ScanResult } from '@/types'
 // CONFIGURATION
 // ============================================
 
-const VISION_MODEL = 'claude-3-5-sonnet-20241022'
+type VisionProvider = 'openai' | 'anthropic' | 'mock'
+
+const OPENAI_VISION_MODEL = 'gpt-4o-mini' // Cost-effective vision model
+const ANTHROPIC_VISION_MODEL = 'claude-3-5-sonnet-20241022'
+const ANTHROPIC_VALIDATION_MODEL = 'claude-3-haiku-20240307'
+
+/**
+ * Determines which vision provider to use based on available API keys
+ * Priority: OpenAI → Anthropic → Mock
+ */
+function getVisionProvider(): { provider: VisionProvider; apiKey: string | null } {
+  const openaiKey = process.env.OPENAI_API_KEY
+  const anthropicKey = process.env.ANTHROPIC_API_KEY
+
+  if (openaiKey) {
+    return { provider: 'openai', apiKey: openaiKey }
+  }
+  if (anthropicKey) {
+    return { provider: 'anthropic', apiKey: anthropicKey }
+  }
+  return { provider: 'mock', apiKey: null }
+}
+
+// ============================================
+// PROMPTS
+// ============================================
 
 const LABEL_SCAN_PROMPT = `Analizza questa foto di un'etichetta di vino italiano.
 Estrai le seguenti informazioni in formato JSON:
@@ -39,28 +69,85 @@ REGOLE:
 
 Rispondi SOLO con JSON valido, senza markdown o altro testo.`
 
+const WINE_VALIDATION_PROMPT = `Analizza questa immagine e determina se contiene:
+- Un'etichetta di vino
+- Una bottiglia di vino
+- Un bicchiere di vino
+- Una carta dei vini
+- Qualsiasi altro contenuto relativo al vino
+
+Rispondi SOLO con un JSON valido nel formato:
+{
+  "is_wine_related": true/false,
+  "confidence": 0.0-1.0,
+  "detected": "label|bottle|glass|menu|other|none"
+}
+
+Se l'immagine NON è relativa al vino (es: cibo, persone, paesaggi, altri prodotti),
+rispondi con is_wine_related: false.`
+
 // ============================================
-// MAIN FUNCTION
+// OPENAI VISION
 // ============================================
 
-/**
- * Scans a wine label image and extracts wine information
- * @param imageBase64 - Base64 encoded image (without data URL prefix)
- * @param mediaType - MIME type of the image (default: image/jpeg)
- * @returns Extracted wine information with confidence score
- */
-export async function scanWineLabel(
+async function scanWithOpenAI(
   imageBase64: string,
-  mediaType: 'image/jpeg' | 'image/png' | 'image/webp' | 'image/gif' = 'image/jpeg'
-): Promise<ScanResult> {
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) {
-    throw new Error('ANTHROPIC_API_KEY not configured - Vision requires Anthropic API')
+  mediaType: string,
+  apiKey: string,
+  prompt: string
+): Promise<string> {
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: OPENAI_VISION_MODEL,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'image_url',
+              image_url: {
+                url: `data:${mediaType};base64,${imageBase64}`,
+                detail: 'low', // Use low detail for faster, cheaper processing
+              },
+            },
+            {
+              type: 'text',
+              text: prompt,
+            },
+          ],
+        },
+      ],
+      max_tokens: 1024,
+      temperature: 0.1, // Low temperature for consistent JSON output
+    }),
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    console.error('OpenAI Vision API error:', response.status, errorText)
+    throw new Error(`OpenAI Vision API error: ${response.status}`)
   }
 
-  // Remove data URL prefix if present
-  const cleanBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, '')
+  const data = await response.json()
+  return data.choices?.[0]?.message?.content || ''
+}
 
+// ============================================
+// ANTHROPIC VISION
+// ============================================
+
+async function scanWithAnthropic(
+  imageBase64: string,
+  mediaType: string,
+  apiKey: string,
+  prompt: string,
+  model: string = ANTHROPIC_VISION_MODEL
+): Promise<string> {
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -69,7 +156,7 @@ export async function scanWineLabel(
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: VISION_MODEL,
+      model,
       max_tokens: 1024,
       messages: [
         {
@@ -80,12 +167,12 @@ export async function scanWineLabel(
               source: {
                 type: 'base64',
                 media_type: mediaType,
-                data: cleanBase64,
+                data: imageBase64,
               },
             },
             {
               type: 'text',
-              text: LABEL_SCAN_PROMPT,
+              text: prompt,
             },
           ],
         },
@@ -96,30 +183,147 @@ export async function scanWineLabel(
   if (!response.ok) {
     const errorText = await response.text()
     console.error('Anthropic Vision API error:', response.status, errorText)
-
-    // Map status codes to user-friendly messages
-    const errorMessages: Record<number, string> = {
-      400: 'Immagine non valida. Prova con un\'altra foto.',
-      401: 'Errore di configurazione del servizio.',
-      429: 'Troppe richieste. Riprova tra qualche secondo.',
-      500: 'Servizio temporaneamente non disponibile.',
-      503: 'Servizio temporaneamente non disponibile.',
-    }
-
-    const userMessage = errorMessages[response.status] || 'Errore nella scansione dell\'etichetta.'
-    throw new Error(`Vision API error: ${userMessage}`)
+    throw new Error(`Anthropic Vision API error: ${response.status}`)
   }
 
   const data = await response.json()
+  return data.content?.[0]?.text || ''
+}
 
-  if (!data.content?.[0]?.text) {
-    throw new Error('Invalid Vision API response format')
+// ============================================
+// MAIN SCAN FUNCTION
+// ============================================
+
+/**
+ * Scans a wine label image and extracts wine information
+ * Uses available vision provider (OpenAI → Anthropic → Mock)
+ */
+export async function scanWineLabel(
+  imageBase64: string,
+  mediaType: 'image/jpeg' | 'image/png' | 'image/webp' | 'image/gif' = 'image/jpeg'
+): Promise<ScanResult> {
+  const { provider, apiKey } = getVisionProvider()
+
+  // Mock mode for development
+  if (provider === 'mock') {
+    console.warn('[DEV] No vision API key configured - returning mock wine data')
+    return {
+      name: 'Brunello di Montalcino',
+      producer: 'Biondi-Santi',
+      year: 2018,
+      wine_type: 'red',
+      region: 'Toscana',
+      denomination: 'DOCG',
+      grape_varieties: ['Sangiovese'],
+      confidence: 0.85,
+    }
   }
 
-  const rawText = data.content[0].text.trim()
+  // Remove data URL prefix if present
+  const cleanBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, '')
+
+  console.log(`[VISION] Using ${provider} for label scan`)
 
   try {
-    // Try to parse JSON, handling potential markdown wrapping
+    let rawText: string
+
+    if (provider === 'openai') {
+      rawText = await scanWithOpenAI(cleanBase64, mediaType, apiKey!, LABEL_SCAN_PROMPT)
+    } else {
+      rawText = await scanWithAnthropic(cleanBase64, mediaType, apiKey!, LABEL_SCAN_PROMPT)
+    }
+
+    return parseWineLabelResponse(rawText.trim())
+  } catch (error) {
+    console.error(`[VISION] ${provider} scan failed:`, error)
+
+    // Map errors to user-friendly messages
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    if (message.includes('401')) {
+      throw new Error('Errore di configurazione del servizio.')
+    }
+    if (message.includes('429')) {
+      throw new Error('Troppe richieste. Riprova tra qualche secondo.')
+    }
+    if (message.includes('400')) {
+      throw new Error('Immagine non valida. Prova con un\'altra foto.')
+    }
+
+    throw new Error('Errore nella scansione dell\'etichetta. Riprova.')
+  }
+}
+
+// ============================================
+// WINE IMAGE VALIDATION
+// ============================================
+
+export interface WineImageValidation {
+  isWineRelated: boolean
+  confidence: number
+  detected: 'label' | 'bottle' | 'glass' | 'menu' | 'other' | 'none'
+  error?: string
+}
+
+/**
+ * Validates if an image contains wine-related content
+ * Uses available vision provider for quick validation
+ */
+export async function validateWineImage(
+  imageBase64: string,
+  mediaType: 'image/jpeg' | 'image/png' | 'image/webp' | 'image/gif' = 'image/jpeg'
+): Promise<WineImageValidation> {
+  const { provider, apiKey } = getVisionProvider()
+
+  // Mock mode - skip validation
+  if (provider === 'mock') {
+    console.warn('[DEV] No vision API key - skipping wine image validation')
+    return {
+      isWineRelated: true,
+      confidence: 0.5,
+      detected: 'other',
+    }
+  }
+
+  const cleanBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, '')
+
+  console.log(`[VISION] Using ${provider} for image validation`)
+
+  try {
+    let rawText: string
+
+    if (provider === 'openai') {
+      rawText = await scanWithOpenAI(cleanBase64, mediaType, apiKey!, WINE_VALIDATION_PROMPT)
+    } else {
+      // Use Haiku for faster/cheaper validation with Anthropic
+      rawText = await scanWithAnthropic(
+        cleanBase64,
+        mediaType,
+        apiKey!,
+        WINE_VALIDATION_PROMPT,
+        ANTHROPIC_VALIDATION_MODEL
+      )
+    }
+
+    return parseValidationResponse(rawText.trim())
+  } catch (error) {
+    console.error(`[VISION] ${provider} validation failed:`, error)
+    // On error, be permissive but flag it
+    return {
+      isWineRelated: true,
+      confidence: 0.3,
+      detected: 'other',
+      error: 'Validation failed',
+    }
+  }
+}
+
+// ============================================
+// RESPONSE PARSERS
+// ============================================
+
+function parseWineLabelResponse(rawText: string): ScanResult {
+  try {
+    // Handle potential markdown wrapping
     let jsonText = rawText
     if (rawText.startsWith('```')) {
       jsonText = rawText.replace(/```json?\n?/g, '').replace(/```$/g, '').trim()
@@ -127,7 +331,6 @@ export async function scanWineLabel(
 
     const parsed = JSON.parse(jsonText)
 
-    // Validate and normalize the response
     return {
       name: parsed.name || null,
       producer: parsed.producer || null,
@@ -146,98 +349,8 @@ export async function scanWineLabel(
   }
 }
 
-// ============================================
-// WINE IMAGE VALIDATION
-// ============================================
-
-const WINE_VALIDATION_PROMPT = `Analizza questa immagine e determina se contiene:
-- Un'etichetta di vino
-- Una bottiglia di vino
-- Un bicchiere di vino
-- Una carta dei vini
-- Qualsiasi altro contenuto relativo al vino
-
-Rispondi SOLO con un JSON valido nel formato:
-{
-  "is_wine_related": true/false,
-  "confidence": 0.0-1.0,
-  "detected": "label|bottle|glass|menu|other|none"
-}
-
-Se l'immagine NON è relativa al vino (es: cibo, persone, paesaggi, altri prodotti),
-rispondi con is_wine_related: false.`
-
-export interface WineImageValidation {
-  isWineRelated: boolean
-  confidence: number
-  detected: 'label' | 'bottle' | 'glass' | 'menu' | 'other' | 'none'
-  error?: string
-}
-
-/**
- * Validates if an image contains wine-related content
- * Uses a quick Vision API call to check before full processing
- */
-export async function validateWineImage(
-  imageBase64: string,
-  mediaType: 'image/jpeg' | 'image/png' | 'image/webp' | 'image/gif' = 'image/jpeg'
-): Promise<WineImageValidation> {
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) {
-    throw new Error('ANTHROPIC_API_KEY not configured')
-  }
-
-  // Remove data URL prefix if present
-  const cleanBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, '')
-
+function parseValidationResponse(rawText: string): WineImageValidation {
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'claude-3-haiku-20240307', // Use Haiku for faster, cheaper validation
-        max_tokens: 256,
-        messages: [
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'image',
-                source: {
-                  type: 'base64',
-                  media_type: mediaType,
-                  data: cleanBase64,
-                },
-              },
-              {
-                type: 'text',
-                text: WINE_VALIDATION_PROMPT,
-              },
-            ],
-          },
-        ],
-      }),
-    })
-
-    if (!response.ok) {
-      console.error('Wine validation API error:', response.status)
-      // If validation fails, allow through but with low confidence
-      return {
-        isWineRelated: true,
-        confidence: 0.5,
-        detected: 'other',
-        error: 'Validation service unavailable',
-      }
-    }
-
-    const data = await response.json()
-    const rawText = data.content?.[0]?.text?.trim() || ''
-
-    // Parse JSON response
     let jsonText = rawText
     if (rawText.startsWith('```')) {
       jsonText = rawText.replace(/```json?\n?/g, '').replace(/```$/g, '').trim()
@@ -250,24 +363,14 @@ export async function validateWineImage(
       confidence: typeof parsed.confidence === 'number' ? parsed.confidence : 0.5,
       detected: validateDetectedType(parsed.detected),
     }
-  } catch (error) {
-    console.error('Wine validation error:', error)
-    // On error, be permissive but flag it
+  } catch {
     return {
       isWineRelated: true,
       confidence: 0.3,
       detected: 'other',
-      error: 'Validation failed',
+      error: 'Parse failed',
     }
   }
-}
-
-function validateDetectedType(type: unknown): WineImageValidation['detected'] {
-  const validTypes = ['label', 'bottle', 'glass', 'menu', 'other', 'none']
-  if (typeof type === 'string' && validTypes.includes(type)) {
-    return type as WineImageValidation['detected']
-  }
-  return 'none'
 }
 
 // ============================================
@@ -282,9 +385,16 @@ function validateWineType(type: unknown): ScanResult['wine_type'] {
   return null
 }
 
+function validateDetectedType(type: unknown): WineImageValidation['detected'] {
+  const validTypes = ['label', 'bottle', 'glass', 'menu', 'other', 'none']
+  if (typeof type === 'string' && validTypes.includes(type)) {
+    return type as WineImageValidation['detected']
+  }
+  return 'none'
+}
+
 /**
- * Validates and compresses an image for optimal API usage
- * Returns base64 string and detected media type
+ * Validates and extracts base64 data from a data URL
  */
 export function validateImageData(dataUrl: string): {
   base64: string
@@ -292,7 +402,6 @@ export function validateImageData(dataUrl: string): {
   isValid: boolean
   error?: string
 } {
-  // Check if it's a valid data URL
   const match = dataUrl.match(/^data:(image\/(?:jpeg|png|webp|gif));base64,(.+)$/)
 
   if (!match) {
@@ -324,4 +433,12 @@ export function validateImageData(dataUrl: string): {
     mediaType,
     isValid: true,
   }
+}
+
+/**
+ * Returns the current vision provider being used
+ * Useful for debugging and logging
+ */
+export function getCurrentVisionProvider(): VisionProvider {
+  return getVisionProvider().provider
 }
