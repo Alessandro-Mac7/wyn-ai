@@ -49,7 +49,7 @@ export function VenueHeader({
 
   return (
     <motion.header
-      className="shrink-0 z-20 mx-3 sm:mx-4 mt-2 mb-3"
+      className="shrink-0 z-20 mx-3 sm:mx-auto mt-2 mb-3 sm:max-w-md lg:max-w-lg"
       initial={{ opacity: 0, y: -12 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -12 }}
