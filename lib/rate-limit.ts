@@ -3,6 +3,8 @@
  * For production at scale, consider Redis-based solution
  */
 
+import { NextRequest, NextResponse } from 'next/server'
+
 interface RateLimitEntry {
   count: number
   resetTime: number
@@ -115,3 +117,50 @@ export function getClientIdentifier(headers: Headers): string {
 
 // Re-export rate limits from centralized config
 export { RATE_LIMITS } from '@/config/constants'
+
+/**
+ * Apply rate limiting to an API request
+ * Returns a 429 response if rate limited, or null if allowed
+ */
+export function withRateLimit(
+  request: NextRequest,
+  config: RateLimitConfig,
+  keyPrefix?: string
+): NextResponse | null {
+  const identifier = getClientIdentifier(request.headers)
+  const key = keyPrefix ? `${keyPrefix}:${identifier}` : identifier
+  const result = checkRateLimit(key, config)
+
+  if (!result.success) {
+    return NextResponse.json(
+      {
+        error: 'Troppe richieste. Riprova tra poco.',
+        retryAfter: result.resetIn,
+      },
+      {
+        status: 429,
+        headers: {
+          'Retry-After': String(result.resetIn),
+          'X-RateLimit-Limit': String(result.limit),
+          'X-RateLimit-Remaining': '0',
+          'X-RateLimit-Reset': String(result.resetIn),
+        },
+      }
+    )
+  }
+
+  return null
+}
+
+/**
+ * Add rate limit headers to a response
+ */
+export function addRateLimitHeaders(
+  response: NextResponse,
+  result: RateLimitResult
+): NextResponse {
+  response.headers.set('X-RateLimit-Limit', String(result.limit))
+  response.headers.set('X-RateLimit-Remaining', String(result.remaining))
+  response.headers.set('X-RateLimit-Reset', String(result.resetIn))
+  return response
+}

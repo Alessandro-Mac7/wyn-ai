@@ -416,3 +416,54 @@ export const VENUE_SUGGESTIONS = [
   'Un rosso corposo',
   'Bollicine per festeggiare',
 ]
+
+// ============================================
+// PREFERENCE EXTRACTION PROMPT
+// ============================================
+
+export const PREFERENCE_EXTRACTION_PROMPT = `# COMPITO
+Analizza questa conversazione tra un utente e WYN (sommelier AI) ed estrai le preferenze vinicole dell'utente.
+
+# OUTPUT FORMAT
+Rispondi SOLO con un oggetto JSON valido, nessun altro testo. Usa questo schema:
+
+{
+  "wine_types": ["red", "white", "rose", "sparkling", "dessert"],
+  "taste_profile": {
+    "sweetness": "dry" | "off-dry" | "sweet" | null,
+    "body": "light" | "medium" | "full" | null,
+    "tannins": "low" | "medium" | "high" | null,
+    "acidity": "low" | "medium" | "high" | null
+  },
+  "price_range": {
+    "min": number | null,
+    "max": number | null
+  },
+  "regions": ["Toscana", "Piemonte", ...],
+  "grapes": ["Nebbiolo", "Sangiovese", ...],
+  "food_pairings": ["carne rossa", "pesce", ...],
+  "occasions": ["cena romantica", "aperitivo", ...],
+  "avoid": ["vini troppo tannici", ...]
+}
+
+# REGOLE
+1. Includi SOLO campi per cui hai evidenze nella conversazione
+2. Ometti campi incerti (non inventare)
+3. wine_types accetta: "red", "white", "rose", "sparkling", "dessert"
+4. Il JSON deve essere valido e parsabile
+5. Non includere commenti nel JSON
+6. Se non riesci a estrarre preferenze significative, rispondi con {}
+
+# CONVERSAZIONE DA ANALIZZARE`
+
+/**
+ * Build the full preference extraction message
+ */
+export function buildPreferenceExtractionMessages(
+  conversationSummary: string
+): ChatMessage[] {
+  return [
+    { role: 'system', content: PREFERENCE_EXTRACTION_PROMPT },
+    { role: 'user', content: conversationSummary },
+  ]
+}

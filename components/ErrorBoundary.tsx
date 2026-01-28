@@ -95,3 +95,51 @@ export function withErrorBoundary<P extends object>(
     )
   }
 }
+
+/**
+ * Lightweight error boundary specifically for scan functionality.
+ * Shows a minimal error UI that doesn't disrupt the chat flow.
+ */
+export class ScanErrorBoundary extends Component<Props, State> {
+  constructor(props: Props) {
+    super(props)
+    this.state = { hasError: false, error: null }
+  }
+
+  static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error }
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error('ScanErrorBoundary caught an error:', error, errorInfo)
+  }
+
+  handleRetry = () => {
+    this.setState({ hasError: false, error: null })
+  }
+
+  render() {
+    if (this.state.hasError) {
+      if (this.props.fallback) {
+        return this.props.fallback
+      }
+
+      return (
+        <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center gap-3">
+          <AlertTriangle className="h-4 w-4 text-amber-400 flex-shrink-0" />
+          <p className="text-sm text-amber-200 flex-1">
+            Errore nella scansione. Riprova.
+          </p>
+          <button
+            onClick={this.handleRetry}
+            className="text-sm text-amber-400 hover:text-amber-300 transition-colors"
+          >
+            Riprova
+          </button>
+        </div>
+      )
+    }
+
+    return this.props.children
+  }
+}

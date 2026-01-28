@@ -14,6 +14,7 @@ import type {
   SessionContextType,
   ChatMode,
   SessionFilters,
+  HistorySessionPayload,
 } from '@/types/session'
 import { createInitialSessionState } from '@/types/session'
 import {
@@ -35,6 +36,7 @@ type SessionAction =
   | { type: 'SET_FILTERS'; payload: SessionFilters }
   | { type: 'RESET_SESSION' }
   | { type: 'HYDRATE'; payload: SessionState }
+  | { type: 'LOAD_FROM_HISTORY'; payload: HistorySessionPayload }
 
 // Reducer
 function sessionReducer(state: SessionState, action: SessionAction): SessionState {
@@ -90,6 +92,27 @@ function sessionReducer(state: SessionState, action: SessionAction): SessionStat
 
     case 'HYDRATE':
       return action.payload
+
+    case 'LOAD_FROM_HISTORY': {
+      const { sessionId, venue, contextMessage } = action.payload
+      const initialMessages: ChatMessage[] = contextMessage
+        ? [{
+            role: 'assistant' as const,
+            content: contextMessage,
+          }]
+        : []
+
+      return {
+        ...createInitialSessionState(),
+        mode: venue ? 'venue' : 'general',
+        venueSlug: venue?.slug ?? null,
+        venueData: venue,
+        messages: initialMessages,
+        historySessionId: sessionId,
+        conversationStartedAt: now,
+        lastActivityAt: now,
+      }
+    }
 
     default:
       return state
@@ -176,6 +199,11 @@ export function SessionProvider({ children }: SessionProviderProps) {
     return Date.now() - state.lastActivityAt > SESSION_MAX_AGE_MS
   }, [state.lastActivityAt])
 
+  const loadFromHistory = useCallback((payload: HistorySessionPayload) => {
+    dispatch({ type: 'LOAD_FROM_HISTORY', payload })
+    removeStorageItem(SESSION_STORAGE_KEY)
+  }, [])
+
   // Build context value
   const contextValue: SessionContextType = {
     ...state,
@@ -186,6 +214,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
     setFilters,
     resetSession,
     isSessionStale,
+    loadFromHistory,
   }
 
   return (
