@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { MapPin, X, Info, BookOpen, Check, Wine } from 'lucide-react'
+import { MapPin, Info, BookOpen, Check, Wine } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { Venue } from '@/types'
 
@@ -31,7 +31,6 @@ interface VenueHeaderProps {
 export function VenueHeader({
   venue,
   wineStats,
-  onClose,
   onInfoToggle,
   onWineMenuToggle,
   isInfoExpanded,
@@ -50,48 +49,39 @@ export function VenueHeader({
 
   return (
     <motion.header
-      className="shrink-0 z-20 glass shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
-      initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: 'auto' }}
-      exit={{ opacity: 0, height: 0 }}
+      className="shrink-0 z-20 mx-3 sm:mx-auto mt-2 mb-3 sm:max-w-md lg:max-w-lg"
+      initial={{ opacity: 0, y: -12 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -12 }}
       transition={{ duration: 0.25, ease: [0, 0, 0.2, 1] }}
     >
-      <div className="px-3 sm:px-4 py-2">
-        {/* Row 1: Venue name + close button */}
-        <div className="flex items-center justify-between gap-2 mb-2">
-          <div className="flex items-center gap-2 min-w-0 flex-1">
-            <MapPin className="h-4 w-4 text-wine shrink-0" />
-            <h1 className="mina-regular text-lg sm:text-xl uppercase truncate">
-              {venue.name}
-            </h1>
-            <AnimatePresence>
-              {showQRBadge && (
-                <motion.span
-                  className="shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-500/20"
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: [0, 1.2, 1], opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{
-                    scale: { duration: 0.5, ease: [0.34, 1.56, 0.64, 1] },
-                    opacity: { duration: 0.3 }
-                  }}
-                >
-                  <Check className="h-3 w-3 text-green-500" />
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 hover:bg-secondary rounded-lg transition-colors btn-press shrink-0"
-            aria-label="Esci dal locale"
-          >
-            <X className="h-4 w-4 text-muted-foreground" />
-          </button>
+      <div className="rounded-2xl glass-ios px-4 py-2.5">
+        {/* Venue name — centered */}
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <MapPin className="h-3.5 w-3.5 text-wine shrink-0" />
+          <h1 className="mina-regular text-base sm:text-lg uppercase truncate text-center">
+            {venue.name}
+          </h1>
+          <AnimatePresence>
+            {showQRBadge && (
+              <motion.span
+                className="shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-500/20"
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: [0, 1.2, 1], opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{
+                  scale: { duration: 0.5, ease: [0.34, 1.56, 0.64, 1] },
+                  opacity: { duration: 0.3 }
+                }}
+              >
+                <Check className="h-3 w-3 text-green-500" />
+              </motion.span>
+            )}
+          </AnimatePresence>
         </div>
 
-        {/* Row 2: Action buttons with wine counts */}
-        <div className="flex items-center gap-2 flex-wrap">
+        {/* Action pills — centered row */}
+        <div className="flex items-center justify-center gap-2 flex-wrap">
           {/* Info button */}
           {onInfoToggle && (
             <button
@@ -100,7 +90,7 @@ export function VenueHeader({
                 "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition-colors btn-press",
                 isInfoExpanded
                   ? "bg-wine/20 border-wine text-wine"
-                  : "border-border hover:border-wine/50 text-muted-foreground hover:text-foreground"
+                  : "border-white/10 hover:border-wine/50 text-muted-foreground hover:text-foreground"
               )}
               aria-label={isInfoExpanded ? "Nascondi info" : "Mostra info"}
               aria-expanded={isInfoExpanded}
@@ -114,7 +104,7 @@ export function VenueHeader({
           {onWineMenuToggle && (
             <button
               onClick={onWineMenuToggle}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border hover:border-wine/50 text-xs font-medium transition-colors btn-press text-muted-foreground hover:text-foreground"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/10 hover:border-wine/50 text-xs font-medium transition-colors btn-press text-muted-foreground hover:text-foreground"
               aria-label="Apri carta dei vini"
             >
               <BookOpen className="h-3.5 w-3.5" />
