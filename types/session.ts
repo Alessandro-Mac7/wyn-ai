@@ -22,9 +22,19 @@ export interface SessionState {
   // Filters (for venue mode)
   filters: SessionFilters
 
+  // History (loaded from chat_sessions)
+  historySessionId: string | null
+
   // Metadata
   lastActivityAt: number
   version: number
+}
+
+// History session load payload
+export interface HistorySessionPayload {
+  sessionId: string
+  venue: Venue | null
+  contextMessage?: string
 }
 
 // Session actions interface
@@ -43,6 +53,9 @@ export interface SessionActions {
   // Session lifecycle
   resetSession: () => void
   isSessionStale: () => boolean
+
+  // History
+  loadFromHistory: (payload: HistorySessionPayload) => void
 }
 
 // Combined context type
@@ -57,6 +70,7 @@ export function createInitialSessionState(): SessionState {
     messages: [],
     conversationStartedAt: null,
     filters: { wineTypes: [] },
+    historySessionId: null,
     lastActivityAt: Date.now(),
     version: 1,
   }

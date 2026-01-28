@@ -63,6 +63,21 @@ export const RATE_LIMITS = {
   /** Scan label endpoint: requests per minute (vision API is expensive) */
   scan: { limit: 10, windowSeconds: 60 },
 
+  /** Wine analysis endpoint: requests per minute (OCR + LLM = expensive) */
+  analyzeWine: { limit: 5, windowSeconds: 60 },
+
   /** General API: requests per minute */
   general: { limit: 60, windowSeconds: 60 },
+
+  /** User data export: requests per 5 minutes (GDPR) */
+  export: { limit: 5, windowSeconds: 300 },
+
+  /** Account deletion: requests per hour (very strict) */
+  deleteAccount: { limit: 3, windowSeconds: 3600 },
+
+  /** Consent updates: requests per minute */
+  consent: { limit: 10, windowSeconds: 60 },
+
+  /** User profile: requests per minute */
+  profile: { limit: 30, windowSeconds: 60 },
 } as const
