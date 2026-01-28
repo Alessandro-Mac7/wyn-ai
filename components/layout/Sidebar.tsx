@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { MessageCircle, Sparkles, Mail, Plus, User, LogIn, LogOut, X, Shield, FileText, Cookie, Settings, History, ScanLine } from 'lucide-react'
+import { Plus, User, LogIn, LogOut, X, Shield, FileText, Cookie, History, ScanLine, MessageCircle, MoreHorizontal, Sparkles, Mail } from 'lucide-react'
 import { Tooltip } from '@/components/ui/tooltip'
 import { useUserOptional } from '@/contexts/user-context'
 import { useSession } from '@/contexts/session-context'
@@ -20,23 +20,16 @@ interface SidebarProps {
   onHomeClick?: () => void
 }
 
-// Navigation items (excluding New Conversation which is handled separately)
-const navItems = [
-  { icon: MessageCircle, label: 'Chat', href: '/chat', tooltip: 'Parla con il sommelier AI' },
-  { icon: Sparkles, label: 'Scopri WYN', href: '/about', tooltip: 'Scopri le funzionalità di WYN' },
-  { icon: Mail, label: 'Contatti', href: '/contacts', tooltip: 'Attiva WYN per il tuo ristorante' },
-]
-
 export function Sidebar({ onHomeClick }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const userContext = useUserOptional()
   const session = useSession()
   const [showProfileModal, setShowProfileModal] = useState(false)
-  const [showLoginModal, setShowLoginModal] = useState(false)
-  const [showUserMenu, setShowUserMenu] = useState(false)
+  const [showLoginPanel, setShowLoginPanel] = useState(false)
   const [showHistoryPanel, setShowHistoryPanel] = useState(false)
   const [showScanPanel, setShowScanPanel] = useState(false)
+  const [showMoreMenu, setShowMoreMenu] = useState(false)
 
   // Chat history hook
   const {
@@ -51,19 +44,16 @@ export function Sidebar({ onHomeClick }: SidebarProps) {
   const displayName = userContext?.profile?.display_name
   const email = userContext?.user?.email
 
-  // Get user initials for avatar
   const getInitials = () => {
-    if (displayName) {
-      return displayName.charAt(0).toUpperCase()
-    }
-    if (email) {
-      return email.charAt(0).toUpperCase()
-    }
+    if (displayName) return displayName.charAt(0).toUpperCase()
+    if (email) return email.charAt(0).toUpperCase()
     return 'U'
   }
 
-  // Determine if on chat page
   const isOnChatPage = pathname === '/chat' || pathname.startsWith('/chat')
+  const isAbout = pathname === '/about'
+  const isContacts = pathname === '/contacts'
+  const isMoreActive = isAbout || isContacts
 
   const handleLogoClick = (e: React.MouseEvent) => {
     if (onHomeClick) {
@@ -76,13 +66,10 @@ export function Sidebar({ onHomeClick }: SidebarProps) {
     router.push('/')
   }
 
-  // Handle selecting a session from history
   const handleSelectHistorySession = (historySession: ChatSessionWithVenue) => {
     setCurrentSession(historySession.id)
     setShowHistoryPanel(false)
 
-    // Build minimal venue object if available
-    // The session context only needs essential venue data for display
     const venue = historySession.venue
       ? {
           id: historySession.venue.id,
@@ -99,230 +86,276 @@ export function Sidebar({ onHomeClick }: SidebarProps) {
         }
       : null
 
-    // Generate context message
     const contextMessage = generateContextMessage(historySession)
 
-    // Load the session into context
     session.loadFromHistory({
       sessionId: historySession.id,
       venue,
       contextMessage,
     })
 
-    // Navigate to chat
     router.push('/chat')
+  }
+
+  const handleProfileOrLogin = () => {
+    if (isAuthenticated) {
+      setShowProfileModal(true)
+    } else {
+      setShowLoginPanel(true)
+    }
   }
 
   return (
     <>
       <aside className="fixed left-0 top-0 z-40 h-screen w-16 hidden sm:flex flex-col bg-card shadow-[4px_0_12px_rgba(0,0,0,0.2)]">
-      {/* Logo - Home button */}
-      <div className="flex items-center justify-center pt-5 pb-3">
-        <Link
-          href="/"
-          onClick={handleLogoClick}
-          className="focus-visible:outline-none"
-        >
-          <motion.div
-            className="origin-bottom"
-            whileHover={{
-              skewX: -8,
-              filter: 'drop-shadow(0 0 8px rgba(143, 36, 54, 0.6))'
-            }}
-            whileTap={{
-              skewX: -12,
-              filter: 'drop-shadow(0 0 12px rgba(143, 36, 54, 0.8))'
-            }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+        {/* Logo - Home button */}
+        <div className="flex items-center justify-center pt-5 pb-3">
+          <Link
+            href="/"
+            onClick={handleLogoClick}
+            className="focus-visible:outline-none"
           >
-            <Image
-              src="/wyn-icon.ico"
-              alt="WYN"
-              width={44}
-              height={44}
-              className="w-11 h-11"
-            />
-          </motion.div>
-        </Link>
-      </div>
+            <motion.div
+              className="origin-bottom"
+              whileHover={{
+                skewX: -8,
+                filter: 'drop-shadow(0 0 8px rgba(143, 36, 54, 0.6))'
+              }}
+              whileTap={{
+                skewX: -12,
+                filter: 'drop-shadow(0 0 12px rgba(143, 36, 54, 0.8))'
+              }}
+              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            >
+              <Image
+                src="/wyn-icon.ico"
+                alt="WYN"
+                width={44}
+                height={44}
+                className="w-11 h-11"
+              />
+            </motion.div>
+          </Link>
+        </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 flex flex-col items-center gap-1 py-2">
-        {/* New Conversation Button - Always visible */}
-        <Tooltip content="Nuova conversazione" side="right">
-          <button
-            onClick={handleNewConversation}
-            className={cn(
-              'flex flex-col items-center justify-center',
-              'w-11 h-11 sm:w-[52px] sm:h-[52px] rounded-lg transition-colors relative',
-              'hover:bg-secondary btn-press',
-              'text-muted-foreground hover:text-foreground',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine'
-            )}
-          >
-            <Plus className="h-5 w-5" />
-            <span className="text-[10px] sm:text-[11px] mt-0.5 sm:mt-1 relative z-10 text-center leading-tight">Nuovo</span>
-          </button>
-        </Tooltip>
+        {/* Navigation */}
+        <nav className="flex-1 flex flex-col items-center gap-1 py-2">
+          {/* New Conversation */}
+          <Tooltip content="Nuova conversazione" side="right">
+            <button
+              onClick={handleNewConversation}
+              className={cn(
+                'flex flex-col items-center justify-center',
+                'w-[52px] h-[52px] rounded-lg transition-colors relative',
+                'hover:bg-secondary btn-press',
+                'text-muted-foreground hover:text-foreground',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine'
+              )}
+            >
+              <Plus className="h-5 w-5" />
+              <span className="text-[11px] mt-1 relative z-10 text-center leading-tight">Nuovo</span>
+            </button>
+          </Tooltip>
 
-        {/* History Button - Opens history panel */}
-        <Tooltip content="Storico chat" side="right">
-          <button
-            onClick={() => setShowHistoryPanel(true)}
-            className={cn(
-              'flex flex-col items-center justify-center',
-              'w-11 h-11 sm:w-[52px] sm:h-[52px] rounded-lg transition-colors relative',
-              'hover:bg-secondary btn-press',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine',
-              showHistoryPanel ? 'bg-secondary text-wine' : 'text-muted-foreground hover:text-foreground'
-            )}
-          >
-            <History className="h-5 w-5" />
-            <span className="text-[10px] sm:text-[11px] mt-0.5 sm:mt-1 relative z-10 text-center leading-tight">Storico</span>
-          </button>
-        </Tooltip>
+          {/* Chat */}
+          <Tooltip content="Parla con il sommelier AI" side="right">
+            <Link
+              href="/chat"
+              className={cn(
+                'flex flex-col items-center justify-center',
+                'w-[52px] h-[52px] rounded-lg transition-colors relative',
+                'hover:bg-secondary btn-press',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine'
+              )}
+            >
+              {isOnChatPage && (
+                <motion.div
+                  layoutId="sidebar-active"
+                  className="absolute inset-0 bg-secondary rounded-lg"
+                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                />
+              )}
+              <MessageCircle className={cn('h-5 w-5 relative z-10', isOnChatPage && 'text-wine')} />
+              <span className={cn('text-[11px] mt-1 relative z-10 text-center leading-tight', isOnChatPage ? 'text-wine' : 'text-muted-foreground')}>Chat</span>
+            </Link>
+          </Tooltip>
 
-        {/* Scan Button - Opens scan panel */}
-        <Tooltip content="Scansiona etichetta" side="right">
-          <button
-            onClick={() => setShowScanPanel(true)}
-            className={cn(
-              'flex flex-col items-center justify-center',
-              'w-11 h-11 sm:w-[52px] sm:h-[52px] rounded-lg transition-colors relative',
-              'hover:bg-secondary btn-press',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine',
-              showScanPanel ? 'bg-secondary text-wine' : 'text-muted-foreground hover:text-foreground'
-            )}
-          >
-            <ScanLine className="h-5 w-5" />
-            <span className="text-[10px] sm:text-[11px] mt-0.5 sm:mt-1 relative z-10 text-center leading-tight">Scansiona</span>
-          </button>
-        </Tooltip>
+          {/* Storico */}
+          <Tooltip content="Storico chat" side="right">
+            <button
+              onClick={() => setShowHistoryPanel(true)}
+              className={cn(
+                'flex flex-col items-center justify-center',
+                'w-[52px] h-[52px] rounded-lg transition-colors relative',
+                'hover:bg-secondary btn-press',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine',
+                showHistoryPanel ? 'bg-secondary text-wine' : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              <History className="h-5 w-5" />
+              <span className="text-[11px] mt-1 relative z-10 text-center leading-tight">Storico</span>
+            </button>
+          </Tooltip>
 
-        {navItems.map((item) => {
-          const isActive = item.href === '/chat'
-            ? isOnChatPage
-            : pathname === item.href || pathname.startsWith(item.href + '/')
+          {/* Scan */}
+          <Tooltip content="Scansiona etichetta" side="right">
+            <button
+              onClick={() => setShowScanPanel(true)}
+              className={cn(
+                'flex flex-col items-center justify-center',
+                'w-[52px] h-[52px] rounded-lg transition-colors relative',
+                'hover:bg-secondary btn-press',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine',
+                showScanPanel ? 'bg-secondary text-wine' : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              <ScanLine className="h-5 w-5" />
+              <span className="text-[11px] mt-1 relative z-10 text-center leading-tight">Scansiona</span>
+            </button>
+          </Tooltip>
 
-          return (
-            <Tooltip key={item.href} content={item.tooltip} side="right">
-              <Link
-                href={item.href}
-
+          {/* Altro — popover with Scopri + Contatti */}
+          <div className="relative">
+            <Tooltip content="Scopri WYN, Contatti" side="right">
+              <button
+                onClick={() => setShowMoreMenu(v => !v)}
                 className={cn(
                   'flex flex-col items-center justify-center',
-                  'w-11 h-11 sm:w-[52px] sm:h-[52px] rounded-lg transition-colors relative',
+                  'w-[52px] h-[52px] rounded-lg transition-colors relative',
                   'hover:bg-secondary btn-press',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine',
+                  isMoreActive || showMoreMenu ? 'bg-secondary text-wine' : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                <MoreHorizontal className="h-5 w-5" />
+                <span className="text-[11px] mt-1 relative z-10 text-center leading-tight">Altro</span>
+              </button>
+            </Tooltip>
+
+            <AnimatePresence>
+              {showMoreMenu && (
+                <>
+                  <motion.div
+                    className="fixed inset-0 z-40"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={() => setShowMoreMenu(false)}
+                  />
+                  <motion.div
+                    className="absolute left-full top-0 ml-2 w-48 z-50 rounded-xl overflow-hidden glass-ios"
+                    initial={{ opacity: 0, x: -8, scale: 0.95 }}
+                    animate={{ opacity: 1, x: 0, scale: 1 }}
+                    exit={{ opacity: 0, x: -8, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    <Link
+                      href="/about"
+                      onClick={() => setShowMoreMenu(false)}
+                      className={cn(
+                        'flex items-center gap-3 px-4 py-3 text-sm transition-colors',
+                        isAbout ? 'text-wine' : 'text-foreground hover:bg-white/5'
+                      )}
+                    >
+                      <Sparkles className="h-4 w-4" />
+                      Scopri WYN
+                    </Link>
+                    <div className="h-px bg-white/10" />
+                    <Link
+                      href="/contacts"
+                      onClick={() => setShowMoreMenu(false)}
+                      className={cn(
+                        'flex items-center gap-3 px-4 py-3 text-sm transition-colors',
+                        isContacts ? 'text-wine' : 'text-foreground hover:bg-white/5'
+                      )}
+                    >
+                      <Mail className="h-4 w-4" />
+                      Contatti
+                    </Link>
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
+          </div>
+        </nav>
+
+        {/* Bottom: Accedi / Profilo */}
+        <div className="mt-auto pb-3 flex flex-col items-center gap-1 relative">
+          {/* User menu (legal + logout) — only for authenticated */}
+          {isAuthenticated && (
+            <div className="relative">
+              <Tooltip content="Account" side="right">
+                <button
+                  onClick={() => setShowProfileModal(true)}
+                  className={cn(
+                    'flex flex-col items-center justify-center',
+                    'w-[52px] h-[52px] rounded-lg transition-colors relative',
+                    'hover:bg-secondary btn-press',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine',
+                    'text-wine'
+                  )}
+                >
+                  <div className="w-7 h-7 rounded-full bg-wine/20 flex items-center justify-center text-sm font-medium text-wine">
+                    {getInitials()}
+                  </div>
+                </button>
+              </Tooltip>
+            </div>
+          )}
+
+          {!isAuthenticated && (
+            <Tooltip content="Accedi a WYN" side="right">
+              <button
+                onClick={handleProfileOrLogin}
+                className={cn(
+                  'flex flex-col items-center justify-center',
+                  'w-[52px] h-[52px] rounded-lg transition-colors relative',
+                  'hover:bg-secondary btn-press',
+                  'text-muted-foreground hover:text-foreground',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine'
                 )}
               >
-                {/* Active background indicator */}
-                {isActive && (
-                  <motion.div
-                    layoutId="sidebar-active"
-                    className="absolute inset-0 bg-secondary rounded-lg"
-                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                  />
-                )}
-                <item.icon className={cn('h-5 w-5 relative z-10', isActive && 'text-wine')} />
-                <span className={cn(
-                  'text-[10px] sm:text-[11px] mt-0.5 sm:mt-1 relative z-10 text-center leading-tight',
-                  isActive && 'text-wine'
-                )}>
-                  {item.label}
-                </span>
-              </Link>
+                <LogIn className="h-5 w-5" />
+                <span className="text-[11px] mt-1 relative z-10 text-center leading-tight">Accedi</span>
+              </button>
             </Tooltip>
-          )
-        })}
-      </nav>
-
-      {/* User Menu Button */}
-      <div className="mt-auto pb-3 flex flex-col items-center relative">
-        <Tooltip content={isAuthenticated ? 'Account e impostazioni' : 'Menu'} side="right">
-          <button
-            onClick={() => setShowUserMenu(!showUserMenu)}
-            className={cn(
-              'flex flex-col items-center justify-center',
-              'w-11 h-11 sm:w-[52px] sm:h-[52px] rounded-lg transition-colors relative',
-              'hover:bg-secondary btn-press',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine',
-              showUserMenu ? 'bg-secondary' : '',
-              isAuthenticated ? 'text-wine' : 'text-muted-foreground hover:text-foreground'
-            )}
-          >
-            {isAuthenticated ? (
-              <div className="w-7 h-7 rounded-full bg-wine/20 flex items-center justify-center text-sm font-medium text-wine">
-                {getInitials()}
-              </div>
-            ) : (
-              <>
-                <Settings className="h-5 w-5" />
-                <span className="text-[10px] sm:text-[11px] mt-0.5 sm:mt-1 relative z-10 text-center leading-tight">Menu</span>
-              </>
-            )}
-          </button>
-        </Tooltip>
-
-        {/* User Menu Dropdown */}
-        <AnimatePresence>
-          {showUserMenu && (
-            <UserMenu
-              isAuthenticated={isAuthenticated}
-              displayName={displayName}
-              email={email}
-              onClose={() => setShowUserMenu(false)}
-              onOpenProfile={() => {
-                setShowUserMenu(false)
-                setShowProfileModal(true)
-              }}
-              onOpenLogin={() => {
-                setShowUserMenu(false)
-                setShowLoginModal(true)
-              }}
-              onSignOut={async () => {
-                setShowUserMenu(false)
-                await userContext?.signOut()
-              }}
-            />
           )}
-        </AnimatePresence>
-      </div>
-    </aside>
+        </div>
+      </aside>
 
-    {/* Profile Modal */}
-    <ProfileModal
-      isOpen={showProfileModal}
-      onClose={() => setShowProfileModal(false)}
-    />
+      {/* Profile Modal */}
+      <ProfileModal
+        isOpen={showProfileModal}
+        onClose={() => setShowProfileModal(false)}
+      />
 
-    {/* Login Panel */}
-    <LoginPanel
-      isOpen={showLoginModal}
-      onClose={() => setShowLoginModal(false)}
-    />
+      {/* Login Panel */}
+      <LoginPanel
+        isOpen={showLoginPanel}
+        onClose={() => setShowLoginPanel(false)}
+      />
 
-    {/* Scan Panel */}
-    <ScanPanel
-      isOpen={showScanPanel}
-      onClose={() => setShowScanPanel(false)}
-    />
+      {/* Scan Panel */}
+      <ScanPanel
+        isOpen={showScanPanel}
+        onClose={() => setShowScanPanel(false)}
+      />
 
-    {/* History Panel */}
-    <HistoryPanel
-      isOpen={showHistoryPanel}
-      onClose={() => setShowHistoryPanel(false)}
-      sessions={sessions}
-      isLoading={isHistoryLoading}
-      isAuthenticated={isAuthenticated}
-      currentSessionId={currentSessionId}
-      onSelectSession={handleSelectHistorySession}
-      onDeleteSession={deleteSession}
-      onOpenLogin={() => {
-        setShowHistoryPanel(false)
-        setShowLoginModal(true)
-      }}
-    />
+      {/* History Panel */}
+      <HistoryPanel
+        isOpen={showHistoryPanel}
+        onClose={() => setShowHistoryPanel(false)}
+        sessions={sessions}
+        isLoading={isHistoryLoading}
+        isAuthenticated={isAuthenticated}
+        currentSessionId={currentSessionId}
+        onSelectSession={handleSelectHistorySession}
+        onDeleteSession={deleteSession}
+        onOpenLogin={() => {
+          setShowHistoryPanel(false)
+          setShowLoginPanel(true)
+        }}
+      />
     </>
   )
 }
@@ -331,7 +364,6 @@ export function Sidebar({ onHomeClick }: SidebarProps) {
 // HISTORY PANEL COMPONENT
 // ============================================
 
-// Slide-in panel animation variants
 const historyBackdropVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -391,7 +423,6 @@ function HistoryPanel({
   onDeleteSession,
   onOpenLogin,
 }: HistoryPanelProps) {
-  // Handle Escape key to close panel
   useEffect(() => {
     if (!isOpen) return
 
@@ -407,7 +438,6 @@ function HistoryPanel({
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
           <motion.div
             className="fixed inset-0 z-[70] bg-black/60"
             variants={historyBackdropVariants}
@@ -417,11 +447,10 @@ function HistoryPanel({
             onClick={onClose}
           />
 
-          {/* Slide-in Panel from left (next to sidebar) */}
           <motion.div
             className={cn(
               'fixed inset-y-0 z-[70]',
-              'left-0', // Slide from screen edge, behind sidebar visually
+              'left-0',
               'w-72 sm:w-80 max-w-[calc(100vw-3.5rem)]',
               'bg-card border-r border-border',
               'flex flex-col',
@@ -435,7 +464,6 @@ function HistoryPanel({
             aria-modal="true"
             aria-labelledby="history-panel-title"
           >
-            {/* Header */}
             <div className="shrink-0 flex items-center justify-between p-4 border-b border-border">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-9 h-9 rounded-full bg-wine/20">
@@ -454,7 +482,6 @@ function HistoryPanel({
               </button>
             </div>
 
-            {/* Content */}
             <div className="flex-1 overflow-y-auto py-2">
               <ChatHistoryList
                 sessions={sessions}
@@ -470,137 +497,5 @@ function HistoryPanel({
         </>
       )}
     </AnimatePresence>
-  )
-}
-
-// ============================================
-// USER MENU COMPONENT
-// ============================================
-
-interface UserMenuProps {
-  isAuthenticated: boolean
-  displayName?: string | null
-  email?: string
-  onClose: () => void
-  onOpenProfile: () => void
-  onOpenLogin: () => void
-  onSignOut: () => void
-}
-
-function UserMenu({
-  isAuthenticated,
-  displayName,
-  email,
-  onClose,
-  onOpenProfile,
-  onOpenLogin,
-  onSignOut,
-}: UserMenuProps) {
-  return (
-    <>
-      {/* Backdrop to close menu */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-        className="fixed inset-0 z-40"
-      />
-
-      {/* Menu */}
-      <motion.div
-        initial={{ opacity: 0, x: -10, scale: 0.95 }}
-        animate={{ opacity: 1, x: 0, scale: 1 }}
-        exit={{ opacity: 0, x: -10, scale: 0.95 }}
-        transition={{ duration: 0.15 }}
-        className="absolute left-full bottom-0 ml-2 w-56 z-50"
-      >
-        <div className="bg-card border border-white/10 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden">
-          {/* User info header (if authenticated) */}
-          {isAuthenticated && (
-            <div className="px-4 py-3 border-b border-white/10">
-              <p className="font-medium text-sm truncate">
-                {displayName || 'Utente'}
-              </p>
-              {email && (
-                <p className="text-xs text-muted-foreground truncate mt-0.5">
-                  {email}
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* Menu items */}
-          <div className="py-1">
-            {/* Login button (if not authenticated) */}
-            {!isAuthenticated && (
-              <button
-                onClick={onOpenLogin}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-white/5 transition-colors text-wine"
-              >
-                <LogIn className="w-4 h-4" />
-                <span>Accedi</span>
-              </button>
-            )}
-
-            {/* Profile button (if authenticated) */}
-            {isAuthenticated && (
-              <button
-                onClick={onOpenProfile}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-white/5 transition-colors"
-              >
-                <User className="w-4 h-4" />
-                <span>Il mio profilo</span>
-              </button>
-            )}
-
-            {/* Divider */}
-            <div className="h-px bg-white/10 my-1" />
-
-            {/* Legal links */}
-            <Link
-              href="/privacy"
-              onClick={onClose}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors"
-            >
-              <Shield className="w-4 h-4" />
-              <span>Privacy Policy</span>
-            </Link>
-
-            <Link
-              href="/cookie-policy"
-              onClick={onClose}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors"
-            >
-              <Cookie className="w-4 h-4" />
-              <span>Cookie Policy</span>
-            </Link>
-
-            <Link
-              href="/terms"
-              onClick={onClose}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors"
-            >
-              <FileText className="w-4 h-4" />
-              <span>Termini di Servizio</span>
-            </Link>
-
-            {/* Logout button (if authenticated) */}
-            {isAuthenticated && (
-              <>
-                <div className="h-px bg-white/10 my-1" />
-                <button
-                  onClick={onSignOut}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-destructive hover:bg-destructive/10 transition-colors"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span>Esci</span>
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      </motion.div>
-    </>
   )
 }
