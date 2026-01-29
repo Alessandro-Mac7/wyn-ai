@@ -130,7 +130,7 @@ export default function AboutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-16 sm:pb-0">
+    <div className="min-h-screen bg-background pb-20 sm:pb-0">
       <main id="main-content" className="pl-0 sm:pl-16 min-h-screen">
         {/* Hero Section */}
         <section className="relative min-h-screen flex flex-col items-center justify-center px-6 overflow-hidden">
