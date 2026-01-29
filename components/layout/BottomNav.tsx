@@ -44,7 +44,7 @@ export function BottomNav({ onScanPress, onProfilePress, isAuthenticated, userIn
             <motion.div
               className={cn(
                 'fixed z-50 sm:hidden',
-                'right-3 bottom-[calc(4.5rem+env(safe-area-inset-bottom))]',
+                'right-3 bottom-20',
                 'w-44 rounded-xl overflow-hidden',
                 'glass-ios'
               )}
@@ -86,7 +86,7 @@ export function BottomNav({ onScanPress, onProfilePress, isAuthenticated, userIn
         className={cn(
           'fixed bottom-0 inset-x-0 z-40 sm:hidden',
           'flex items-end gap-2',
-          'px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))]'
+          'px-3 pb-2'
         )}
       >
         {/* Floating WYN home button */}
