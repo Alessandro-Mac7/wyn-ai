@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { usePathname } from 'next/navigation'
 import { Sidebar } from './Sidebar'
 import { BottomNav } from './BottomNav'
@@ -8,6 +8,7 @@ import { LoginPanel } from '@/components/auth/LoginPanel'
 import { ProfileModal } from '@/components/auth/ProfileModal'
 import { ScanPanel } from '@/components/scan/ScanPanel'
 import { useUserOptional } from '@/contexts/user-context'
+import { useUserInitial } from '@/hooks/useUserInitial'
 
 interface MainLayoutProps {
   children: React.ReactNode
@@ -16,20 +17,13 @@ interface MainLayoutProps {
 export function MainLayout({ children }: MainLayoutProps) {
   const pathname = usePathname()
   const userContext = useUserOptional()
+  const userInitial = useUserInitial()
 
   const [showScanPanel, setShowScanPanel] = useState(false)
   const [showLoginPanel, setShowLoginPanel] = useState(false)
   const [showProfileModal, setShowProfileModal] = useState(false)
 
   const isAuthenticated = userContext?.isAuthenticated ?? false
-  const displayName = userContext?.profile?.display_name
-  const email = userContext?.user?.email
-
-  const userInitial = displayName
-    ? displayName.charAt(0).toUpperCase()
-    : email
-      ? email.charAt(0).toUpperCase()
-      : 'U'
 
   // Pages that don't use the shared sidebar
   const isAdminPage = pathname.startsWith('/admin')
@@ -49,12 +43,20 @@ export function MainLayout({ children }: MainLayoutProps) {
     }
   }
 
+  const handleOpenScan = () => setShowScanPanel(true)
+  const handleOpenLogin = () => setShowLoginPanel(true)
+  const handleOpenProfile = () => setShowProfileModal(true)
+
   return (
     <>
-      <Sidebar />
+      <Sidebar
+        onOpenScan={handleOpenScan}
+        onOpenLogin={handleOpenLogin}
+        onOpenProfile={handleOpenProfile}
+      />
 
       <BottomNav
-        onScanPress={() => setShowScanPanel(true)}
+        onScanPress={handleOpenScan}
         onProfilePress={handleProfilePress}
         isAuthenticated={isAuthenticated}
         userInitial={userInitial}
@@ -62,7 +64,7 @@ export function MainLayout({ children }: MainLayoutProps) {
 
       {children}
 
-      {/* Mobile panels triggered by BottomNav */}
+      {/* Shared panels — single instances for both mobile and desktop triggers */}
       <ScanPanel
         isOpen={showScanPanel}
         onClose={() => setShowScanPanel(false)}

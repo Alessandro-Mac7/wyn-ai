@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, User, Mail, Loader2, Settings, LogOut, ChevronRight } from 'lucide-react'
 import { useUserProfile } from '@/hooks/useUserProfile'
+import { useRegisterPanel } from '@/contexts/panel-context'
 import { PrivacySettings } from './PrivacySettings'
 
 interface ProfileModalProps {
@@ -14,6 +15,8 @@ interface ProfileModalProps {
 type Tab = 'profile' | 'privacy'
 
 export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
+  useRegisterPanel('profile-modal', isOpen)
+
   const {
     profile,
     email,
@@ -79,7 +82,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[70]"
           />
 
           {/* Modal */}
@@ -87,7 +90,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="fixed inset-x-2 xs:inset-x-4 top-[5%] bottom-[5%] sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-md sm:max-h-[80vh] overflow-hidden z-50"
+            className="fixed inset-x-2 xs:inset-x-4 top-[5%] bottom-[5%] sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-md sm:max-h-[80vh] overflow-hidden z-[70]"
             style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
           >
             <div className="bg-card border border-white/10 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden flex flex-col h-full sm:max-h-[80vh]">

@@ -1,34 +1,34 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, User, LogIn, LogOut, X, Shield, FileText, Cookie, History, ScanLine, MessageCircle, MoreHorizontal, Sparkles, Mail } from 'lucide-react'
+import { Plus, LogIn, X, History, ScanLine, MessageCircle, MoreHorizontal, Sparkles, Mail } from 'lucide-react'
 import { Tooltip } from '@/components/ui/tooltip'
 import { useUserOptional } from '@/contexts/user-context'
 import { useSession } from '@/contexts/session-context'
-import { ProfileModal } from '@/components/auth/ProfileModal'
-import { LoginPanel } from '@/components/auth/LoginPanel'
 import { ChatHistoryList } from '@/components/chat/ChatHistoryList'
-import { ScanPanel } from '@/components/scan/ScanPanel'
 import { useChatHistory, generateContextMessage, type ChatSessionWithVenue } from '@/hooks/useChatHistory'
+import { useUserInitial } from '@/hooks/useUserInitial'
+import { useRegisterPanel } from '@/contexts/panel-context'
 import { cn } from '@/lib/utils'
 
 interface SidebarProps {
   onHomeClick?: () => void
+  onOpenScan: () => void
+  onOpenLogin: () => void
+  onOpenProfile: () => void
 }
 
-export function Sidebar({ onHomeClick }: SidebarProps) {
+export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const userContext = useUserOptional()
   const session = useSession()
-  const [showProfileModal, setShowProfileModal] = useState(false)
-  const [showLoginPanel, setShowLoginPanel] = useState(false)
+  const userInitial = useUserInitial()
   const [showHistoryPanel, setShowHistoryPanel] = useState(false)
-  const [showScanPanel, setShowScanPanel] = useState(false)
   const [showMoreMenu, setShowMoreMenu] = useState(false)
 
   // Chat history hook
@@ -41,14 +41,6 @@ export function Sidebar({ onHomeClick }: SidebarProps) {
   } = useChatHistory()
 
   const isAuthenticated = userContext?.isAuthenticated ?? false
-  const displayName = userContext?.profile?.display_name
-  const email = userContext?.user?.email
-
-  const getInitials = () => {
-    if (displayName) return displayName.charAt(0).toUpperCase()
-    if (email) return email.charAt(0).toUpperCase()
-    return 'U'
-  }
 
   const isOnChatPage = pathname === '/chat' || pathname.startsWith('/chat')
   const isAbout = pathname === '/about'
@@ -99,9 +91,9 @@ export function Sidebar({ onHomeClick }: SidebarProps) {
 
   const handleProfileOrLogin = () => {
     if (isAuthenticated) {
-      setShowProfileModal(true)
+      onOpenProfile()
     } else {
-      setShowLoginPanel(true)
+      onOpenLogin()
     }
   }
 
@@ -200,13 +192,13 @@ export function Sidebar({ onHomeClick }: SidebarProps) {
           {/* Scan */}
           <Tooltip content="Scansiona etichetta" side="right">
             <button
-              onClick={() => setShowScanPanel(true)}
+              onClick={onOpenScan}
               className={cn(
                 'flex flex-col items-center justify-center',
                 'w-[52px] h-[52px] rounded-lg transition-colors relative',
                 'hover:bg-secondary btn-press',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine',
-                showScanPanel ? 'bg-secondary text-wine' : 'text-muted-foreground hover:text-foreground'
+                'text-muted-foreground hover:text-foreground'
               )}
             >
               <ScanLine className="h-5 w-5" />
@@ -281,29 +273,24 @@ export function Sidebar({ onHomeClick }: SidebarProps) {
 
         {/* Bottom: Accedi / Profilo */}
         <div className="mt-auto pb-3 flex flex-col items-center gap-1 relative">
-          {/* User menu (legal + logout) — only for authenticated */}
-          {isAuthenticated && (
-            <div className="relative">
-              <Tooltip content="Account" side="right">
-                <button
-                  onClick={() => setShowProfileModal(true)}
-                  className={cn(
-                    'flex flex-col items-center justify-center',
-                    'w-[52px] h-[52px] rounded-lg transition-colors relative',
-                    'hover:bg-secondary btn-press',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine',
-                    'text-wine'
-                  )}
-                >
-                  <div className="w-7 h-7 rounded-full bg-wine/20 flex items-center justify-center text-sm font-medium text-wine">
-                    {getInitials()}
-                  </div>
-                </button>
-              </Tooltip>
-            </div>
-          )}
-
-          {!isAuthenticated && (
+          {isAuthenticated ? (
+            <Tooltip content="Account" side="right">
+              <button
+                onClick={onOpenProfile}
+                className={cn(
+                  'flex flex-col items-center justify-center',
+                  'w-[52px] h-[52px] rounded-lg transition-colors relative',
+                  'hover:bg-secondary btn-press',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine',
+                  'text-wine'
+                )}
+              >
+                <div className="w-7 h-7 rounded-full bg-wine/20 flex items-center justify-center text-sm font-medium text-wine">
+                  {userInitial}
+                </div>
+              </button>
+            </Tooltip>
+          ) : (
             <Tooltip content="Accedi a WYN" side="right">
               <button
                 onClick={handleProfileOrLogin}
@@ -323,25 +310,7 @@ export function Sidebar({ onHomeClick }: SidebarProps) {
         </div>
       </aside>
 
-      {/* Profile Modal */}
-      <ProfileModal
-        isOpen={showProfileModal}
-        onClose={() => setShowProfileModal(false)}
-      />
-
-      {/* Login Panel */}
-      <LoginPanel
-        isOpen={showLoginPanel}
-        onClose={() => setShowLoginPanel(false)}
-      />
-
-      {/* Scan Panel */}
-      <ScanPanel
-        isOpen={showScanPanel}
-        onClose={() => setShowScanPanel(false)}
-      />
-
-      {/* History Panel */}
+      {/* History Panel — only panel Sidebar owns (has its own data) */}
       <HistoryPanel
         isOpen={showHistoryPanel}
         onClose={() => setShowHistoryPanel(false)}
@@ -353,7 +322,7 @@ export function Sidebar({ onHomeClick }: SidebarProps) {
         onDeleteSession={deleteSession}
         onOpenLogin={() => {
           setShowHistoryPanel(false)
-          setShowLoginPanel(true)
+          onOpenLogin()
         }}
       />
     </>
@@ -423,16 +392,7 @@ function HistoryPanel({
   onDeleteSession,
   onOpenLogin,
 }: HistoryPanelProps) {
-  useEffect(() => {
-    if (!isOpen) return
-
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
-    }
-
-    document.addEventListener('keydown', handleEscape)
-    return () => document.removeEventListener('keydown', handleEscape)
-  }, [isOpen, onClose])
+  useRegisterPanel('history-panel', isOpen)
 
   return (
     <AnimatePresence>
