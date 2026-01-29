@@ -157,6 +157,27 @@ export const cardVariants: Variants = {
   },
 }
 
+// Legal/content page stagger (used by privacy, terms, cookie-policy)
+export const legalContainerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.06,
+      delayChildren: 0.1,
+    },
+  },
+}
+
+export const legalItemVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] },
+  },
+}
+
 // List stagger
 export const listContainerVariants: Variants = {
   hidden: { opacity: 0 },

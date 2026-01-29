@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { LogIn, X } from 'lucide-react'
 import { MagicLinkForm } from '@/components/auth/MagicLinkForm'
+import { useRegisterPanel } from '@/contexts/panel-context'
 import { cn } from '@/lib/utils'
 
 // Slide-in panel animation variants
@@ -49,6 +50,8 @@ interface LoginPanelProps {
 }
 
 export function LoginPanel({ isOpen, onClose }: LoginPanelProps) {
+  useRegisterPanel('login-panel', isOpen)
+
   return (
     <AnimatePresence>
       {isOpen && (
