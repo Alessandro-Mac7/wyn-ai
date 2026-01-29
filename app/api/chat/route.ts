@@ -45,6 +45,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    if (body.message.length > 2000) {
+      return NextResponse.json(
+        { error: 'Il messaggio è troppo lungo (max 2000 caratteri).' },
+        { status: 400 }
+      )
+    }
+
     let systemPrompt: string
     let venueName: string | undefined
     let mode: 'general' | 'venue' = 'general'

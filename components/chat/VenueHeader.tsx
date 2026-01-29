@@ -21,7 +21,6 @@ interface WineStats {
 interface VenueHeaderProps {
   venue: Venue
   wineStats?: WineStats
-  onClose: () => void
   onInfoToggle?: () => void
   onWineMenuToggle?: () => void
   isInfoExpanded?: boolean

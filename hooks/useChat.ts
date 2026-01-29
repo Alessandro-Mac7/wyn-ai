@@ -50,14 +50,14 @@ export function useChat(): UseChatReturn {
   useEffect(() => {
     const handleBeforeUnload = () => {
       if (isAuthenticated && hasProfilingConsent && messages.length >= 3) {
-        // Use sendBeacon for reliable delivery on page close
-        const data = JSON.stringify({
+        // Use sendBeacon with Blob for proper content-type
+        const blob = new Blob([JSON.stringify({
           id: serverSessionId.current,
           venue_id: venueData?.id ?? null,
           message_count: messages.length,
           ended_at: new Date().toISOString(),
-        })
-        navigator.sendBeacon('/api/chat-session', data)
+        })], { type: 'application/json' })
+        navigator.sendBeacon('/api/chat-session', blob)
       }
     }
 

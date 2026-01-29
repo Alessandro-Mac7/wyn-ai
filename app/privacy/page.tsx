@@ -3,27 +3,7 @@
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
-
-// Staggered animation variants
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.06,
-      delayChildren: 0.1,
-    },
-  },
-}
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] as const },
-  },
-}
+import { legalContainerVariants as containerVariants, legalItemVariants as itemVariants } from '@/lib/motion'
 
 export default function PrivacyPage() {
   return (

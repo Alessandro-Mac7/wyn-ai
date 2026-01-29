@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ScanLine } from 'lucide-react'
 import { LabelScanner } from './LabelScanner'
+import { useRegisterPanel } from '@/contexts/panel-context'
 import { cn } from '@/lib/utils'
 
 const backdropVariants = {
@@ -32,6 +33,8 @@ interface ScanPanelProps {
 }
 
 export function ScanPanel({ isOpen, onClose }: ScanPanelProps) {
+  useRegisterPanel('scan-panel', isOpen)
+
   // Escape to close
   useEffect(() => {
     if (!isOpen) return

@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, KeyboardEvent, useCallback, Suspense } fro
 import { useSearchParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Send, X, CheckCircle, Loader2, History } from 'lucide-react'
+import { Send, X, CheckCircle, Loader2 } from 'lucide-react'
 import { useSession } from '@/contexts/session-context'
 import { useChat } from '@/hooks/useChat'
 import { useVenue, useRecentVenues } from '@/hooks/useVenue'
@@ -291,7 +291,6 @@ function ChatPageContent() {
               key="venue-header"
               venue={venue}
               wineStats={wineStats || undefined}
-              onClose={handleClearVenue}
               onInfoToggle={handleInfoToggle}
               onWineMenuToggle={handleWineMenuToggle}
               isInfoExpanded={showVenueInfo}
