@@ -35,7 +35,7 @@ export function MobileSidebarToggle({ isOpen, onToggle, position = 'center' }: M
       whileTap={{ scale: 0.95 }}
       animate={{
         left: isOpen ? 56 : 0,
-        top: position === 'center' ? '50%' : '1rem',
+        top: position === 'center' ? '50%' : 'calc(env(safe-area-inset-top, 0px) + 1rem)',
         y: position === 'center' ? '-50%' : 0,
       }}
       transition={{
