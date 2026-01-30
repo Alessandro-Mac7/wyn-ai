@@ -84,19 +84,9 @@
   * {
     @apply border-border;
   }
-  html {
-    height: 100%;
-  }
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
-    min-height: 100%;
-
-    /* Safe area CSS custom properties — used by components */
-    --sat: env(safe-area-inset-top, 0px);
-    --sab: env(safe-area-inset-bottom, 0px);
-    --sal: env(safe-area-inset-left, 0px);
-    --sar: env(safe-area-inset-right, 0px);
   }
 }
 

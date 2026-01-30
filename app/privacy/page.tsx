@@ -7,7 +7,7 @@ import { legalContainerVariants as containerVariants, legalItemVariants as itemV
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-background pb-20 sm:pb-0">
+    <div className="min-h-screen bg-background">
       <motion.div
         className="max-w-3xl mx-auto px-4 py-8 sm:py-12"
         variants={containerVariants}
