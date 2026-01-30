@@ -179,6 +179,7 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
           <Tooltip content="Parla con il sommelier AI" side="right">
             <Link
               href="/chat"
+              onClick={handleNavClick}
               className={cn(
                 'flex flex-col items-center justify-center',
                 'w-[52px] h-[52px] rounded-lg transition-colors relative',

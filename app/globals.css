@@ -190,8 +190,8 @@
 }
 
 /* Fixed full-screen container that respects top safe area.
-   Uses inset:0 + padding-top so content clears the status bar
-   while background extends to screen edges (dark theme). */
+   Bottom safe area is handled per-component (e.g. chat input).
+   Background extends to screen edges (dark theme, no visible gap). */
 .fixed-safe {
   position: fixed;
   inset: 0;
