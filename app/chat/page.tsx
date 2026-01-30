@@ -447,7 +447,7 @@ function ChatPageContent() {
             </AnimatePresence>
 
             {/* Floating glass input - iOS style */}
-            <div className="shrink-0 px-3 sm:px-4 pb-[max(0.25rem,env(safe-area-inset-bottom))]">
+            <div className="shrink-0 px-3 sm:px-4 pb-1 sm:pb-2">
               <div className="max-w-3xl mx-auto">
                 <motion.div
                   className={cn(
@@ -495,7 +495,7 @@ function ChatPageContent() {
                     <Send className="h-4 w-4" />
                   </button>
                 </motion.div>
-                <p className="hidden sm:block text-[10px] text-muted-foreground/60 text-center mt-2 px-2 whitespace-nowrap">
+                <p className="text-[10px] text-muted-foreground/60 text-center mt-1 px-2 whitespace-nowrap">
                   WYN può commettere errori. Verifica col tuo giudizio.
                 </p>
               </div>
