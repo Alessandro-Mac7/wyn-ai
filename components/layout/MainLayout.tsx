@@ -1,14 +1,13 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { Sidebar } from './Sidebar'
-import { MobileNav } from './MobileNav'
+import { MobileSidebarToggle } from './MobileSidebarToggle'
 import { LoginPanel } from '@/components/auth/LoginPanel'
 import { ProfileModal } from '@/components/auth/ProfileModal'
 import { ScanPanel } from '@/components/scan/ScanPanel'
 import { useUserOptional } from '@/contexts/user-context'
-import { useUserInitial } from '@/hooks/useUserInitial'
 
 interface MainLayoutProps {
   children: React.ReactNode
@@ -17,8 +16,8 @@ interface MainLayoutProps {
 export function MainLayout({ children }: MainLayoutProps) {
   const pathname = usePathname()
   const userContext = useUserOptional()
-  const userInitial = useUserInitial()
 
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
   const [showScanPanel, setShowScanPanel] = useState(false)
   const [showLoginPanel, setShowLoginPanel] = useState(false)
   const [showProfileModal, setShowProfileModal] = useState(false)
@@ -35,13 +34,9 @@ export function MainLayout({ children }: MainLayoutProps) {
     return <>{children}</>
   }
 
-  const handleProfilePress = () => {
-    if (isAuthenticated) {
-      setShowProfileModal(true)
-    } else {
-      setShowLoginPanel(true)
-    }
-  }
+  // On chat page, toggle is centered; on other pages, it's at the top
+  const isChatPage = pathname === '/chat' || pathname.startsWith('/chat/')
+  const togglePosition = isChatPage ? 'center' : 'top'
 
   const handleOpenScan = () => setShowScanPanel(true)
   const handleOpenLogin = () => setShowLoginPanel(true)
@@ -49,21 +44,25 @@ export function MainLayout({ children }: MainLayoutProps) {
 
   return (
     <>
+      {/* Mobile sidebar toggle — WYN icon on left edge */}
+      <MobileSidebarToggle
+        isOpen={mobileSidebarOpen}
+        onToggle={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+        position={togglePosition}
+      />
+
+      {/* Sidebar — always visible on desktop, drawer on mobile */}
       <Sidebar
+        isMobileOpen={mobileSidebarOpen}
+        onMobileClose={() => setMobileSidebarOpen(false)}
         onOpenScan={handleOpenScan}
         onOpenLogin={handleOpenLogin}
         onOpenProfile={handleOpenProfile}
       />
 
-      <MobileNav
-        onProfilePress={handleProfilePress}
-        isAuthenticated={isAuthenticated}
-        userInitial={userInitial}
-      />
-
       {children}
 
-      {/* Shared panels — desktop sidebar triggers */}
+      {/* Shared panels */}
       <ScanPanel
         isOpen={showScanPanel}
         onClose={() => setShowScanPanel(false)}

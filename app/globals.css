@@ -189,15 +189,13 @@
   padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
 }
 
-/* Fixed full-screen container that respects safe areas.
-   Uses env() directly instead of CSS custom properties
-   for better compatibility in iOS PWA standalone mode. */
+/* Fixed full-screen container that respects top safe area.
+   Uses inset:0 + padding-top so content clears the status bar
+   while background extends to screen edges (dark theme). */
 .fixed-safe {
   position: fixed;
-  top: env(safe-area-inset-top, 0px);
-  bottom: env(safe-area-inset-bottom, 0px);
-  left: 0;
-  right: 0;
+  inset: 0;
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
 /* Message entry animations */

@@ -20,9 +20,11 @@ interface SidebarProps {
   onOpenScan: () => void
   onOpenLogin: () => void
   onOpenProfile: () => void
+  isMobileOpen?: boolean
+  onMobileClose?: () => void
 }
 
-export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile }: SidebarProps) {
+export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, isMobileOpen, onMobileClose }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const userContext = useUserOptional()
@@ -52,10 +54,12 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile }:
       e.preventDefault()
       onHomeClick()
     }
+    onMobileClose?.()
   }
 
   const handleNewConversation = () => {
     router.push('/')
+    onMobileClose?.()
   }
 
   const handleSelectHistorySession = (historySession: ChatSessionWithVenue) => {
@@ -97,9 +101,31 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile }:
     }
   }
 
+  const handleNavClick = () => {
+    onMobileClose?.()
+  }
+
   return (
     <>
-      <aside className="fixed left-0 top-0 z-40 h-screen w-16 hidden sm:flex flex-col bg-card shadow-[4px_0_12px_rgba(0,0,0,0.2)]">
+      {/* Mobile backdrop */}
+      <AnimatePresence>
+        {isMobileOpen && (
+          <motion.div
+            className="fixed inset-0 z-30 bg-black/60 sm:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onMobileClose}
+          />
+        )}
+      </AnimatePresence>
+
+      <aside className={cn(
+        'fixed left-0 top-0 z-40 h-screen w-14 sm:w-16 flex flex-col bg-card shadow-[4px_0_12px_rgba(0,0,0,0.2)]',
+        'transition-transform duration-200 ease-out',
+        'sm:translate-x-0',
+        isMobileOpen ? 'translate-x-0' : '-translate-x-full sm:translate-x-0'
+      )}>
         {/* Logo - Home button */}
         <div className="flex items-center justify-center pt-5 pb-3">
           <Link
