@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react'
 import { usePathname } from 'next/navigation'
 import { Sidebar } from './Sidebar'
-import { BottomNav } from './BottomNav'
+import { MobileNav } from './MobileNav'
 import { LoginPanel } from '@/components/auth/LoginPanel'
 import { ProfileModal } from '@/components/auth/ProfileModal'
 import { ScanPanel } from '@/components/scan/ScanPanel'
@@ -55,7 +55,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         onOpenProfile={handleOpenProfile}
       />
 
-      <BottomNav
+      <MobileNav
         onProfilePress={handleProfilePress}
         isAuthenticated={isAuthenticated}
         userInitial={userInitial}

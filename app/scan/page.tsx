@@ -9,7 +9,7 @@ export default function ScanPage() {
   const router = useRouter()
 
   return (
-    <div className="min-h-screen pb-20 sm:pb-0">
+    <div className="min-h-screen">
       <main id="main-content" className="pl-0 sm:pl-16 min-h-screen">
         {/* Header */}
         <div className="sticky top-0 z-10 safe-top">

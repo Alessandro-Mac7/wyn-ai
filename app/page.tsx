@@ -60,7 +60,7 @@ export default function HomePage() {
   return (
     <div className="fixed-safe overflow-hidden">
       {/* Main content */}
-      <main id="main-content" className="pl-0 sm:pl-16 h-full flex flex-col pb-20 sm:pb-0">
+      <main id="main-content" className="pl-0 sm:pl-16 h-full flex flex-col">
         <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 overflow-hidden">
           {/* Logo and Tagline */}
           <motion.div

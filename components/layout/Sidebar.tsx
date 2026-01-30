@@ -413,7 +413,7 @@ function HistoryPanel({
               'left-0',
               'w-72 sm:w-80 max-w-[calc(100vw-3.5rem)]',
               'bg-card border-r border-border',
-              'flex flex-col',
+              'flex flex-col safe-top',
               'shadow-[8px_0_32px_rgba(0,0,0,0.3)]'
             )}
             variants={historyPanelVariants}
