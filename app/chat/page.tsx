@@ -270,9 +270,9 @@ function ChatPageContent() {
   const userMessageCount = messages.filter(m => m.role === 'user').length
 
   return (
-    <div className="fixed inset-0 flex flex-col overflow-hidden">
+    <div className="fixed-safe flex flex-col overflow-hidden">
       {/* Main content - no padding on mobile since sidebar is hidden */}
-      <main id="main-content" className="pl-0 sm:pl-16 flex-1 flex flex-col min-h-0 safe-top sm:pt-0">
+      <main id="main-content" className="pl-0 sm:pl-16 flex-1 flex flex-col min-h-0">
           {/* Top bar: ModeToggle + VenueHeader */}
         {!venueLoading && (
           <div className="shrink-0 z-20 flex items-center justify-center px-4 py-2">
@@ -447,7 +447,7 @@ function ChatPageContent() {
             </AnimatePresence>
 
             {/* Floating glass input - iOS style */}
-            <div className="shrink-0 px-3 sm:px-4 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] sm:pb-1">
+            <div className="shrink-0 px-3 sm:px-4 pb-20 sm:pb-1">
               <div className="max-w-3xl mx-auto">
                 <motion.div
                   className={cn(
