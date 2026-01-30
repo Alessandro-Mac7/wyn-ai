@@ -127,7 +127,7 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
         isMobileOpen ? 'translate-x-0' : '-translate-x-full sm:translate-x-0'
       )}>
         {/* Logo - Home button */}
-        <div className="flex items-center justify-center pt-5 pb-3">
+        <div className="flex items-center justify-center pt-5 pb-3 safe-top">
           <Link
             href="/"
             onClick={handleLogoClick}
@@ -215,21 +215,29 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
             </button>
           </Tooltip>
 
-          {/* Scan */}
+          {/* Scan — dedicated page */}
           <Tooltip content="Scansiona etichetta" side="right">
-            <button
-              onClick={onOpenScan}
+            <Link
+              href="/scan"
+              onClick={handleNavClick}
               className={cn(
                 'flex flex-col items-center justify-center',
                 'w-[52px] h-[52px] rounded-lg transition-colors relative',
                 'hover:bg-secondary btn-press',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine',
-                'text-muted-foreground hover:text-foreground'
+                pathname === '/scan' ? 'text-wine' : 'text-muted-foreground hover:text-foreground'
               )}
             >
-              <ScanLine className="h-5 w-5" />
-              <span className="text-[11px] mt-1 relative z-10 text-center leading-tight">Scansiona</span>
-            </button>
+              {pathname === '/scan' && (
+                <motion.div
+                  layoutId="sidebar-active"
+                  className="absolute inset-0 bg-secondary rounded-lg"
+                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                />
+              )}
+              <ScanLine className={cn('h-5 w-5 relative z-10', pathname === '/scan' && 'text-wine')} />
+              <span className={cn('text-[11px] mt-1 relative z-10 text-center leading-tight', pathname === '/scan' ? 'text-wine' : 'text-muted-foreground')}>Scansiona</span>
+            </Link>
           </Tooltip>
 
           {/* Altro — popover with Scopri + Contatti */}
@@ -298,7 +306,7 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
         </nav>
 
         {/* Bottom: Accedi / Profilo */}
-        <div className="mt-auto pb-3 flex flex-col items-center gap-1 relative">
+        <div className="mt-auto pb-6 flex flex-col items-center gap-1 relative safe-bottom">
           {isAuthenticated ? (
             <Tooltip content="Account" side="right">
               <button
