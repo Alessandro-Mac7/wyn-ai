@@ -495,7 +495,7 @@ function ChatPageContent() {
                     <Send className="h-4 w-4" />
                   </button>
                 </motion.div>
-                <p className="text-[10px] text-muted-foreground/60 text-center mt-2 px-2 whitespace-nowrap">
+                <p className="hidden sm:block text-[10px] text-muted-foreground/60 text-center mt-2 px-2 whitespace-nowrap">
                   WYN può commettere errori. Verifica col tuo giudizio.
                 </p>
               </div>
