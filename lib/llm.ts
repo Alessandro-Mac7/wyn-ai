@@ -205,12 +205,19 @@ async function callAnthropic(
     headers: {
       'x-api-key': apiKey,
       'anthropic-version': '2023-06-01',
+      'anthropic-beta': 'prompt-caching-2024-07-31',
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       model: config.model,
       max_tokens: config.maxTokens,
-      system: systemMessage,
+      system: [
+        {
+          type: 'text',
+          text: systemMessage,
+          cache_control: { type: 'ephemeral' },
+        },
+      ],
       messages: userMessages.map(m => ({
         role: m.role === 'assistant' ? 'assistant' : 'user',
         content: m.content,
@@ -230,12 +237,20 @@ async function callAnthropic(
     throw new Error('Invalid Anthropic response format')
   }
 
+  const cacheCreated = data.usage?.cache_creation_input_tokens || 0
+  const cacheRead = data.usage?.cache_read_input_tokens || 0
+  if (cacheCreated || cacheRead) {
+    console.log(`[LLM] Anthropic cache: created=${cacheCreated} read=${cacheRead}`)
+  }
+
   return {
     content: data.content[0].text,
     model: data.model,
     usage: {
       input_tokens: data.usage?.input_tokens || 0,
       output_tokens: data.usage?.output_tokens || 0,
+      cache_creation_input_tokens: cacheCreated,
+      cache_read_input_tokens: cacheRead,
     },
   }
 }
