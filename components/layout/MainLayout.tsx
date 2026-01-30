@@ -56,7 +56,6 @@ export function MainLayout({ children }: MainLayoutProps) {
       />
 
       <BottomNav
-        onScanPress={handleOpenScan}
         onProfilePress={handleProfilePress}
         isAuthenticated={isAuthenticated}
         userInitial={userInitial}
@@ -64,7 +63,7 @@ export function MainLayout({ children }: MainLayoutProps) {
 
       {children}
 
-      {/* Shared panels — single instances for both mobile and desktop triggers */}
+      {/* Shared panels — desktop sidebar triggers */}
       <ScanPanel
         isOpen={showScanPanel}
         onClose={() => setShowScanPanel(false)}
