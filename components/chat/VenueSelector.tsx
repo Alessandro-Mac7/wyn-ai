@@ -263,7 +263,7 @@ export function VenueSelector({
           {/* Slide-in Panel */}
           <motion.div
             className={cn(
-              'fixed inset-y-0 right-0 z-[70] safe-top',
+              'fixed inset-y-0 right-0 z-[70] safe-top safe-bottom',
               'w-full sm:w-[380px] max-w-full',
               'bg-card border-l border-border',
               'flex flex-col',

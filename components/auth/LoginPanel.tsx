@@ -72,7 +72,7 @@ export function LoginPanel({ isOpen, onClose }: LoginPanelProps) {
               'fixed inset-y-0 right-0 z-[70]',
               'w-full sm:w-[380px] max-w-full',
               'bg-card border-l border-border',
-              'flex flex-col safe-top',
+              'flex flex-col safe-top safe-bottom',
               'shadow-[-8px_0_32px_rgba(0,0,0,0.3)]'
             )}
             variants={panelVariants}
