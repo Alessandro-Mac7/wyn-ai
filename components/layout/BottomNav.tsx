@@ -84,10 +84,10 @@ export function BottomNav({ onProfilePress, isAuthenticated, userInitial }: Bott
       <div
         className={cn(
           'fixed bottom-0 inset-x-0 z-40 sm:hidden',
-          'flex items-end gap-2',
-          'px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))]'
+          'flex flex-col'
         )}
       >
+        <div className="flex items-end gap-2 px-3 pb-2">
         {/* Floating WYN home button */}
         <Link href="/" className="shrink-0">
           <motion.div
@@ -173,6 +173,9 @@ export function BottomNav({ onProfilePress, isAuthenticated, userInitial }: Bott
             </button>
           </div>
         </nav>
+        </div>
+        {/* Safe area fill — extends background behind home indicator */}
+        <div className="bg-background/80 backdrop-blur-xl safe-bottom" />
       </div>
     </>
   )
