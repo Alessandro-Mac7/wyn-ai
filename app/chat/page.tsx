@@ -447,7 +447,7 @@ function ChatPageContent() {
             </AnimatePresence>
 
             {/* Floating glass input - iOS style */}
-            <div className="shrink-0 px-3 sm:px-4 pb-3 sm:pb-1 safe-bottom">
+            <div className="shrink-0 px-3 sm:px-4 pb-[max(0.25rem,env(safe-area-inset-bottom))]">
               <div className="max-w-3xl mx-auto">
                 <motion.div
                   className={cn(
