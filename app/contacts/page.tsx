@@ -64,7 +64,7 @@ export default function ContactsPage() {
   }
 
   return (
-    <div className="min-h-screen pb-20 sm:pb-0">
+    <div className="min-h-screen pb-[calc(5rem+env(safe-area-inset-bottom,0px))] sm:pb-0">
       {/* Main content */}
       <main id="main-content" className="pl-0 sm:pl-16 min-h-screen">
         <div className="max-w-6xl mx-auto px-4 py-12 sm:py-16">

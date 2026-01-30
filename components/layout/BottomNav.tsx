@@ -10,13 +10,12 @@ import { usePanelContext } from '@/contexts/panel-context'
 import { cn } from '@/lib/utils'
 
 interface BottomNavProps {
-  onScanPress: () => void
   onProfilePress: () => void
   isAuthenticated: boolean
   userInitial?: string
 }
 
-export function BottomNav({ onScanPress, onProfilePress, isAuthenticated, userInitial }: BottomNavProps) {
+export function BottomNav({ onProfilePress, isAuthenticated, userInitial }: BottomNavProps) {
   const pathname = usePathname()
   const { isPanelOpen } = usePanelContext()
   const [showMore, setShowMore] = useState(false)
@@ -44,7 +43,7 @@ export function BottomNav({ onScanPress, onProfilePress, isAuthenticated, userIn
             <motion.div
               className={cn(
                 'fixed z-50 sm:hidden',
-                'right-3 bottom-20',
+                'right-3 bottom-[calc(5rem+env(safe-area-inset-bottom,0px))]',
                 'w-44 rounded-xl overflow-hidden',
                 'glass-ios'
               )}
@@ -86,7 +85,7 @@ export function BottomNav({ onScanPress, onProfilePress, isAuthenticated, userIn
         className={cn(
           'fixed bottom-0 inset-x-0 z-40 sm:hidden',
           'flex items-end gap-2',
-          'px-3 pb-2'
+          'px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))]'
         )}
       >
         {/* Floating WYN home button */}
@@ -129,13 +128,16 @@ export function BottomNav({ onScanPress, onProfilePress, isAuthenticated, userIn
               <span className="text-[10px] mt-0.5">Chat</span>
             </Link>
 
-            <button
-              onClick={onScanPress}
-              className="flex-1 flex flex-col items-center justify-center min-h-[44px] rounded-lg transition-colors text-muted-foreground"
+            <Link
+              href="/scan"
+              className={cn(
+                'flex-1 flex flex-col items-center justify-center min-h-[44px] rounded-lg transition-colors',
+                pathname === '/scan' ? 'text-wine' : 'text-muted-foreground'
+              )}
             >
               <ScanLine className="h-5 w-5" />
               <span className="text-[10px] mt-0.5">Scansiona</span>
-            </button>
+            </Link>
 
             <button
               onClick={onProfilePress}
