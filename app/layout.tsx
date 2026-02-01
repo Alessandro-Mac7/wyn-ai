@@ -10,6 +10,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const viewport: Viewport = {
   themeColor: '#8f2436',
+  viewportFit: 'cover',
   maximumScale: 1,
   minimumScale: 1,
   userScalable: false, // Disable pinch zoom for native app feel
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'black',
+    statusBarStyle: 'black-translucent',
     title: 'WYN',
   },
   icons: {
