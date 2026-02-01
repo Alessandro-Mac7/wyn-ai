@@ -127,7 +127,7 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
         isMobileOpen ? 'translate-x-0' : '-translate-x-full sm:translate-x-0'
       )}>
         {/* Logo - Home button */}
-        <div className="flex items-center justify-center pt-5 pb-3 safe-top">
+        <div className="flex items-center justify-center pt-5 pb-3">
           <Link
             href="/"
             onClick={handleLogoClick}
@@ -307,7 +307,7 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
         </nav>
 
         {/* Bottom: Accedi / Profilo */}
-        <div className="mt-auto pb-6 flex flex-col items-center gap-1 relative safe-bottom">
+        <div className="mt-auto pb-6 flex flex-col items-center gap-1 relative">
           {isAuthenticated ? (
             <Tooltip content="Account" side="right">
               <button
@@ -448,7 +448,7 @@ function HistoryPanel({
               'left-0',
               'w-72 sm:w-80 max-w-[calc(100vw-3.5rem)]',
               'bg-card border-r border-border',
-              'flex flex-col safe-top safe-bottom',
+              'flex flex-col',
               'shadow-[8px_0_32px_rgba(0,0,0,0.3)]'
             )}
             variants={historyPanelVariants}
