@@ -27,12 +27,47 @@ export interface MagicLinkResult {
 }
 
 /**
+ * Build the auth callback URL
+ *
+ * Priority:
+ * 1. Explicit redirectTo parameter
+ * 2. NEXT_PUBLIC_APP_URL environment variable
+ * 3. window.location.origin (fallback)
+ *
+ * IMPORTANT: The redirect URL MUST be whitelisted in Supabase Dashboard:
+ * Authentication → URL Configuration → Redirect URLs
+ */
+function buildAuthCallbackUrl(redirectTo?: string): string {
+  if (redirectTo) {
+    return redirectTo
+  }
+
+  // Use explicit app URL if configured (recommended for production)
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL
+  if (appUrl && appUrl !== 'http://localhost:3000') {
+    return `${appUrl}/auth/callback`
+  }
+
+  // Fallback to current origin
+  return `${window.location.origin}/auth/callback`
+}
+
+/**
  * Send magic link email for passwordless authentication
+ *
+ * NOTE: For this to work correctly, you must configure Supabase Dashboard:
+ * 1. Set "Site URL" to your production domain
+ * 2. Add callback URLs to "Redirect URLs" whitelist
  */
 export async function signInWithMagicLink(options: MagicLinkOptions): Promise<MagicLinkResult> {
   const supabase = createSupabaseBrowserClient()
 
-  const redirectTo = options.redirectTo || `${window.location.origin}/auth/callback`
+  const redirectTo = buildAuthCallbackUrl(options.redirectTo)
+
+  // Debug logging (remove in production if needed)
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[Auth] Magic link redirect URL:', redirectTo)
+  }
 
   const { error } = await supabase.auth.signInWithOtp({
     email: options.email,

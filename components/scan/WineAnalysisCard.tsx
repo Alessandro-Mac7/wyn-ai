@@ -1,5 +1,6 @@
 'use client'
 
+import NextImage from 'next/image'
 import { motion } from 'framer-motion'
 import { Wine, Star, Utensils, BarChart3, Grape, DollarSign, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -7,6 +8,7 @@ import type { WineAnalysis } from '@/types'
 
 interface WineAnalysisCardProps {
   analysis: WineAnalysis
+  imageUrl?: string | null
 }
 
 const wineTypeLabels: Record<string, { label: string; color: string }> = {
@@ -73,9 +75,12 @@ function CharBar({ label, value }: { label: string; value: string | null }) {
   )
 }
 
-export function WineAnalysisCard({ analysis }: WineAnalysisCardProps) {
-  const { basic, evaluation, aromatic_profile, characteristics, food_pairings, guide_ratings, user_ratings, price_info } = analysis
+export function WineAnalysisCard({ analysis, imageUrl: scannedImageUrl }: WineAnalysisCardProps) {
+  const { basic, evaluation, aromatic_profile, characteristics, food_pairings, guide_ratings, user_ratings, price_info, image_url } = analysis
   const typeInfo = basic.wine_type ? wineTypeLabels[basic.wine_type] : null
+
+  // Use image from web search, fallback to scanned image
+  const displayImageUrl = image_url || scannedImageUrl
 
   return (
     <motion.div
@@ -84,32 +89,50 @@ export function WineAnalysisCard({ analysis }: WineAnalysisCardProps) {
       initial="hidden"
       animate="show"
     >
-      {/* Header */}
-      <motion.div variants={stagger.item} className="space-y-1">
-        <div className="flex items-start gap-2 flex-wrap">
-          {typeInfo && (
-            <span className={cn('text-[10px] font-medium px-2 py-0.5 rounded-full', typeInfo.color)}>
-              {typeInfo.label}
-            </span>
+      {/* Scanned Image + Header */}
+      <motion.div variants={stagger.item} className="flex gap-4">
+        {/* Bottle/Label Image - prefer web image, fallback to scanned */}
+        {displayImageUrl && (
+          <div className="shrink-0">
+            <div className="relative w-20 h-28 rounded-lg overflow-hidden border border-border bg-card shadow-md">
+              <NextImage
+                src={displayImageUrl}
+                alt={image_url ? 'Bottiglia' : 'Etichetta scansionata'}
+                fill
+                className="object-cover"
+                unoptimized={!image_url} // Only optimize if it's a web URL
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Wine Info */}
+        <div className="flex-1 space-y-1">
+          <div className="flex items-start gap-2 flex-wrap">
+            {typeInfo && (
+              <span className={cn('text-[10px] font-medium px-2 py-0.5 rounded-full', typeInfo.color)}>
+                {typeInfo.label}
+              </span>
+            )}
+            {basic.year && (
+              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-white/5 text-muted-foreground">
+                {basic.year}
+              </span>
+            )}
+            {basic.denomination && (
+              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-white/5 text-muted-foreground">
+                {basic.denomination}
+              </span>
+            )}
+          </div>
+          <h3 className="text-lg font-bold leading-tight">{basic.name || 'Vino sconosciuto'}</h3>
+          {basic.producer && (
+            <p className="text-sm text-muted-foreground">{basic.producer}</p>
           )}
-          {basic.year && (
-            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-white/5 text-muted-foreground">
-              {basic.year}
-            </span>
-          )}
-          {basic.denomination && (
-            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-white/5 text-muted-foreground">
-              {basic.denomination}
-            </span>
+          {basic.region && (
+            <p className="text-xs text-muted-foreground">{basic.region}</p>
           )}
         </div>
-        <h3 className="text-lg font-bold leading-tight">{basic.name || 'Vino sconosciuto'}</h3>
-        {basic.producer && (
-          <p className="text-sm text-muted-foreground">{basic.producer}</p>
-        )}
-        {basic.region && (
-          <p className="text-xs text-muted-foreground">{basic.region}</p>
-        )}
       </motion.div>
 
       {/* Quality Score + Summary */}

@@ -9,10 +9,48 @@ import {
 import { checkRateLimit, getClientIdentifier, RATE_LIMITS } from '@/lib/rate-limit'
 import type { ChatMessage } from '@/types'
 
+// Security constants for chat history validation
+const MAX_HISTORY_MESSAGES = 20 // Limit conversation history
+const MAX_MESSAGE_LENGTH = 4000 // Max chars per message
+const VALID_ROLES = ['user', 'assistant'] as const
+
 interface ChatRequest {
   message: string
   venue_slug?: string
   history?: ChatMessage[]
+}
+
+/**
+ * Sanitize and validate chat history to prevent prompt injection
+ * - Only allow 'user' and 'assistant' roles (no 'system')
+ * - Limit message length
+ * - Limit total history length
+ */
+function sanitizeChatHistory(history: unknown): ChatMessage[] {
+  if (!history || !Array.isArray(history)) {
+    return []
+  }
+
+  return history
+    .filter((msg): msg is ChatMessage => {
+      // Must be an object with role and content
+      if (!msg || typeof msg !== 'object') return false
+      if (!('role' in msg) || !('content' in msg)) return false
+
+      // Role must be 'user' or 'assistant' (never 'system')
+      if (!VALID_ROLES.includes(msg.role as typeof VALID_ROLES[number])) return false
+
+      // Content must be a non-empty string
+      if (typeof msg.content !== 'string' || !msg.content.trim()) return false
+
+      return true
+    })
+    .slice(-MAX_HISTORY_MESSAGES) // Keep only last N messages
+    .map(msg => ({
+      role: msg.role as 'user' | 'assistant',
+      // Truncate overly long messages
+      content: msg.content.slice(0, MAX_MESSAGE_LENGTH),
+    }))
 }
 
 export async function POST(request: NextRequest) {
@@ -75,11 +113,14 @@ export async function POST(request: NextRequest) {
       systemPrompt = SYSTEM_PROMPT_GENERAL
     }
 
-    // Build messages array with history
+    // Sanitize and validate history to prevent prompt injection
+    const sanitizedHistory = sanitizeChatHistory(body.history)
+
+    // Build messages array with validated history
     const messages = buildChatMessages(
       body.message,
       systemPrompt,
-      body.history || []
+      sanitizedHistory
     )
 
     // Call LLM

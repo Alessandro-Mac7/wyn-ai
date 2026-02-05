@@ -323,6 +323,7 @@ export interface ScanLabelResponse {
 
 export interface WineAnalysis {
   basic: ScanResult
+  image_url?: string | null // URL immagine bottiglia trovata in rete
   evaluation: {
     quality_score: number
     style: string | null
