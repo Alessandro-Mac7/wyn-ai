@@ -8,7 +8,14 @@ import { createBrowserClient } from '@supabase/ssr'
 export function createSupabaseBrowserClient() {
   return createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      auth: {
+        // Use implicit flow to avoid PKCE issues when user opens
+        // magic link in a different browser/device
+        flowType: 'implicit',
+      },
+    }
   )
 }
 
