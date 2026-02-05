@@ -94,13 +94,6 @@ export function VenueSelector({
     }
   }, [isOpen, locationStatus])
 
-  // Fetch nearby venues when position is available and settings loaded
-  useEffect(() => {
-    if (userPosition && locationStatus === 'granted' && maxVenueDistance > 0) {
-      loadNearbyVenues()
-    }
-  }, [userPosition, locationStatus, maxVenueDistance])
-
   const requestLocation = async () => {
     setLocationStatus('requesting')
 
@@ -136,6 +129,13 @@ export function VenueSelector({
     setNearbyVenues(result.venues as VenueWithDistance[])
     setLoadingNearby(false)
   }, [userPosition, maxVenueDistance])
+
+  // Fetch nearby venues when position is available and settings loaded
+  useEffect(() => {
+    if (userPosition && locationStatus === 'granted' && maxVenueDistance > 0) {
+      loadNearbyVenues()
+    }
+  }, [userPosition, locationStatus, maxVenueDistance, loadNearbyVenues])
 
   // Validate venue exists and select it (with optional distance warning)
   const validateAndSelect = async (slug: string, skipWarning = false) => {

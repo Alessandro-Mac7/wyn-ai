@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Loader2, RefreshCw, Wine } from 'lucide-react'
 import { ImageUploader } from './ImageUploader'
@@ -14,7 +14,22 @@ export function LabelScanner() {
   const [state, setState] = useState<ScannerState>('idle')
   const [analysis, setAnalysis] = useState<WineAnalysis | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [scannedImage, setScannedImage] = useState<string | null>(null)
   const abortRef = useRef<AbortController | null>(null)
+  const resultsRef = useRef<HTMLDivElement>(null)
+
+  // Smooth scroll to results when they appear
+  useEffect(() => {
+    if (state === 'results' && resultsRef.current) {
+      // Small delay to let the content render
+      requestAnimationFrame(() => {
+        resultsRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        })
+      })
+    }
+  }, [state])
 
   const handleImageSelect = useCallback(async (imageDataUrl: string) => {
     // Cancel previous
@@ -28,6 +43,7 @@ export function LabelScanner() {
     setState('analyzing')
     setError(null)
     setAnalysis(null)
+    setScannedImage(imageDataUrl) // Save the scanned image
 
     try {
       const response = await fetch('/api/analyze-wine', {
@@ -67,6 +83,7 @@ export function LabelScanner() {
     setState('idle')
     setAnalysis(null)
     setError(null)
+    setScannedImage(null)
   }, [])
 
   return (
@@ -96,8 +113,8 @@ export function LabelScanner() {
       )}
 
       {state === 'results' && analysis && (
-        <div className="space-y-4">
-          <WineAnalysisCard analysis={analysis} />
+        <div ref={resultsRef} className="space-y-4">
+          <WineAnalysisCard analysis={analysis} imageUrl={scannedImage} />
           <button
             onClick={handleReset}
             className={cn(

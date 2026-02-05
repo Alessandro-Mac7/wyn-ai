@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
+import NextImage from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Camera, ImagePlus, X, Loader2, Wine } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -254,10 +255,13 @@ export function ImageAttachment({
             className="absolute bottom-full mb-2 left-0 max-h-[40vh]"
           >
             <div className="relative rounded-lg overflow-hidden border border-border bg-card shadow-lg">
-              <img
+              <NextImage
                 src={imagePreview}
                 alt="Anteprima etichetta"
+                width={80}
+                height={80}
                 className="w-20 h-20 object-cover"
+                unoptimized
               />
               {(isLoading || isProcessing) && (
                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center">

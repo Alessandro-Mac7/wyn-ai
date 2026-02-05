@@ -5,6 +5,7 @@
 
 import type { ChatMessage, ScanResult, WineAnalysis } from '@/types'
 import { chat } from '@/lib/llm'
+import { searchWineImage } from '@/lib/wine-image-search'
 
 // ============================================
 // ANALYSIS PROMPT
@@ -188,7 +189,16 @@ export function parseWineAnalysis(rawText: string, scan: ScanResult): WineAnalys
  * Run full wine analysis: takes ScanResult, returns WineAnalysis
  */
 export async function analyzeWine(scan: ScanResult): Promise<WineAnalysis> {
-  const messages = buildWineAnalysisMessages(scan)
-  const response = await chat(messages)
-  return parseWineAnalysis(response.content, scan)
+  // Run LLM analysis and image search in parallel
+  const [response, imageUrl] = await Promise.all([
+    chat(buildWineAnalysisMessages(scan)),
+    searchWineImage(scan).catch(() => null), // Don't fail if image search fails
+  ])
+
+  const analysis = parseWineAnalysis(response.content, scan)
+
+  // Add image URL if found
+  analysis.image_url = imageUrl
+
+  return analysis
 }
