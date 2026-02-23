@@ -4,9 +4,14 @@ import { getVenueBySlug, getWinesWithRatings } from '@/lib/supabase'
 import {
   SYSTEM_PROMPT_GENERAL,
   getVenueSystemPrompt,
+  getVenueSystemPromptRAG,
   buildChatMessages,
 } from '@/lib/prompts'
+import { searchWinesRAG } from '@/lib/rag'
+import { parseQueryIntent } from '@/lib/query-parser'
+import { isEmbeddingAvailable } from '@/lib/embeddings'
 import { checkRateLimit, getClientIdentifier, RATE_LIMITS } from '@/lib/rate-limit'
+import { RAG_THRESHOLD, RAG_TOP_K, RAG_SIMILARITY_THRESHOLD } from '@/config/constants'
 import type { ChatMessage } from '@/types'
 
 // Security constants for chat history validation
@@ -106,7 +111,29 @@ export async function POST(request: NextRequest) {
 
       // Get only available wines with ratings for venue mode (RULE-001)
       const wines = await getWinesWithRatings(venue.id, true)
-      systemPrompt = getVenueSystemPrompt(venue.name, wines)
+
+      // Decision: RAG path for large catalogs, full context for small ones (RULE-008)
+      if (wines.length > RAG_THRESHOLD && isEmbeddingAvailable()) {
+        // RAG path: parse query → semantic search → build compact prompt
+        const intent = parseQueryIntent(body.message)
+        const ragResult = await searchWinesRAG({
+          venueId: venue.id,
+          query: body.message,
+          topK: RAG_TOP_K,
+          threshold: RAG_SIMILARITY_THRESHOLD,
+          onlyAvailable: true,
+          wineType: intent.wineType,
+          maxPrice: intent.maxPrice,
+          minPrice: intent.minPrice,
+        })
+
+        console.log(`[CHAT] RAG path: ${wines.length} total wines, ${ragResult.totalMatched} matched in ${ragResult.searchTimeMs}ms`)
+        systemPrompt = getVenueSystemPromptRAG(venue.name, ragResult.ragContext, wines.length)
+      } else {
+        // Full context path: all wines fit in prompt
+        systemPrompt = getVenueSystemPrompt(venue.name, wines)
+      }
+
       venueName = venue.name
       mode = 'venue'
     } else {

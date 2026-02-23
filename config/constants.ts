@@ -27,6 +27,25 @@ export const ENRICHMENT_MAX_RETRIES = 3
 export const ENRICHMENT_RETRY_DELAY_MS = 1000
 
 // ============================================
+// EMBEDDINGS
+// ============================================
+
+/** OpenAI embedding model */
+export const EMBEDDING_MODEL = 'text-embedding-3-small'
+
+/** Dimensions of the embedding vector */
+export const EMBEDDING_DIMENSIONS = 1536
+
+/** Maximum texts per OpenAI embeddings API call */
+export const EMBEDDING_BATCH_SIZE = 2048
+
+/** Maximum retry attempts for embedding API calls */
+export const EMBEDDING_MAX_RETRIES = 3
+
+/** Initial delay for retry backoff (milliseconds) */
+export const EMBEDDING_RETRY_DELAY_MS = 1000
+
+// ============================================
 // CHAT
 // ============================================
 
@@ -42,6 +61,19 @@ export const SEARCH_DEBOUNCE_MS = 300
 
 /** Maximum CSV file size (5MB) */
 export const CSV_MAX_FILE_SIZE = 5 * 1024 * 1024
+
+// ============================================
+// RAG (Retrieval Augmented Generation)
+// ============================================
+
+/** Wine count threshold: use RAG above this, full context below (RULE-008) */
+export const RAG_THRESHOLD = 50
+
+/** Number of wines to retrieve in RAG search */
+export const RAG_TOP_K = 8
+
+/** Minimum similarity score for RAG results */
+export const RAG_SIMILARITY_THRESHOLD = 0.4
 
 // ============================================
 // RATE LIMITING
