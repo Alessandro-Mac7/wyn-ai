@@ -12,6 +12,8 @@ import { parseQueryIntent } from '@/lib/query-parser'
 import { isEmbeddingAvailable } from '@/lib/embeddings'
 import { checkRateLimit, getClientIdentifier, RATE_LIMITS } from '@/lib/rate-limit'
 import { RAG_THRESHOLD, RAG_TOP_K, RAG_SIMILARITY_THRESHOLD } from '@/config/constants'
+import { createSupabaseServerClient } from '@/lib/supabase-auth-server'
+import { retrieveRelevantMemories, formatMemoriesForPrompt } from '@/lib/memory'
 import type { ChatMessage } from '@/types'
 
 // Security constants for chat history validation
@@ -138,6 +140,34 @@ export async function POST(request: NextRequest) {
       mode = 'venue'
     } else {
       systemPrompt = SYSTEM_PROMPT_GENERAL
+    }
+
+    // Inject user memories if authenticated + consented (RULE-009)
+    if (isEmbeddingAvailable()) {
+      try {
+        const supabase = await createSupabaseServerClient()
+        const { data: { user } } = await supabase.auth.getUser()
+
+        if (user) {
+          const { data: profile } = await supabase
+            .from('user_profiles')
+            .select('profiling_consent')
+            .eq('user_id', user.id)
+            .single()
+
+          if (profile?.profiling_consent) {
+            const memories = await retrieveRelevantMemories(user.id, body.message)
+            const memorySection = formatMemoriesForPrompt(memories)
+            if (memorySection) {
+              systemPrompt += '\n\n' + memorySection
+              console.log(`[MEMORY] Injected ${memories.length} memories into prompt`)
+            }
+          }
+        }
+      } catch (err) {
+        // Memory retrieval is non-critical, don't fail the chat
+        console.error('[MEMORY] Failed to retrieve memories:', err)
+      }
     }
 
     // Sanitize and validate history to prevent prompt injection

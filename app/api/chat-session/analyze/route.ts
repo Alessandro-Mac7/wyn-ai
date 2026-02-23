@@ -6,7 +6,9 @@ import {
   calculateConfidence,
   buildConversationText,
 } from '@/lib/preference-extractor'
+import { extractMemories } from '@/lib/memory'
 import type { ChatSession, InferredPreferences } from '@/types/user'
+import type { ChatMessage } from '@/types'
 
 // ============================================
 // POST /api/chat-session/analyze
@@ -85,6 +87,43 @@ export async function POST(request: NextRequest) {
         analyzed: false,
         message: 'Nessuna preferenza estratta',
       })
+    }
+
+    // Extract memory fragments from sessions (non-critical)
+    try {
+      // Build messages array from recent sessions for memory extraction
+      const recentMessages = sessions.slice(0, 3).flatMap(session => {
+        const msgs: ChatMessage[] = []
+        if (session.summary?.topic) {
+          msgs.push({ role: 'user' as const, content: session.summary.topic })
+        }
+        if (session.summary?.wines_discussed?.length) {
+          msgs.push({
+            role: 'assistant' as const,
+            content: `Vini discussi: ${session.summary.wines_discussed.join(', ')}`
+          })
+        }
+        if (session.summary?.recommendations?.length) {
+          msgs.push({
+            role: 'assistant' as const,
+            content: `Raccomandazioni: ${session.summary.recommendations.join(', ')}`
+          })
+        }
+        return msgs
+      })
+
+      if (recentMessages.length > 0) {
+        const memories = await extractMemories(
+          recentMessages,
+          user.id,
+          sessions[0]?.id,
+          sessions[0]?.venue_id || undefined
+        )
+        console.log(`[MEMORY] Extracted ${memories.length} memories from session analysis`)
+      }
+    } catch (memoryErr) {
+      // Memory extraction is non-critical
+      console.error('[MEMORY] Failed to extract memories:', memoryErr)
     }
 
     // Get existing preferences
