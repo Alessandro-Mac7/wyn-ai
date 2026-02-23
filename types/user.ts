@@ -146,6 +146,46 @@ export interface WineScanData {
 }
 
 // ============================================
+// MEMORY FRAGMENTS (User Memory System)
+// ============================================
+
+export type MemoryFragmentType = 'preference' | 'purchase' | 'feedback' | 'context' | 'dislike' | 'occasion'
+
+export interface MemoryFragment {
+  id: string
+  user_id: string
+  fragment_type: MemoryFragmentType
+  content: string
+  metadata: MemoryMetadata
+  weight: number  // 0.0-1.0, decays over time
+  last_relevant_at: string
+  source_session_id: string | null
+  source_venue_id: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface MemoryMetadata {
+  wine_name?: string
+  wine_type?: string
+  venue_name?: string
+  venue_slug?: string
+  region?: string
+  grape?: string
+  price?: number
+  occasion?: string
+  [key: string]: unknown  // Allow extension
+}
+
+export interface MemoryFragmentCreate {
+  fragment_type: MemoryFragmentType
+  content: string
+  metadata?: MemoryMetadata
+  source_session_id?: string
+  source_venue_id?: string
+}
+
+// ============================================
 // GDPR EXPORT
 // ============================================
 
@@ -156,6 +196,7 @@ export interface UserDataExport {
   chat_sessions: ChatSession[]
   preferences: InferredPreferences | Record<string, never>
   wine_scans: WineScan[]
+  memories: MemoryFragment[]
 }
 
 // ============================================

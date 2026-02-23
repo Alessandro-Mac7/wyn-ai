@@ -113,3 +113,19 @@ export const RATE_LIMITS = {
   /** User profile: requests per minute */
   profile: { limit: 30, windowSeconds: 60 },
 } as const
+
+// ============================================
+// MEMORY SYSTEM
+// ============================================
+
+/** Minimum similarity score for memory retrieval */
+export const MEMORY_SIMILARITY_THRESHOLD = 0.3
+
+/** Similarity threshold for deduplication (higher = stricter) */
+export const MEMORY_DEDUP_THRESHOLD = 0.9
+
+/** Number of memories to retrieve by default */
+export const MEMORY_TOP_K = 5
+
+/** Maximum fragments to extract per session */
+export const MEMORY_MAX_FRAGMENTS_PER_SESSION = 5
