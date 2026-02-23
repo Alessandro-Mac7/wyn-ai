@@ -6,6 +6,8 @@ import {
   ENRICHMENT_MAX_RETRIES,
   ENRICHMENT_RETRY_DELAY_MS,
 } from '@/config/constants'
+import { syncEmbedding } from './embedding-pipeline'
+import { isEmbeddingAvailable } from './embeddings'
 import type { Wine, WineWithRatings, ChatMessage, LLMResponse } from '@/types'
 
 // Retry with exponential backoff
@@ -246,6 +248,13 @@ export async function enrichWine(wine: Wine): Promise<WineWithRatings> {
         completed_at: new Date().toISOString(),
       })
       .eq('id', job.id)
+
+    // Re-embed wine after enrichment (content hash changed due to new data)
+    if (isEmbeddingAvailable()) {
+      syncEmbedding(wine.id).catch((err) => {
+        console.error('[EMBEDDING] Failed to re-embed after enrichment:', err)
+      })
+    }
 
     return { ...wine, ratings: savedRatings }
   } catch (error) {
