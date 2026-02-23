@@ -7,7 +7,8 @@
 
 import { WineWithRatings } from '@/types'
 import { embedText, generateContentHash } from './embeddings'
-import { wineToChunkText } from './wine-chunks'
+import { wineToChunkText, wineToChunkTextWithKnowledge } from './wine-chunks'
+import { getWineKnowledge } from './wine-knowledge'
 import { supabaseAdmin } from './supabase-auth-server'
 
 // ============================================
@@ -66,11 +67,14 @@ export async function embedWine(wineId: string): Promise<boolean> {
 
     const wineWithRatings = wine as unknown as WineWithRatings
 
-    // 2. Generate chunk text and hash
-    const chunkText = wineToChunkText(wineWithRatings)
+    // 2. Fetch wine knowledge if available
+    const knowledge = await getWineKnowledge(wineId)
+
+    // 3. Generate chunk text with knowledge and hash
+    const chunkText = wineToChunkTextWithKnowledge(wineWithRatings, knowledge)
     const contentHash = generateContentHash(chunkText)
 
-    // 3. Check if embedding exists with same hash (skip if unchanged)
+    // 4. Check if embedding exists with same hash (skip if unchanged)
     const { data: existingEmbedding } = await supabaseAdmin
       .from('wine_embeddings')
       .select('content_hash')
@@ -82,11 +86,11 @@ export async function embedWine(wineId: string): Promise<boolean> {
       return true
     }
 
-    // 4. Generate embedding
+    // 5. Generate embedding
     console.log(`[EMBEDDING] Generating embedding for wine ${wineId}`)
     const embedding = await embedText(chunkText)
 
-    // 5. Upsert into wine_embeddings
+    // 6. Upsert into wine_embeddings
     const { error: upsertError } = await supabaseAdmin
       .from('wine_embeddings')
       .upsert({
@@ -169,8 +173,11 @@ export async function embedVenueWines(venueId: string): Promise<VenueEmbeddingSt
       const batchResults = await Promise.all(
         batch.map(async (wine) => {
           try {
-            // Generate chunk text and hash
-            const chunkText = wineToChunkText(wine)
+            // Fetch wine knowledge if available
+            const knowledge = await getWineKnowledge(wine.id)
+
+            // Generate chunk text with knowledge and hash
+            const chunkText = wineToChunkTextWithKnowledge(wine, knowledge)
             const contentHash = generateContentHash(chunkText)
 
             // Check if embedding exists with same hash
@@ -273,28 +280,31 @@ export async function syncEmbedding(wineId: string): Promise<boolean> {
 
     const wineWithRatings = wine as unknown as WineWithRatings
 
-    // 2. Generate new chunk text and hash
-    const chunkText = wineToChunkText(wineWithRatings)
+    // 2. Fetch wine knowledge if available
+    const knowledge = await getWineKnowledge(wineId)
+
+    // 3. Generate new chunk text with knowledge and hash
+    const chunkText = wineToChunkTextWithKnowledge(wineWithRatings, knowledge)
     const contentHash = generateContentHash(chunkText)
 
-    // 3. Fetch current embedding
+    // 4. Fetch current embedding
     const { data: existingEmbedding } = await supabaseAdmin
       .from('wine_embeddings')
       .select('content_hash')
       .eq('wine_id', wineId)
       .single()
 
-    // 4. If hash matches → skip
+    // 5. If hash matches → skip
     if (existingEmbedding && existingEmbedding.content_hash === contentHash) {
       console.log(`[EMBEDDING] Wine ${wineId} unchanged, skipping sync`)
       return true
     }
 
-    // 5. Hash differs or no existing embedding → regenerate
+    // 6. Hash differs or no existing embedding → regenerate
     console.log(`[EMBEDDING] Wine ${wineId} changed, regenerating embedding`)
     const embedding = await embedText(chunkText)
 
-    // 6. Upsert embedding
+    // 7. Upsert embedding
     const { error: upsertError } = await supabaseAdmin
       .from('wine_embeddings')
       .upsert({

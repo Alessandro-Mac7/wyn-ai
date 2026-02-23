@@ -8,6 +8,7 @@ import {
 } from '@/config/constants'
 import { syncEmbedding } from './embedding-pipeline'
 import { isEmbeddingAvailable } from './embeddings'
+import { generateWineKnowledge } from './wine-knowledge'
 import type { Wine, WineWithRatings, ChatMessage, LLMResponse } from '@/types'
 
 // Retry with exponential backoff
@@ -256,7 +257,13 @@ export async function enrichWine(wine: Wine): Promise<WineWithRatings> {
       })
     }
 
-    return { ...wine, ratings: savedRatings }
+    // Trigger knowledge generation async (fire-and-forget)
+    const wineWithRatings: WineWithRatings = { ...wine, ratings: savedRatings }
+    generateWineKnowledge(wineWithRatings).catch((err) => {
+      console.error('[KNOWLEDGE] Failed to generate knowledge after enrichment:', err)
+    })
+
+    return wineWithRatings
   } catch (error) {
     console.error('Enrichment failed:', error)
 

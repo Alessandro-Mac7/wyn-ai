@@ -5,30 +5,8 @@
  * Target: 150-300 tokens per chunk, Italian-optimized.
  */
 
-import { WineWithRatings } from '@/types'
+import { WineWithRatings, WineKnowledge } from '@/types'
 import { MIN_RATING_CONFIDENCE } from '@/config/constants'
-
-// ============================================
-// WINE KNOWLEDGE TYPES (Phase 2 Placeholder)
-// ============================================
-
-/**
- * Placeholder interface for Phase 2 wine knowledge.
- * Will be properly defined in types/index.ts when deep knowledge features are implemented.
- */
-export interface WineKnowledge {
-  producer_history?: string
-  terroir_description?: string
-  vinification_process?: string
-  aging_method?: string
-  food_pairings?: Array<{
-    category: string
-    dishes: string[]
-    match: string
-  }>
-  anecdotes?: string
-  curiosities?: string[]
-}
 
 // ============================================
 // WINE TYPE MAPPING
@@ -163,9 +141,27 @@ export function wineToChunkTextWithKnowledge(
     knowledgeParts.push(`\nStoria del Produttore:\n${knowledge.producer_history}`)
   }
 
+  // Producer philosophy
+  if (knowledge.producer_philosophy) {
+    knowledgeParts.push(`\nFilosofia del Produttore:\n${knowledge.producer_philosophy}`)
+  }
+
   // Terroir description
   if (knowledge.terroir_description) {
     knowledgeParts.push(`\nTerroir:\n${knowledge.terroir_description}`)
+  }
+
+  // Vineyard details
+  if (knowledge.vineyard_details) {
+    knowledgeParts.push(`\nVigneto:\n${knowledge.vineyard_details}`)
+  }
+
+  // Soil and climate
+  const terrainParts: string[] = []
+  if (knowledge.soil_type) terrainParts.push(`Terreno: ${knowledge.soil_type}`)
+  if (knowledge.climate) terrainParts.push(`Clima: ${knowledge.climate}`)
+  if (terrainParts.length > 0) {
+    knowledgeParts.push(`\n${terrainParts.join(', ')}`)
   }
 
   // Vinification process
@@ -173,9 +169,20 @@ export function wineToChunkTextWithKnowledge(
     knowledgeParts.push(`\nVinificazione:\n${knowledge.vinification_process}`)
   }
 
-  // Aging method
+  // Aging method and duration
   if (knowledge.aging_method) {
-    knowledgeParts.push(`\nAffinamento:\n${knowledge.aging_method}`)
+    const agingText = knowledge.aging_duration
+      ? `${knowledge.aging_method} (${knowledge.aging_duration})`
+      : knowledge.aging_method
+    knowledgeParts.push(`\nAffinamento:\n${agingText}`)
+  }
+
+  // Vintage notes
+  if (knowledge.vintage_notes) {
+    const vintageText = knowledge.vintage_quality
+      ? `${knowledge.vintage_notes} (Qualità: ${knowledge.vintage_quality})`
+      : knowledge.vintage_notes
+    knowledgeParts.push(`\nAnnata:\n${vintageText}`)
   }
 
   // Food pairings (expanded format)
@@ -183,10 +190,20 @@ export function wineToChunkTextWithKnowledge(
     const pairingsText = knowledge.food_pairings
       .map((pairing) => {
         const dishesText = pairing.dishes.join(', ')
-        return `${pairing.category}: ${dishesText} (${pairing.match})`
+        const notesText = pairing.notes ? ` - ${pairing.notes}` : ''
+        return `${pairing.category}: ${dishesText} (${pairing.match})${notesText}`
       })
       .join('\n')
     knowledgeParts.push(`\nAbbinamenti:\n${pairingsText}`)
+  }
+
+  // Serving information
+  const servingParts: string[] = []
+  if (knowledge.serving_temperature) servingParts.push(`Temperatura: ${knowledge.serving_temperature}`)
+  if (knowledge.decanting_time) servingParts.push(`Decantazione: ${knowledge.decanting_time}`)
+  if (knowledge.glass_type) servingParts.push(`Bicchiere: ${knowledge.glass_type}`)
+  if (servingParts.length > 0) {
+    knowledgeParts.push(`\nServizio:\n${servingParts.join('\n')}`)
   }
 
   // Anecdotes
