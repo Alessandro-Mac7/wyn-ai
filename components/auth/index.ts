@@ -1,4 +1,3 @@
-export { MagicLinkForm } from './MagicLinkForm'
 export { OtpLoginForm } from './OtpLoginForm'
 export { RegisterPrompt } from './RegisterPrompt'
 export { ProfileModal } from './ProfileModal'
