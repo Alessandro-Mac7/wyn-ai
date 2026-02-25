@@ -121,7 +121,7 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
       </AnimatePresence>
 
       <aside className={cn(
-        'fixed top-0 bottom-0 sm:left-2 sm:top-2 sm:bottom-2 z-40 w-14 sm:w-16 flex flex-col glass-panel sm:rounded-2xl shadow-[4px_0_12px_rgba(0,0,0,0.2)]',
+        'fixed top-0 bottom-0 sm:left-2 sm:top-2 sm:bottom-2 z-40 w-14 sm:w-16 flex flex-col glass-panel sm:rounded-2xl sm:border sm:border-white/[0.15] shadow-[4px_0_12px_rgba(0,0,0,0.2)]',
         'transition-[transform,left] duration-200 ease-out',
         isMobileOpen ? 'left-0' : '-left-14 sm:left-2'
       )}>

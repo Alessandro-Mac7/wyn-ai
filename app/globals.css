@@ -116,11 +116,20 @@
     @apply text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
     background-color: hsl(var(--background));
-    background-image:
+  }
+
+  /* Fixed ambient gradient — pseudo-element instead of background-attachment:fixed
+     (background-attachment:fixed is broken on iOS Safari) */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, transparent 40%),
       radial-gradient(ellipse 80% 50% at 20% 80%, hsla(350, 60%, 20%, 0.15), transparent),
-      radial-gradient(ellipse 120% 30% at 50% 0%, rgba(255, 255, 255, 0.06), transparent),
       radial-gradient(ellipse 50% 50% at 50% 50%, hsla(30, 30%, 15%, 0.10), transparent);
-    background-attachment: fixed;
   }
 }
 
@@ -294,12 +303,16 @@
       inset 0 0.5px 0 hsl(var(--glass-highlight));
   }
 
-  /* Glass panel — slide-in panels */
+  /* Glass panel — slide-in panels & sidebar.
+     No top/bottom border so edge-to-edge panels look continuous. */
   .glass-panel {
     -webkit-backdrop-filter: blur(24px) saturate(170%) brightness(1.1);
     backdrop-filter: blur(24px) saturate(170%) brightness(1.1);
     background: rgba(255, 255, 255, 0.10);
-    border: 1px solid hsl(var(--glass-border));
+    border-left: 1px solid hsl(var(--glass-border));
+    border-right: 1px solid hsl(var(--glass-border));
+    border-top: none;
+    border-bottom: none;
     box-shadow:
       -8px 0 32px rgba(0, 0, 0, 0.3),
       inset 0 0.5px 0 hsl(var(--glass-highlight));
