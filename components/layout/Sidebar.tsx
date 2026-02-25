@@ -121,10 +121,9 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
       </AnimatePresence>
 
       <aside className={cn(
-        'fixed left-0 top-0 bottom-0 sm:left-2 sm:top-2 sm:bottom-2 z-40 w-14 sm:w-16 flex flex-col glass-panel sm:rounded-2xl shadow-[4px_0_12px_rgba(0,0,0,0.2)]',
-        'transition-transform duration-200 ease-out',
-        'sm:translate-x-0',
-        isMobileOpen ? 'translate-x-0' : '-translate-x-full sm:translate-x-0'
+        'fixed top-0 bottom-0 sm:left-2 sm:top-2 sm:bottom-2 z-40 w-14 sm:w-16 flex flex-col glass-panel sm:rounded-2xl shadow-[4px_0_12px_rgba(0,0,0,0.2)]',
+        'transition-[transform,left] duration-200 ease-out',
+        isMobileOpen ? 'left-0' : '-left-14 sm:left-2'
       )}>
         {/* Logo - Home button */}
         <div className="flex items-center justify-center pt-[max(1.25rem,env(safe-area-inset-top,0px))] pb-3">
