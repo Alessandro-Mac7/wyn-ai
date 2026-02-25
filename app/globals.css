@@ -106,7 +106,7 @@
     background-color: hsl(var(--background));
     background-image:
       radial-gradient(ellipse 80% 50% at 20% 80%, hsla(350, 60%, 20%, 0.15), transparent),
-      radial-gradient(ellipse 60% 60% at 80% 20%, hsla(280, 30%, 18%, 0.12), transparent),
+      radial-gradient(ellipse 100% 50% at 50% 0%, hsla(280, 30%, 18%, 0.12), transparent),
       radial-gradient(ellipse 50% 50% at 50% 50%, hsla(30, 30%, 15%, 0.10), transparent);
     background-attachment: fixed;
   }
