@@ -112,31 +112,20 @@
   * {
     @apply border-border;
   }
+  /* Ambient gradient on html root element.
+     Per CSS spec the root element's background paints the entire canvas
+     (viewport + safe areas), which eliminates iOS Safari safe-area gaps
+     that plague position:fixed pseudo-elements. */
   html {
-    background-color: hsl(var(--background));
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, transparent 40%),
+      radial-gradient(ellipse 80% 50% at 20% 80%, hsla(350, 60%, 20%, 0.15), transparent),
+      radial-gradient(ellipse 50% 50% at 50% 50%, hsla(30, 30%, 15%, 0.10), transparent),
+      hsl(var(--background));
   }
   body {
     @apply text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
-    background-color: hsl(var(--background));
-  }
-
-  /* Fixed ambient gradient — pseudo-element instead of background-attachment:fixed
-     (background-attachment:fixed is broken on iOS Safari).
-     Generous negative insets cover iOS Safari safe-area rendering gaps. */
-  body::before {
-    content: '';
-    position: fixed;
-    top: -100px;
-    left: 0;
-    right: 0;
-    bottom: -100px;
-    z-index: -1;
-    pointer-events: none;
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, transparent 40%),
-      radial-gradient(ellipse 80% 50% at 20% 80%, hsla(350, 60%, 20%, 0.15), transparent),
-      radial-gradient(ellipse 50% 50% at 50% 50%, hsla(30, 30%, 15%, 0.10), transparent);
   }
 }
 
