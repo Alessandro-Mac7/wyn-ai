@@ -1,5 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import type { Venue, Wine, WineWithRatings, WineCreateInput, WineUpdateInput } from '@/types'
+import { syncEmbedding, updateEmbeddingAvailability, deleteEmbedding } from './embedding-pipeline'
+import { isEmbeddingAvailable } from './embeddings'
 
 // ============================================
 // SUPABASE CLIENT
@@ -152,6 +154,14 @@ export async function createWine(
     console.error('Error creating wine:', error)
     return null
   }
+
+  // Trigger async embedding for new wine (fire-and-forget)
+  if (data && isEmbeddingAvailable()) {
+    syncEmbedding(data.id).catch((err) => {
+      console.error('[EMBEDDING] Failed to embed new wine:', err)
+    })
+  }
+
   return data
 }
 
@@ -185,10 +195,25 @@ export async function updateWine(
     console.error('Error updating wine:', error)
     return null
   }
+
+  // Trigger async re-embedding after update (fire-and-forget)
+  if (data && isEmbeddingAvailable()) {
+    syncEmbedding(data.id).catch((err) => {
+      console.error('[EMBEDDING] Failed to re-embed updated wine:', err)
+    })
+  }
+
   return data
 }
 
 export async function deleteWine(wineId: string): Promise<boolean> {
+  // Delete embedding first (fire-and-forget, non-blocking)
+  if (isEmbeddingAvailable()) {
+    deleteEmbedding(wineId).catch((err) => {
+      console.error('[EMBEDDING] Failed to delete embedding:', err)
+    })
+  }
+
   const { error } = await supabase
     .from('wines')
     .delete()
@@ -214,6 +239,14 @@ export async function toggleWineAvailability(
     console.error('Error toggling wine availability:', error)
     return false
   }
+
+  // Fast path: update embedding availability flag without re-embedding
+  if (isEmbeddingAvailable()) {
+    updateEmbeddingAvailability(wineId, available).catch((err) => {
+      console.error('[EMBEDDING] Failed to update embedding availability:', err)
+    })
+  }
+
   return true
 }
 

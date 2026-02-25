@@ -6,6 +6,9 @@ import {
   ENRICHMENT_MAX_RETRIES,
   ENRICHMENT_RETRY_DELAY_MS,
 } from '@/config/constants'
+import { syncEmbedding } from './embedding-pipeline'
+import { isEmbeddingAvailable } from './embeddings'
+import { generateWineKnowledge } from './wine-knowledge'
 import type { Wine, WineWithRatings, ChatMessage, LLMResponse } from '@/types'
 
 // Retry with exponential backoff
@@ -247,7 +250,20 @@ export async function enrichWine(wine: Wine): Promise<WineWithRatings> {
       })
       .eq('id', job.id)
 
-    return { ...wine, ratings: savedRatings }
+    // Re-embed wine after enrichment (content hash changed due to new data)
+    if (isEmbeddingAvailable()) {
+      syncEmbedding(wine.id).catch((err) => {
+        console.error('[EMBEDDING] Failed to re-embed after enrichment:', err)
+      })
+    }
+
+    // Trigger knowledge generation async (fire-and-forget)
+    const wineWithRatings: WineWithRatings = { ...wine, ratings: savedRatings }
+    generateWineKnowledge(wineWithRatings).catch((err) => {
+      console.error('[KNOWLEDGE] Failed to generate knowledge after enrichment:', err)
+    })
+
+    return wineWithRatings
   } catch (error) {
     console.error('Enrichment failed:', error)
 

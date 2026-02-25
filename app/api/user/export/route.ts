@@ -90,6 +90,12 @@ async function manualExport(
       .select('*')
       .eq('user_id', userId)
 
+    // Fetch memory fragments
+    const { data: memories } = await supabase
+      .from('memory_fragments')
+      .select('*')
+      .eq('user_id', userId)
+
     const result: UserDataExport = {
       exported_at: new Date().toISOString(),
       user_id: userId,
@@ -97,6 +103,7 @@ async function manualExport(
       chat_sessions: chatSessions ?? [],
       preferences: preferences ?? ({} as Record<string, never>),
       wine_scans: wineScans ?? [],
+      memories: memories ?? [],
     }
 
     return NextResponse.json(result, {

@@ -2,7 +2,7 @@
 
 import { forwardRef } from 'react'
 import { motion } from 'framer-motion'
-import { Wine, Sparkles } from 'lucide-react'
+import { Wine, Sparkles, QrCode, MapPin } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import { messageVariants } from '@/lib/motion'
 import type { ChatMessage as MessageType } from '@/types'
@@ -10,6 +10,9 @@ import type { ChatMessage as MessageType } from '@/types'
 interface ChatMessageProps {
   message: MessageType
   isNew?: boolean
+  showCta?: boolean
+  ctaVariant?: 'scan-qr' | 'discover-venues'
+  onCtaAction?: (action: 'scan-qr' | 'discover-venues') => void
 }
 
 // Format timestamp
@@ -21,8 +24,43 @@ function formatTime(date?: Date): string {
   })
 }
 
+// Contextual CTA component
+interface ContextualCtaProps {
+  variant: 'scan-qr' | 'discover-venues'
+  onAction: (action: 'scan-qr' | 'discover-venues') => void
+}
+
+function ContextualCta({ variant, onAction }: ContextualCtaProps) {
+  const config = {
+    'scan-qr': {
+      icon: QrCode,
+      text: 'Sei al ristorante? Scannerizza il QR',
+    },
+    'discover-venues': {
+      icon: MapPin,
+      text: 'Scopri ristoranti WYN vicino a te',
+    },
+  }
+
+  const { icon: Icon, text } = config[variant]
+
+  return (
+    <motion.button
+      className="mt-2 flex items-center gap-2 text-xs text-muted-foreground hover:text-wine transition-colors px-3 py-1.5 rounded-lg bg-wine/5 border border-wine/10 hover:bg-wine/10 hover:border-wine/20"
+      initial={{ opacity: 0, y: 5 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.5, duration: 0.3 }}
+      onClick={() => onAction(variant)}
+      type="button"
+    >
+      <Icon className="h-3.5 w-3.5 flex-shrink-0" />
+      <span>{text}</span>
+    </motion.button>
+  )
+}
+
 export const ChatMessage = forwardRef<HTMLDivElement, ChatMessageProps>(
-  function ChatMessage({ message, isNew = true }, ref) {
+  function ChatMessage({ message, isNew = true, showCta = false, ctaVariant, onCtaAction }, ref) {
     const isUser = message.role === 'user'
 
     // User message style
@@ -79,6 +117,11 @@ export const ChatMessage = forwardRef<HTMLDivElement, ChatMessageProps>(
           <p className="text-xs text-muted-foreground mt-1.5">
             {formatTime()}
           </p>
+
+          {/* CTA - after timestamp */}
+          {showCta && ctaVariant && onCtaAction && (
+            <ContextualCta variant={ctaVariant} onAction={onCtaAction} />
+          )}
         </div>
       </motion.div>
     )

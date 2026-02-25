@@ -64,6 +64,48 @@ export interface WineWithRatings extends Wine {
   ratings: WineRating[]
 }
 
+// ============================================
+// WINE KNOWLEDGE TYPES (Deep Sommelier Knowledge)
+// ============================================
+
+export interface WineKnowledge {
+  id: string
+  wine_id: string
+  producer_history: string | null
+  producer_philosophy: string | null
+  terroir_description: string | null
+  vineyard_details: string | null
+  soil_type: string | null
+  climate: string | null
+  vinification_process: string | null
+  aging_method: string | null
+  aging_duration: string | null
+  vintage_notes: string | null
+  vintage_quality: 'eccellente' | 'ottima' | 'buona' | 'media' | 'scarsa' | null
+  food_pairings: FoodPairingDetailed[] | null
+  serving_temperature: string | null
+  decanting_time: string | null
+  glass_type: string | null
+  anecdotes: string | null
+  curiosities: string[] | null
+  knowledge_version: number
+  reviewed_at: string | null
+  reviewed_by: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface FoodPairingDetailed {
+  category: string
+  dishes: string[]
+  match: 'eccellente' | 'ottimo' | 'buono'
+  notes?: string
+}
+
+export interface WineWithKnowledge extends WineWithRatings {
+  knowledge?: WineKnowledge | null
+}
+
 export interface EnrichmentJob {
   id: string
   wine_id: string

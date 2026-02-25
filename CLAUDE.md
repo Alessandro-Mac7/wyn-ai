@@ -21,37 +21,36 @@
 ## 2. ARCHITECTURE OVERVIEW
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         WYN ARCHITECTURE                             │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                      │
-│  ┌──────────────────────────────────────────────────────────────┐   │
-│  │                      NEXT.JS 14 APP                           │   │
-│  │  ┌─────────────────────────────────────────────────────────┐ │   │
-│  │  │                    APP ROUTER                            │ │   │
-│  │  │                                                          │ │   │
-│  │  │  PAGES                           API ROUTES              │ │   │
-│  │  │  ├── /              (landing)    ├── /api/chat          │ │   │
-│  │  │  ├── /chat          (general)    ├── /api/admin/login   │ │   │
-│  │  │  ├── /v/[slug]      (venue)      ├── /api/admin/wines   │ │   │
-│  │  │  └── /admin/*       (dashboard)  └── /api/enrichment    │ │   │
-│  │  │                                                          │ │   │
-│  │  └─────────────────────────────────────────────────────────┘ │   │
-│  │                                                               │   │
-│  │  ┌─────────────────────────────────────────────────────────┐ │   │
-│  │  │                    LIB LAYER                             │ │   │
-│  │  │  supabase.ts │ llm.ts │ prompts.ts │ enrichment.ts      │ │   │
-│  │  └─────────────────────────────────────────────────────────┘ │   │
-│  └──────────────────────────────────────────────────────────────┘   │
-│                              │                                       │
-│              ┌───────────────┼───────────────┐                      │
-│              ▼               ▼               ▼                      │
-│  ┌───────────────┐  ┌───────────────┐  ┌───────────────┐           │
-│  │   SUPABASE    │  │   LLM APIs    │  │  WEB SPEECH   │           │
-│  │  (PostgreSQL) │  │ Groq / Claude │  │     API       │           │
-│  └───────────────┘  └───────────────┘  └───────────────┘           │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────┐
+│                     WYN ARCHITECTURE v2                               │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                       │
+│  NEXT.JS 14 APP                                                       │
+│  ├── Pages: /, /chat, /v/[slug], /scan, /admin/*, /internal/*        │
+│  ├── API:   /api/chat (RAG-aware), /api/scan-label, /api/embeddings  │
+│  │          /api/venues/discover, /api/cron/memory-decay              │
+│  └── Lib:   llm.ts, prompts.ts, rag.ts, embeddings.ts,              │
+│             memory.ts, wine-knowledge.ts, vision.ts                   │
+│                                                                       │
+│  ┌──────────────────┐  ┌─────────────────┐  ┌──────────────────┐    │
+│  │  SUPABASE        │  │  LLM APIs       │  │  EMBEDDING API   │    │
+│  │  PostgreSQL      │  │  Groq / Claude  │  │  OpenAI          │    │
+│  │  + pgvector      │  │  / GPT-4o-mini  │  │  3-small (1536d) │    │
+│  └──────┬───────────┘  └─────────────────┘  └──────────────────┘    │
+│         │                                                             │
+│  TABLES:                                                              │
+│  ├── venues, wines, wine_ratings      (core)                         │
+│  ├── wine_embeddings (vector 1536)    (RAG - Phase 1)                │
+│  ├── wine_knowledge                   (deep knowledge - Phase 2)     │
+│  ├── memory_fragments (vector 1536)   (user memory - Phase 3)        │
+│  └── user_profiles, chat_sessions     (auth + sessions)              │
+│                                                                       │
+│  KEY FUNCTIONS (PostgreSQL):                                          │
+│  ├── match_wines()          → hybrid vector + SQL search              │
+│  ├── match_memories()       → weight-adjusted memory search           │
+│  └── decay_memory_weights() → stale memory management                │
+│                                                                       │
+└──────────────────────────────────────────────────────────────────────┘
 ```
 
 ### 2.1 Deployment Model
@@ -59,21 +58,31 @@
 | Component | Platform | Tier |
 |-----------|----------|------|
 | Frontend + API | Vercel | Free |
-| Database | Supabase | Free |
+| Database + pgvector | Supabase | Free |
 | LLM (dev) | Groq | Free |
 | LLM (prod) | Anthropic | Pay-per-use |
+| Embeddings | OpenAI text-embedding-3-small | Pay-per-use (~$0.02/1M tokens) |
 
 ### 2.2 Data Flow
 
 ```
-Customer Journey:
+Customer Journey (Venue Mode):
 QR Code → /v/[slug] → Load venue wines → Chat with AI → Get recommendations
+  └── If >50 wines: RAG path (embed query → match_wines → top 8 in prompt)
+  └── If <=50 wines: Full context (all wines in prompt)
+
+Customer Journey (General Mode):
+/chat → Ask wine questions → AI responds → Label scan / Venue discovery CTAs
+  └── Memory: preferences extracted post-session, injected in next chat
+  └── Label scan: camera icon → /api/scan-label → wine info as chat message
+  └── CTAs: every 3rd message, guide to venue mode
 
 Venue Admin Journey:
-/admin → Login (Supabase Auth) → /admin/dashboard → Add/Toggle wines → AI Enrichment (async)
+/admin → Login → /admin/dashboard → Add/Toggle wines → AI Enrichment (async)
+  └── Enrichment → Knowledge generation → Embedding pipeline → wine_embeddings
 
 Super Admin Journey:
-/admin → Login (Supabase Auth) → /internal/venues → Censimento nuovi locali
+/admin → Login → /internal/venues → Censimento nuovi locali
 ```
 
 ---
@@ -93,18 +102,19 @@ Super Admin Journey:
 │  │  • Venue        │  │  • Wine         │  │  • Message      │     │
 │  │  • VenueAuth    │  │  • WineType     │  │  • Conversation │     │
 │  │  • Slug         │  │  • Enrichment   │  │  • Context      │     │
-│  │                 │  │  • Rating       │  │                 │     │
+│  │                 │  │  • Rating       │  │  • Memory       │     │
 │  └────────┬────────┘  └────────┬────────┘  └────────┬────────┘     │
 │           │                    │                    │               │
 │           └────────────────────┼────────────────────┘               │
 │                                │                                     │
-│                    ┌───────────┴───────────┐                        │
-│                    │   RECOMMENDATION CTX  │                        │
-│                    │                       │                        │
-│                    │  • WineGuide          │                        │
-│                    │  • SommelierPrompt    │                        │
-│                    │  • FoodPairing        │                        │
-│                    └───────────────────────┘                        │
+│  ┌─────────────────┐  ┌───────┴───────────┐  ┌─────────────────┐   │
+│  │  EMBEDDING CTX  │  │ RECOMMENDATION CTX│  │   MEMORY CTX    │   │
+│  │                 │  │                   │  │                 │   │
+│  │  • WineEmbedding│  │  • WineGuide     │  │  • Fragment     │   │
+│  │  • RAG Search   │  │  • SommelierPrompt│  │  • Extraction  │   │
+│  │  • Query Intent │  │  • FoodPairing   │  │  • Decay        │   │
+│  │  • Knowledge    │  │  • VenueDiscovery│  │  • GDPR         │   │
+│  └─────────────────┘  └──────────────────┘  └─────────────────┘   │
 │                                                                      │
 └─────────────────────────────────────────────────────────────────────┘
 ```
@@ -113,9 +123,12 @@ Super Admin Journey:
 
 | Entity | Description | Key Fields |
 |--------|-------------|------------|
-| **Venue** | Restaurant/bar using WYN | id, slug, name, description |
+| **Venue** | Restaurant/bar using WYN | id, slug, name, description, latitude, longitude |
 | **Wine** | Wine in venue's list | id, venue_id, name, type, price, available |
 | **WineEnriched** | Wine with AI data | grape_varieties, tasting_notes, ratings |
+| **WineEmbedding** | Vector representation | wine_id, venue_id, embedding(1536), content_hash |
+| **WineKnowledge** | Deep sommelier knowledge | wine_id, producer_history, terroir, pairings, curiosities |
+| **MemoryFragment** | User preference/memory | user_id, fragment_type, content, embedding, weight |
 | **Message** | Chat message | id, role, content, timestamp |
 | **WineGuide** | Rating publication | id, name, ratingSystem, philosophy |
 
@@ -129,6 +142,12 @@ RULE-004: AI NEVER mentions prices in general mode
 RULE-005: Enrichment failure does NOT block wine availability
 RULE-006: Ratings with confidence < 0.4 are discarded
 RULE-007: One admin account per venue (MVP)
+RULE-008: Venues with >50 wines use RAG search; <=50 use full context
+RULE-009: Memory extraction requires authenticated user with profiling_consent=true
+RULE-010: Memory fragments decay 5%/month weight when not accessed for 30 days
+RULE-013: Deep knowledge generation uses best available model for accuracy
+RULE-014: General mode has NO rate limit - it's the vertical app core
+RULE-015: General mode responses include contextual CTA toward venue mode
 ```
 
 ---
@@ -150,12 +169,17 @@ RULE-007: One admin account per venue (MVP)
 
 | ID | Decision | Status |
 |----|----------|--------|
-| ADR-001 | No vector DB for MVP (wines fit in context) | ✅ Accepted |
+| ADR-001 | pgvector for venues >50 wines; full context for <=50 | ✅ Implemented (replaces "no vector DB") |
 | ADR-002 | JSONB for ratings (flexible schema) | ✅ Accepted |
 | ADR-003 | Async enrichment (non-blocking UX) | ✅ Accepted |
 | ADR-004 | Supabase Auth with RLS and two-tier roles | ✅ Implemented |
 | ADR-005 | Configurable wine guides system | ✅ Accepted |
 | ADR-006 | Italian-only UI for MVP | ✅ Accepted |
+| ADR-007 | OpenAI text-embedding-3-small for embeddings (1536d, cheap) | ✅ Implemented |
+| ADR-008 | Content hash to skip unchanged re-embeddings | ✅ Implemented |
+| ADR-009 | User memories are user-scoped, not venue-scoped (cross-venue) | ✅ Implemented |
+| ADR-010 | Memory decay via cron, min weight 0.1 (never fully forgotten) | ✅ Implemented |
+| ADR-011 | CTAs are pure UI, zero LLM token cost | ✅ Implemented |
 
 ---
 
@@ -164,56 +188,98 @@ RULE-007: One admin account per venue (MVP)
 ```
 wyn/
 ├── CLAUDE.md                    # THIS FILE - Source of truth
+├── docs/
+│   └── ARCHITECTURE-RAG-MEMORY.md  # Technical reference for RAG/Memory systems
 ├── mockup/                      # UI/UX Design Reference (MUST follow)
-│   ├── home.png                 # Home/Chat page design
-│   ├── about.png                # "Scopri WYN" feature page
-│   ├── admin-login.png          # Admin authentication
-│   ├── admin-paanel.png         # Wine management dashboard
-│   └── add-new-wine.png         # Wine creation modal
-├── plans/                       # Change plans (explore→plan→implement→review)
+├── plans/
+│   ├── PLAN-PLATFORM-EVOLUTION-V2.md   # Main evolution plan (Phases 1-5)
+│   └── PLAN-WIDGET-API-SDK.md          # Deferred: widget + public API
 ├── supabase/
 │   └── migrations/
-│       ├── 001_initial_schema.sql
-│       └── 002_auth_migration.sql  # Supabase Auth + RLS policies
-├── app/                         # Next.js App Router
-│   ├── layout.tsx
-│   ├── page.tsx
-│   ├── globals.css
-│   ├── chat/
-│   ├── v/[slug]/
+│       ├── 001_add_recommended_column.sql
+│       ├── 002_auth_migration.sql       # Supabase Auth + RLS
+│       ├── 003_venue_location.sql       # Venue geolocation
+│       ├── 004_app_settings.sql
+│       ├── 005_user_profiles.sql        # User profiles + consent
+│       ├── 006_fix_user_profile_trigger.sql
+│       ├── 007_pgvector_wine_embeddings.sql  # pgvector + match_wines()
+│       ├── 008_wine_knowledge.sql            # Deep wine knowledge
+│       └── 009_memory_fragments.sql          # Memory + match_memories() + decay
+├── app/
+│   ├── layout.tsx, page.tsx, globals.css
+│   ├── chat/page.tsx            # Main chat (general + venue, label scan, CTAs)
+│   ├── scan/page.tsx            # Standalone label scanner
+│   ├── v/[slug]/page.tsx        # Venue entry via QR
 │   ├── admin/
-│   │   ├── page.tsx             # Login page
-│   │   └── dashboard/
-│   │       └── page.tsx         # Venue admin dashboard
-│   ├── internal/
-│   │   └── venues/
-│   │       └── page.tsx         # Super admin - venue registration
+│   │   ├── page.tsx             # Login
+│   │   └── dashboard/page.tsx   # Venue admin dashboard
+│   ├── internal/venues/page.tsx # Super admin
 │   └── api/
-│       ├── chat/
-│       ├── enrichment/
-│       └── internal/
-│           └── venues/
-│               └── route.ts     # Super admin API
+│       ├── chat/route.ts             # RAG-aware chat (RULE-008)
+│       ├── scan-label/route.ts       # Vision API label scan
+│       ├── enrichment/route.ts       # Wine AI enrichment
+│       ├── embeddings/               # Embedding pipeline APIs
+│       │   ├── route.ts              # Batch embed
+│       │   ├── sync/route.ts         # Single wine sync
+│       │   └── backfill/route.ts     # Backfill existing wines
+│       ├── venues/
+│       │   ├── nearby/route.ts       # Haversine nearby search
+│       │   └── discover/route.ts     # Cross-venue wine discovery (RAG)
+│       ├── admin/wines/[wineId]/knowledge/route.ts  # Knowledge review
+│       ├── chat-session/analyze/route.ts  # Memory extraction post-session
+│       ├── cron/memory-decay/route.ts     # Weekly memory weight decay
+│       ├── user/
+│       │   ├── memories/route.ts     # GDPR: list/delete memories
+│       │   └── export/route.ts       # GDPR: data export (includes memories)
+│       └── internal/venues/route.ts
 ├── components/
 │   ├── chat/
+│   │   ├── ChatMessage.tsx       # Message + contextual CTAs
+│   │   ├── ChatMessages.tsx      # Message list + CTA logic
+│   │   ├── ChatInput.tsx         # Input with ImageAttachment
+│   │   ├── ChatContainer.tsx     # Alternative chat wrapper with scan
+│   │   ├── VenueDiscoveryCard.tsx  # Nearby venues with matching wines
+│   │   ├── VenueSelector.tsx     # Venue search/select modal
+│   │   └── ...
+│   ├── scan/
+│   │   └── ScanResultCard.tsx    # Label scan result display
 │   ├── admin/
-│   ├── ui/
-│   └── Providers.tsx            # AuthProvider wrapper
-├── contexts/
-│   ├── auth-context.tsx         # Supabase Auth context
-│   └── session-context.tsx      # Chat session context
-├── hooks/
-│   └── useAdmin.ts              # Admin dashboard hook (self-contained auth)
+│   │   └── WineKnowledgePanel.tsx  # Knowledge review UI
+│   ├── auth/
+│   │   └── PrivacySettings.tsx   # User memory management
+│   └── ui/
 ├── lib/
-│   ├── supabase.ts              # Legacy Supabase client
-│   ├── supabase-auth.ts         # Browser client for auth
-│   ├── supabase-auth-server.ts  # Server client + admin functions
-│   ├── llm.ts
-│   ├── prompts.ts
-│   └── enrichment.ts
-├── middleware.ts                # Route protection (auth + role checks)
+│   ├── supabase.ts              # Legacy client + wine CRUD
+│   ├── supabase-auth.ts         # Browser auth client
+│   ├── supabase-auth-server.ts  # Server client + admin ops
+│   ├── llm.ts                   # LLM client (Groq/Anthropic)
+│   ├── prompts.ts               # System prompts (general + venue + RAG)
+│   ├── enrichment.ts            # Wine AI enrichment pipeline
+│   ├── embeddings.ts            # OpenAI embedding client
+│   ├── wine-chunks.ts           # Wine → embedding-optimized text
+│   ├── embedding-pipeline.ts    # Orchestrator: embed/sync/backfill
+│   ├── rag.ts                   # Semantic wine search (searchWinesRAG)
+│   ├── query-parser.ts          # Italian query intent parser (regex)
+│   ├── wine-knowledge.ts        # Deep knowledge generation via LLM
+│   ├── memory.ts                # Memory extraction + retrieval + format
+│   ├── vision.ts                # Vision API for label scanning
+│   ├── wine-matcher.ts          # Match scanned label to venue wines
+│   ├── geolocation.ts           # Browser geolocation helpers
+│   └── rate-limit.ts            # In-memory rate limiting
 ├── config/
+│   ├── constants.ts             # RAG_THRESHOLD, RAG_TOP_K, MEMORY_* constants
+│   └── wine-guides.config.ts
+├── contexts/
+│   ├── auth-context.tsx
+│   └── session-context.tsx
+├── hooks/
+│   ├── useAdmin.ts
+│   ├── useChat.ts
+│   └── useVenue.ts
 ├── types/
+│   ├── index.ts                 # Wine, Venue, WineKnowledge types
+│   └── user.ts                  # MemoryFragment, UserProfile types
+├── middleware.ts
 └── public/
 ```
 
@@ -427,8 +493,9 @@ docs(readme): add deployment instructions
 ```
 
 **Important:**
-- NEVER add "Co-Authored-By: Claude" or any Claude/AI mention in commits
-- Keep commits clean and professional
+- NEVER mention Claude, Claude Code, AI, or any AI tool in commits, PRs, merge messages, branch names, or any git-related content
+- NEVER add "Co-Authored-By" or "Generated with" lines
+- Keep all git history clean and professional
 
 ### 8.2 Branch Strategy
 
@@ -488,6 +555,12 @@ SUPABASE_SERVICE_ROLE_KEY=eyJxxx...  # Server-side only, for admin operations
 # LLM
 GROQ_API_KEY=gsk_xxx...
 ANTHROPIC_API_KEY=sk-ant-xxx...  # Production
+
+# Embeddings + Vision (OpenAI)
+OPENAI_API_KEY=sk-...              # Used for embeddings (text-embedding-3-small) and vision (GPT-4o-mini)
+
+# Memory decay cron
+CRON_SECRET=...                    # Auth for /api/cron/memory-decay
 
 # App
 NEXT_PUBLIC_APP_NAME=WYN
@@ -680,13 +753,126 @@ See `plans/PLAN-007-frontend-ui-implementation.md` for detailed implementation s
 
 ---
 
-## 15. QUICK REFERENCE
+## 15. RAG ARCHITECTURE
 
-### 15.1 Key Files
+> Detailed reference: `docs/ARCHITECTURE-RAG-MEMORY.md`
+
+### 15.1 Overview
+
+RAG (Retrieval-Augmented Generation) replaces the full wine list in the LLM prompt with only the most relevant wines. This reduces token usage from ~150K to ~3K for large venues.
+
+### 15.2 Decision Logic (RULE-008)
+
+```
+Venue wines count:
+  <=50 wines → Full context path (all wines in prompt, no embeddings)
+  >50 wines  → RAG path (embed query → match_wines() → top 8 in prompt)
+```
+
+Constants in `config/constants.ts`:
+- `RAG_THRESHOLD = 50` (wines cutoff)
+- `RAG_TOP_K = 8` (max wines returned)
+- `RAG_SIMILARITY_THRESHOLD = 0.4` (minimum cosine similarity)
+
+### 15.3 Indexing Pipeline
+
+```
+Wine CRUD/Enrichment → wineToChunkText() → embedText() → wine_embeddings (upsert)
+                          ↓ includes knowledge if available
+                          ↓ content_hash check: skip if unchanged
+```
+
+### 15.4 Search Pipeline
+
+```
+User query → parseQueryIntent() → embedText(query) → match_wines(embedding, venue_id, filters)
+           → top 8 WineWithRatings → getVenueSystemPromptRAG() → LLM
+```
+
+### 15.5 Wine Knowledge
+
+Each wine gets deep sommelier knowledge (producer_history, terroir, pairings, curiosities) generated by LLM after enrichment. Included in chunk text for richer embeddings.
+
+---
+
+## 16. MEMORY SYSTEM
+
+### 16.1 Overview
+
+User memory persists preferences across sessions and venues. Only for authenticated users with `profiling_consent=true` (RULE-009, GDPR compliant).
+
+### 16.2 Fragment Types
+
+| Type | Example |
+|------|---------|
+| `preference` | "Preferisce Barolo e rossi strutturati" |
+| `dislike` | "Non gradisce vini dolci" |
+| `purchase` | "Ha ordinato Brunello di Montalcino" |
+| `feedback` | "Ha apprezzato il consiglio sul Barbaresco" |
+| `context` | "Cena romantica per due" |
+| `occasion` | "Anniversario di matrimonio" |
+
+### 16.3 Lifecycle
+
+```
+Post-session → LLM extracts fragments → embed → dedup (similarity >0.9) → store
+Next chat    → embed query → match_memories() → inject top 5 in prompt
+Weekly cron  → decay_memory_weights() (stale >30 days: -5%, min 0.1)
+GDPR         → GET/DELETE /api/user/memories, included in /api/user/export
+```
+
+### 16.4 Cross-Venue
+
+Memories are user-scoped (not venue-scoped). `source_venue_id` tracks origin but does NOT restrict retrieval. Preferences expressed at Venue A inform recommendations at Venue B.
+
+---
+
+## 17. VERTICAL APP FEATURES
+
+### 17.1 Label Scanning
+
+Camera icon in chat input → captures image → `POST /api/scan-label` (Vision API) → `ScanResultCard` above input.
+- Venue mode: matches against venue wine list ("Questo vino e' in carta!")
+- General mode: shows wine info with "Chiedi al sommelier" button
+
+### 17.2 Venue Discovery
+
+`POST /api/venues/discover` → cross-venue RAG search → `VenueDiscoveryCard` showing nearby venues with matching wines. Uses pgvector embeddings across all venues + optional Haversine geolocation filtering.
+
+### 17.3 Contextual CTAs (RULE-015)
+
+Every 3rd assistant message in general mode shows a subtle CTA:
+- Alternates: "Sei al ristorante? Scannerizza il QR" / "Scopri ristoranti WYN vicino a te"
+- Pure UI element, zero LLM token cost
+- Never shown in venue mode
+
+---
+
+## 18. DATABASE MIGRATIONS
+
+| # | File | Description |
+|---|------|-------------|
+| 001 | `001_add_recommended_column.sql` | Initial schema |
+| 002 | `002_auth_migration.sql` | Supabase Auth + RLS |
+| 003 | `003_venue_location.sql` | Venue geolocation (lat/lng) |
+| 004 | `004_app_settings.sql` | App settings |
+| 005 | `005_user_profiles.sql` | User profiles + profiling consent |
+| 006 | `006_fix_user_profile_trigger.sql` | Fix profile trigger |
+| 007 | `007_pgvector_wine_embeddings.sql` | pgvector + wine_embeddings + match_wines() |
+| 008 | `008_wine_knowledge.sql` | Deep wine knowledge table |
+| 009 | `009_memory_fragments.sql` | Memory fragments + match_memories() + decay |
+
+All migrations are **additive** (no destructive changes). After 007-009: run `POST /api/embeddings/backfill`.
+
+---
+
+## 19. QUICK REFERENCE
+
+### 19.1 Key Files
 
 | Purpose | Location |
 |---------|----------|
-| Types | `types/index.ts` |
+| Types | `types/index.ts`, `types/user.ts` |
 | DB Client (legacy) | `lib/supabase.ts` |
 | Auth Client (browser) | `lib/supabase-auth.ts` |
 | Auth Client (server) | `lib/supabase-auth-server.ts` |
@@ -695,11 +881,20 @@ See `plans/PLAN-007-frontend-ui-implementation.md` for detailed implementation s
 | LLM Client | `lib/llm.ts` |
 | AI Prompts | `lib/prompts.ts` |
 | Enrichment | `lib/enrichment.ts` |
+| Embedding Client | `lib/embeddings.ts` |
+| Wine Chunking | `lib/wine-chunks.ts` |
+| Embedding Pipeline | `lib/embedding-pipeline.ts` |
+| RAG Search | `lib/rag.ts` |
+| Query Parser | `lib/query-parser.ts` |
+| Wine Knowledge | `lib/wine-knowledge.ts` |
+| Memory System | `lib/memory.ts` |
+| Vision (label scan) | `lib/vision.ts` |
+| RAG Constants | `config/constants.ts` |
 | Wine Guides | `config/wine-guides.config.ts` |
-| Auth Migration | `supabase/migrations/002_auth_migration.sql` |
+| Architecture Docs | `docs/ARCHITECTURE-RAG-MEMORY.md` |
 | UI Mockups | `mockup/*.png` |
 
-### 15.2 Common Commands
+### 19.2 Common Commands
 
 ```bash
 pnpm dev          # Start dev server
@@ -709,7 +904,7 @@ pnpm lint         # Lint code
 pnpm typecheck    # TypeScript check
 ```
 
-### 15.3 Useful Links
+### 19.3 Useful Links
 
 - [Next.js Docs](https://nextjs.org/docs)
 - [Supabase Docs](https://supabase.com/docs)
@@ -723,8 +918,9 @@ pnpm typecheck    # TypeScript check
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0.0 | 2024-12-30 | Initial | Baseline |
-| 1.1.0 | 2025-01-05 | Claude | Supabase Auth migration, two-tier roles, RLS policies |
-| 1.2.0 | 2025-01-09 | Claude | Added mandatory pre-push checklist (lint, tsc, build) |
+| 1.1.0 | 2025-01-05 | - | Supabase Auth migration, two-tier roles, RLS policies |
+| 1.2.0 | 2025-01-09 | - | Added mandatory pre-push checklist (lint, tsc, build) |
+| 2.0.0 | 2026-02-25 | - | v2 architecture: RAG, pgvector, wine knowledge, user memory, vertical app features, label scan, venue discovery, CTAs |
 
 ---
 
