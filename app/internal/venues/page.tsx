@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Building2, Mail, LogOut, Settings,
-  MapPin, Navigation, Plus, Pencil, X, Loader2, Wine, Search, Save, Check
+  MapPin, Navigation, Plus, Pencil, X, Loader2, Wine, Search, Save, Check, Database
 } from 'lucide-react'
 import { createSupabaseBrowserClient } from '@/lib/supabase-auth'
 import { Button } from '@/components/ui/button'
@@ -113,6 +113,10 @@ export default function VenueManagementPage() {
   const [savingSettings, setSavingSettings] = useState(false)
   const [settingsSaved, setSettingsSaved] = useState(false)
 
+  // Backfill state
+  const [isBackfilling, setIsBackfilling] = useState(false)
+  const [backfillResult, setBackfillResult] = useState<string | null>(null)
+
   // Fetch venues
   const fetchVenues = useCallback(async () => {
     setLoadingVenues(true)
@@ -165,6 +169,26 @@ export default function VenueManagementPage() {
       console.error('Error saving settings:', error)
     } finally {
       setSavingSettings(false)
+    }
+  }
+
+  // Run embeddings backfill
+  const runBackfill = async () => {
+    setIsBackfilling(true)
+    setBackfillResult(null)
+    try {
+      const res = await fetch('/api/embeddings/backfill', { method: 'POST' })
+      const data = await res.json()
+      if (res.ok) {
+        setBackfillResult(`${data.total_embedded} embedded, ${data.total_skipped} skipped, ${data.total_failed} failed`)
+        setTimeout(() => setBackfillResult(null), 5000)
+      } else {
+        setBackfillResult(`Errore: ${data.error}`)
+      }
+    } catch {
+      setBackfillResult('Errore di connessione')
+    } finally {
+      setIsBackfilling(false)
     }
   }
 
@@ -432,6 +456,34 @@ export default function VenueManagementPage() {
             <p className="text-xs text-muted-foreground mt-1">
               0 = controllo disabilitato
             </p>
+          </div>
+
+          {/* Backfill Embeddings */}
+          <div className="mt-6 pt-4 border-t border-white/[0.08]">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium">Embeddings</p>
+                <p className="text-xs text-muted-foreground">
+                  Rigenera i vettori per la ricerca semantica di tutti i locali
+                </p>
+              </div>
+              <Button
+                onClick={runBackfill}
+                disabled={isBackfilling}
+                size="sm"
+                variant="outline"
+              >
+                {isBackfilling ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Database className="h-4 w-4 mr-2" />
+                )}
+                {isBackfilling ? 'Backfill...' : 'Backfill'}
+              </Button>
+            </div>
+            {backfillResult && (
+              <p className="text-xs text-muted-foreground mt-2">{backfillResult}</p>
+            )}
           </div>
         </div>
 
