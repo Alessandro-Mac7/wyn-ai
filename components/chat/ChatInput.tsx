@@ -109,11 +109,11 @@ export function ChatInput({
   const isOverLimit = input.length > CHAT_MAX_CHARACTERS
 
   return (
-    <div className="p-4 border-t border-border safe-bottom">
+    <div className="p-4 border-t border-white/[0.08] safe-bottom">
       <motion.div
         className={cn(
           'flex gap-2 items-end rounded-xl transition-colors',
-          'glass',
+          'glass-input',
           hasError && 'border-destructive'
         )}
         variants={inputVariants}
