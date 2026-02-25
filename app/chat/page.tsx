@@ -16,11 +16,13 @@ import {
   VenueSelector,
   WineMenuPanel,
 } from '@/components/chat'
+import { ImageAttachment } from '@/components/chat/ImageAttachment'
+import { ScanResultCard } from '@/components/scan/ScanResultCard'
 import { InstallPrompt } from '@/components/pwa'
 import { RegisterPrompt } from '@/components/auth'
 import { cn } from '@/lib/utils'
 import { inputVariants } from '@/lib/motion'
-import type { ChatMessage } from '@/types'
+import type { ChatMessage, ScanLabelResponse, ScanResult, WineWithRatings } from '@/types'
 
 // Initial AI welcome message for general chat
 const INITIAL_MESSAGE: ChatMessage = {
@@ -89,6 +91,12 @@ function ChatPageContent() {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const legacyMigrationDone = useRef(false)
   const hasShownHint = useRef(false)
+
+  // Scan state
+  const [scanResult, setScanResult] = useState<ScanLabelResponse | null>(null)
+  const [isScanLoading, setIsScanLoading] = useState(false)
+  const [scanError, setScanError] = useState<string | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
 
 
 
@@ -184,6 +192,72 @@ function ChatPageContent() {
     }
   }, [])
 
+  // Handle wine label scan
+  const handleScan = useCallback(async (imageDataUrl: string) => {
+    setIsScanLoading(true)
+    setScanError(null)
+    setScanResult(null)
+    setImagePreview(imageDataUrl)
+
+    try {
+      const response = await fetch('/api/scan-label', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          image: imageDataUrl,
+          venue_slug: venueData?.slug,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Errore nella scansione')
+      }
+
+      const data: ScanLabelResponse = await response.json()
+      setScanResult(data)
+    } catch (err) {
+      console.error('Scan error:', err)
+      setScanError(err instanceof Error ? err.message : 'Errore nella scansione')
+    } finally {
+      setIsScanLoading(false)
+    }
+  }, [venueData?.slug])
+
+  // Handle closing scan result
+  const handleCloseScanResult = useCallback(() => {
+    setScanResult(null)
+    setScanError(null)
+    setImagePreview(null)
+  }, [])
+
+  // Handle clearing image preview
+  const handleClearImage = useCallback(() => {
+    setImagePreview(null)
+    setScanResult(null)
+    setScanError(null)
+  }, [])
+
+  // Handle selecting a wine from scan results
+  const handleSelectWine = useCallback((wine: WineWithRatings) => {
+    // Send a message about the selected wine
+    sendMessage(`Parlami di questo vino: ${wine.name}${wine.producer ? ` di ${wine.producer}` : ''}`)
+    setScanResult(null)
+    setImagePreview(null)
+  }, [sendMessage])
+
+  // Handle asking about a scanned wine (general mode)
+  const handleAskAboutScannedWine = useCallback((scanned: ScanResult) => {
+    const parts = [scanned.name || 'questo vino']
+    if (scanned.producer) parts.push(`di ${scanned.producer}`)
+    if (scanned.year) parts.push(`(${scanned.year})`)
+    if (scanned.region) parts.push(`dalla regione ${scanned.region}`)
+
+    sendMessage(`Ho scansionato un'etichetta. Parlami di ${parts.join(' ')}. Quali sono le sue caratteristiche e con cosa lo abbineresti?`)
+    setScanResult(null)
+    setImagePreview(null)
+  }, [sendMessage])
+
   // Determine if we're in venue mode
   const isVenueMode = mode === 'venue'
 
@@ -230,6 +304,12 @@ function ChatPageContent() {
   // Toggle wine menu panel
   const handleWineMenuToggle = useCallback(() => {
     setShowWinePanel(prev => !prev)
+  }, [])
+
+  // Handle CTA actions (scan QR or discover venues)
+  const handleCtaAction = useCallback((action: 'scan-qr' | 'discover-venues') => {
+    // Both actions should open the venue selector
+    setShowVenueSelector(true)
   }, [])
 
   // Handle send message
@@ -414,7 +494,12 @@ function ChatPageContent() {
             {/* Messages area - ONLY scrollable section */}
             <div className="flex-1 overflow-y-auto overscroll-contain scrollbar-thin px-4 min-h-0">
               <div className="max-w-3xl mx-auto">
-                <ChatMessages messages={displayMessages} isLoading={isLoading} />
+                <ChatMessages
+                  messages={displayMessages}
+                  isLoading={isLoading}
+                  mode={mode}
+                  onCtaAction={handleCtaAction}
+                />
               </div>
             </div>
 
@@ -446,6 +531,46 @@ function ChatPageContent() {
               )}
             </AnimatePresence>
 
+            {/* Scan error display */}
+            <AnimatePresence>
+              {scanError && (
+                <div className="px-4">
+                  <motion.div
+                    className="max-w-3xl mx-auto w-full p-3 rounded-lg mb-3 flex items-start gap-3 bg-destructive/10 border border-destructive/30"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                  >
+                    <div className="flex-1">
+                      <p className="text-sm text-red-300">{scanError}</p>
+                    </div>
+                    <button
+                      onClick={() => setScanError(null)}
+                      className="flex-shrink-0 p-1 text-muted-foreground hover:text-foreground rounded transition-colors"
+                      aria-label="Chiudi errore"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </motion.div>
+                </div>
+              )}
+            </AnimatePresence>
+
+            {/* Scan result display */}
+            {scanResult && (
+              <div className="px-4 pb-3">
+                <div className="max-w-3xl mx-auto">
+                  <ScanResultCard
+                    result={scanResult}
+                    onClose={handleCloseScanResult}
+                    onSelectWine={handleSelectWine}
+                    onAskAboutScannedWine={handleAskAboutScannedWine}
+                    isVenueMode={isVenueMode}
+                  />
+                </div>
+              </div>
+            )}
+
             {/* Floating glass input - iOS style */}
             <div className="shrink-0 px-3 sm:px-4 pb-[max(0.25rem,env(safe-area-inset-bottom,0px))] sm:pb-2">
               <div className="max-w-3xl mx-auto">
@@ -458,6 +583,17 @@ function ChatPageContent() {
                   variants={inputVariants}
                   animate={error && !errorDismissed ? 'error' : isFocused ? 'focused' : 'idle'}
                 >
+                  {/* Image attachment button - left side */}
+                  <div className="absolute left-2 bottom-2 z-10">
+                    <ImageAttachment
+                      onImageSelect={handleScan}
+                      onImageClear={handleClearImage}
+                      imagePreview={imagePreview}
+                      isLoading={isScanLoading}
+                      disabled={isLoading || isScanLoading}
+                    />
+                  </div>
+
                   <textarea
                     ref={textareaRef}
                     value={input}
@@ -471,7 +607,7 @@ function ChatPageContent() {
                     aria-label="Scrivi un messaggio"
                     aria-multiline="true"
                     className={cn(
-                      'flex-1 resize-none bg-transparent rounded-2xl py-2.5 pl-4 pr-12',
+                      'flex-1 resize-none bg-transparent rounded-2xl py-2.5 pl-16 pr-12',
                       'text-[15px] leading-relaxed focus:outline-none disabled:opacity-50',
                       'min-h-[48px] max-h-[100px] sm:max-h-[120px]',
                       'transition-[height] duration-150 ease-out motion-reduce:transition-none',
