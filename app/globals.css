@@ -202,14 +202,27 @@
 
 /* Safe area padding — uses --sat / --sab tokens.
    In browser mode these are 0px (browser handles safe areas).
-   In standalone PWA they resolve to env(safe-area-inset-*).
-   --panel-extend is added by glass-panel on mobile to cover iOS Safari
-   rendering gaps; defaults to 0px for non-panel elements. */
+   In standalone PWA they resolve to env(safe-area-inset-*). */
 .safe-top {
-  padding-top: calc(var(--panel-extend, 0px) + var(--sat));
+  padding-top: var(--sat);
 }
 .safe-bottom {
-  padding-bottom: calc(var(--panel-extend, 0px) + var(--sab));
+  padding-bottom: var(--sab);
+}
+
+/* iOS Safari: fixed panels don't cover the full screen — there's a
+   rendering gap between the browser chrome and the web viewport.
+   Negative margins extend the glass-panel element beyond the viewport;
+   padding keeps content in place. Doubled selector for high specificity
+   so it overrides safe-top/safe-bottom and Tailwind utilities.
+   Only on mobile (desktop panels have rounded corners + offsets). */
+@media (max-width: 639px) {
+  .glass-panel.glass-panel {
+    margin-top: -100px;
+    margin-bottom: -100px;
+    padding-top: calc(100px + var(--sat));
+    padding-bottom: calc(100px + var(--sab));
+  }
 }
 
 /* Fixed full-screen container.
@@ -314,24 +327,6 @@
     box-shadow:
       -8px 0 32px rgba(0, 0, 0, 0.3),
       inset 0 0.5px 0 hsl(var(--glass-highlight));
-  }
-
-  /* iOS Safari: extend glass panels with negative margins to cover the
-     rendering gap between browser chrome and web content.
-     The element itself grows beyond the viewport; compensating padding
-     keeps content in the visible area. Mobile only. */
-  @media (max-width: 639px) {
-    .glass-panel {
-      --panel-extend: 50px;
-      margin-top: calc(-1 * var(--panel-extend));
-      margin-bottom: calc(-1 * var(--panel-extend));
-      padding-top: var(--panel-extend);
-      padding-bottom: var(--panel-extend);
-    }
-    /* Reset for children so nested safe-top/safe-bottom don't double-count */
-    .glass-panel > * {
-      --panel-extend: 0px;
-    }
   }
 
   /* Glass input — inputs, textareas */
