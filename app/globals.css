@@ -308,6 +308,7 @@
     backdrop-filter: blur(12px) brightness(1.05);
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid hsl(var(--glass-border-subtle));
+    border-radius: 0.75rem;
   }
 
   .glass-input:focus {
