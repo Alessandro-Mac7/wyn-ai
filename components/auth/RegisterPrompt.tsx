@@ -3,7 +3,7 @@
 import { useState, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Sparkles, Shield, History } from 'lucide-react'
-import { MagicLinkForm } from './MagicLinkForm'
+import { OtpLoginForm } from './OtpLoginForm'
 import { useRegistrationPrompt } from '@/hooks/useUserProfile'
 
 interface RegisterPromptProps {
@@ -25,8 +25,11 @@ export function RegisterPrompt({ messageCount, className = '' }: RegisterPromptP
     setShowForm(true)
   }, [])
 
-  const handleFormSuccess = useCallback(() => {
-    // Form shows success message, then user will be redirected via email
+  const handleFormSuccess = useCallback((isNewUser: boolean) => {
+    if (isNewUser) {
+      window.location.href = '/auth/confirm?new=true'
+    }
+    // For returning users, session is now active — prompt will auto-hide
   }, [])
 
   const handleFormCancel = useCallback(() => {
@@ -116,9 +119,9 @@ export function RegisterPrompt({ messageCount, className = '' }: RegisterPromptP
               >
                 <h3 className="font-semibold text-sm mb-1">Registrati con email</h3>
                 <p className="text-xs text-muted-foreground mb-4">
-                  Ti invieremo un link magico per accedere
+                  Ti invieremo un codice di verifica per accedere
                 </p>
-                <MagicLinkForm
+                <OtpLoginForm
                   onSuccess={handleFormSuccess}
                   onCancel={handleFormCancel}
                 />

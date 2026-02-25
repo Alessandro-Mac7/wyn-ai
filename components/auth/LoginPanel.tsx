@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import { LogIn, X } from 'lucide-react'
-import { MagicLinkForm } from '@/components/auth/MagicLinkForm'
+import { OtpLoginForm } from '@/components/auth/OtpLoginForm'
 import { useRegisterPanel } from '@/contexts/panel-context'
 import { cn } from '@/lib/utils'
 
@@ -105,11 +105,17 @@ export function LoginPanel({ isOpen, onClose }: LoginPanelProps) {
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-4">
               <p className="text-sm text-muted-foreground mb-6">
-                Inserisci la tua email e ti invieremo un link magico per accedere.
+                Inserisci la tua email e ti invieremo un codice di verifica per accedere.
               </p>
 
-              <MagicLinkForm
-                onSuccess={() => {}}
+              <OtpLoginForm
+                onSuccess={(isNewUser) => {
+                  if (isNewUser) {
+                    window.location.href = '/auth/confirm?new=true'
+                  } else {
+                    onClose()
+                  }
+                }}
                 onCancel={onClose}
                 showConsent={true}
               />
