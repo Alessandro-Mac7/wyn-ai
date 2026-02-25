@@ -112,12 +112,14 @@
   * {
     @apply border-border;
   }
-  /* Ambient gradient on html root element.
-     Per CSS spec the root element's background paints the entire canvas
-     (viewport + safe areas), which eliminates iOS Safari safe-area gaps
-     that plague position:fixed pseudo-elements. */
+  /* Root element background paints the entire canvas (viewport + safe
+     areas + iOS Safari chrome gaps). The top/bottom edge strips simulate
+     the glass-panel appearance so the gap between Safari chrome and the
+     web viewport blends seamlessly with any open panel. */
   html {
     background:
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 0, transparent 30px),
+      linear-gradient(to top, rgba(255, 255, 255, 0.08) 0, transparent 30px),
       linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, transparent 40%),
       radial-gradient(ellipse 80% 50% at 20% 80%, hsla(350, 60%, 20%, 0.15), transparent),
       radial-gradient(ellipse 50% 50% at 50% 50%, hsla(30, 30%, 15%, 0.10), transparent),
@@ -208,21 +210,6 @@
 }
 .safe-bottom {
   padding-bottom: var(--sab);
-}
-
-/* iOS Safari: fixed panels don't cover the full screen — there's a
-   rendering gap between the browser chrome and the web viewport.
-   Negative margins extend the glass-panel element beyond the viewport;
-   padding keeps content in place. Doubled selector for high specificity
-   so it overrides safe-top/safe-bottom and Tailwind utilities.
-   Only on mobile (desktop panels have rounded corners + offsets). */
-@media (max-width: 639px) {
-  .glass-panel.glass-panel {
-    margin-top: -100px;
-    margin-bottom: -100px;
-    padding-top: calc(100px + var(--sat));
-    padding-bottom: calc(100px + var(--sab));
-  }
 }
 
 /* Fixed full-screen container.
