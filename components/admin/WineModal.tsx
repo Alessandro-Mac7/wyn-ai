@@ -77,7 +77,7 @@ export function WineModal({ onClose, onSave }: WineModalProps) {
   }
 
   const inputClass =
-    'w-full h-10 px-3 bg-secondary rounded-lg border-0 text-sm focus:outline-none focus:ring-2 focus:ring-wine'
+    'w-full h-10 px-3 glass-input text-sm'
 
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
@@ -243,7 +243,7 @@ export function WineModal({ onClose, onSave }: WineModalProps) {
               onChange={handleChange}
               placeholder="Descrivi il vino: note di degustazione, aromi, abbinamenti..."
               rows={3}
-              className="w-full px-3 py-2 bg-secondary rounded-lg border-0 text-sm focus:outline-none focus:ring-2 focus:ring-wine resize-none"
+              className="w-full px-3 py-2 glass-input text-sm resize-none"
             />
           </div>
 

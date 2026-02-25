@@ -164,7 +164,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                       <label className="block text-sm font-medium mb-2 text-muted-foreground">
                         Email
                       </label>
-                      <div className="flex items-center gap-3 p-3 bg-background/50 border border-white/10 rounded-xl">
+                      <div className="flex items-center gap-3 p-3 glass-input rounded-xl">
                         <Mail className="w-4 h-4 text-muted-foreground" />
                         <span className="text-sm">{email}</span>
                       </div>
@@ -185,7 +185,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                             onChange={(e) => setEditName(e.target.value)}
                             placeholder="Il tuo nome"
                             maxLength={50}
-                            className="w-full pl-10 pr-4 py-3 bg-background/50 border border-white/10 rounded-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-wine/50"
+                            className="w-full pl-10 pr-4 py-3 glass-input text-foreground placeholder:text-muted-foreground/50"
                           />
                         </div>
                         {editName !== (displayName || '') && (

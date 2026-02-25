@@ -111,7 +111,7 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
       <AnimatePresence>
         {isMobileOpen && (
           <motion.div
-            className="fixed inset-0 z-30 bg-black/60 sm:hidden"
+            className="fixed inset-0 z-30 glass-backdrop sm:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -121,7 +121,7 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
       </AnimatePresence>
 
       <aside className={cn(
-        'fixed left-0 top-0 bottom-0 z-40 w-14 sm:w-16 flex flex-col bg-card shadow-[4px_0_12px_rgba(0,0,0,0.2)]',
+        'fixed left-0 top-0 bottom-0 z-40 w-14 sm:w-16 flex flex-col glass-panel shadow-[4px_0_12px_rgba(0,0,0,0.2)]',
         'transition-transform duration-200 ease-out',
         'sm:translate-x-0',
         isMobileOpen ? 'translate-x-0' : '-translate-x-full sm:translate-x-0'
@@ -165,7 +165,7 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
               className={cn(
                 'flex flex-col items-center justify-center',
                 'w-[52px] h-[52px] rounded-lg transition-colors relative',
-                'hover:bg-secondary btn-press',
+                'hover:bg-white/5 btn-press',
                 'text-muted-foreground hover:text-foreground',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine'
               )}
@@ -183,14 +183,14 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
               className={cn(
                 'flex flex-col items-center justify-center',
                 'w-[52px] h-[52px] rounded-lg transition-colors relative',
-                'hover:bg-secondary btn-press',
+                'hover:bg-white/5 btn-press',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine'
               )}
             >
               {isOnChatPage && (
                 <motion.div
                   layoutId="sidebar-active"
-                  className="absolute inset-0 bg-secondary rounded-lg"
+                  className="absolute inset-0 bg-white/5 rounded-lg"
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 />
               )}
@@ -206,7 +206,7 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
               className={cn(
                 'flex flex-col items-center justify-center',
                 'w-[52px] h-[52px] rounded-lg transition-colors relative',
-                'hover:bg-secondary btn-press',
+                'hover:bg-white/5 btn-press',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine',
                 showHistoryPanel ? 'bg-secondary text-wine' : 'text-muted-foreground hover:text-foreground'
               )}
@@ -224,7 +224,7 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
               className={cn(
                 'flex flex-col items-center justify-center',
                 'w-[52px] h-[52px] rounded-lg transition-colors relative',
-                'hover:bg-secondary btn-press',
+                'hover:bg-white/5 btn-press',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine',
                 pathname === '/scan' ? 'text-wine' : 'text-muted-foreground hover:text-foreground'
               )}
@@ -232,7 +232,7 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
               {pathname === '/scan' && (
                 <motion.div
                   layoutId="sidebar-active"
-                  className="absolute inset-0 bg-secondary rounded-lg"
+                  className="absolute inset-0 bg-white/5 rounded-lg"
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 />
               )}
@@ -249,7 +249,7 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
                 className={cn(
                   'flex flex-col items-center justify-center',
                   'w-[52px] h-[52px] rounded-lg transition-colors relative',
-                  'hover:bg-secondary btn-press',
+                  'hover:bg-white/5 btn-press',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine',
                   isMoreActive || showMoreMenu ? 'bg-secondary text-wine' : 'text-muted-foreground hover:text-foreground'
                 )}
@@ -315,7 +315,7 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
                 className={cn(
                   'flex flex-col items-center justify-center',
                   'w-[52px] h-[52px] rounded-lg transition-colors relative',
-                  'hover:bg-secondary btn-press',
+                  'hover:bg-white/5 btn-press',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine',
                   'text-wine'
                 )}
@@ -332,7 +332,7 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
                 className={cn(
                   'flex flex-col items-center justify-center',
                   'w-[52px] h-[52px] rounded-lg transition-colors relative',
-                  'hover:bg-secondary btn-press',
+                  'hover:bg-white/5 btn-press',
                   'text-muted-foreground hover:text-foreground',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine'
                 )}
@@ -368,17 +368,7 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
 // HISTORY PANEL COMPONENT
 // ============================================
 
-const historyBackdropVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { duration: 0.2 }
-  },
-  exit: {
-    opacity: 0,
-    transition: { duration: 0.2, delay: 0.1 }
-  }
-} as const
+import { backdropVariants } from '@/lib/motion'
 
 const historyPanelVariants = {
   hidden: {
@@ -434,8 +424,8 @@ function HistoryPanel({
       {isOpen && (
         <>
           <motion.div
-            className="fixed inset-0 z-[70] bg-black/60"
-            variants={historyBackdropVariants}
+            className="fixed inset-0 z-[70] glass-backdrop"
+            variants={backdropVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
@@ -447,9 +437,8 @@ function HistoryPanel({
               'fixed inset-y-0 z-[70]',
               'left-0',
               'w-72 sm:w-80 max-w-[calc(100vw-3.5rem)]',
-              'bg-card border-r border-border',
-              'flex flex-col pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)]',
-              'shadow-[8px_0_32px_rgba(0,0,0,0.3)]'
+              'glass-panel border-r border-white/[0.08]',
+              'flex flex-col pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)]'
             )}
             variants={historyPanelVariants}
             initial="hidden"
@@ -459,7 +448,7 @@ function HistoryPanel({
             aria-modal="true"
             aria-labelledby="history-panel-title"
           >
-            <div className="shrink-0 flex items-center justify-between p-4 border-b border-border">
+            <div className="shrink-0 flex items-center justify-between p-4 border-b border-white/[0.08]">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-9 h-9 rounded-full bg-wine/20">
                   <History className="h-4 w-4 text-wine" />
@@ -470,7 +459,7 @@ function HistoryPanel({
               </div>
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-secondary rounded-lg transition-colors"
+                className="p-2 hover:bg-white/5 rounded-lg transition-colors"
                 aria-label="Chiudi"
               >
                 <X className="h-5 w-5" />

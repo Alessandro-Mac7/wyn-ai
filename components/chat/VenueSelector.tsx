@@ -352,9 +352,7 @@ export function VenueSelector({
                     placeholder="es. osteria-del-vino"
                     disabled={isValidating}
                     className={cn(
-                      'w-full h-11 pl-10 pr-12 rounded-lg',
-                      'bg-secondary border-0 text-sm',
-                      'focus:outline-none focus:ring-2 focus:ring-wine',
+                      'w-full h-11 pl-10 pr-12 glass-input text-sm',
                       'placeholder:text-muted-foreground',
                       'disabled:opacity-50',
                       error && 'ring-2 ring-destructive'

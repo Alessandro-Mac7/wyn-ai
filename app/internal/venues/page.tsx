@@ -344,8 +344,7 @@ export default function VenueManagementPage() {
   )
 
   const inputClass = cn(
-    'w-full h-10 px-3 bg-secondary rounded-lg border-0 text-sm',
-    'focus:outline-none focus:ring-2 focus:ring-wine',
+    'w-full h-10 px-3 glass-input text-sm',
     'placeholder:text-muted-foreground'
   )
 
@@ -426,7 +425,7 @@ export default function VenueManagementPage() {
                 step="1"
                 value={maxVenueDistance}
                 onChange={(e) => setMaxVenueDistance(e.target.value)}
-                className="w-full h-10 px-3 bg-secondary rounded-lg border-0 text-sm focus:outline-none focus:ring-2 focus:ring-wine"
+                className="w-full h-10 px-3 glass-input text-sm"
               />
               <span className="text-sm text-muted-foreground">km</span>
             </div>
@@ -462,7 +461,7 @@ export default function VenueManagementPage() {
               placeholder="Cerca locali..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-10 pl-10 pr-4 bg-secondary rounded-lg border-0 text-sm focus:outline-none focus:ring-2 focus:ring-wine"
+              className="w-full h-10 pl-10 pr-4 glass-input text-sm"
             />
           </div>
         </div>

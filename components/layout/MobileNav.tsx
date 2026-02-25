@@ -23,19 +23,7 @@ interface MobileNavProps {
   userInitial?: string
 }
 
-const drawerVariants = {
-  hidden: { x: '100%', opacity: 0.8 },
-  visible: {
-    x: 0,
-    opacity: 1,
-    transition: { type: 'spring' as const, stiffness: 300, damping: 30 },
-  },
-  exit: {
-    x: '100%',
-    opacity: 0.8,
-    transition: { type: 'spring' as const, stiffness: 300, damping: 30 },
-  },
-} as const
+import { panelSlideVariants, backdropVariants } from '@/lib/motion'
 
 export function MobileNav({ onProfilePress, isAuthenticated, userInitial }: MobileNavProps) {
   const pathname = usePathname()
@@ -86,10 +74,11 @@ export function MobileNav({ onProfilePress, isAuthenticated, userInitial }: Mobi
           <>
             {/* Backdrop */}
             <motion.div
-              className="fixed inset-0 z-[45] bg-black/50 sm:hidden"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[45] glass-backdrop sm:hidden"
+              variants={backdropVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
               onClick={close}
             />
 
@@ -98,16 +87,16 @@ export function MobileNav({ onProfilePress, isAuthenticated, userInitial }: Mobi
               className={cn(
                 'fixed top-0 bottom-0 right-0 z-[45] sm:hidden',
                 'w-64 max-w-[80vw]',
-                'bg-card/95 backdrop-blur-xl border-l border-border',
+                'glass-panel',
                 'flex flex-col safe-top'
               )}
-              variants={drawerVariants}
+              variants={panelSlideVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
             >
               {/* Logo header */}
-              <div className="flex items-center gap-3 px-5 py-4 border-b border-border">
+              <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.08]">
                 <Image
                   src="/wyn-icon.ico"
                   alt="WYN"
@@ -150,7 +139,7 @@ export function MobileNav({ onProfilePress, isAuthenticated, userInitial }: Mobi
                   onClick={close}
                 />
 
-                <div className="h-px bg-border my-2" />
+                <div className="h-px bg-white/[0.08] my-2" />
 
                 <NavItem
                   href="/about"
@@ -169,13 +158,13 @@ export function MobileNav({ onProfilePress, isAuthenticated, userInitial }: Mobi
               </div>
 
               {/* Bottom: Accedi / Profilo */}
-              <div className="px-3 py-4 border-t border-border safe-bottom">
+              <div className="px-3 py-4 border-t border-white/[0.08] safe-bottom">
                 {isAuthenticated ? (
                   <button
                     onClick={handleProfilePress}
                     className={cn(
                       'w-full flex items-center gap-3 px-3 py-3 rounded-xl',
-                      'transition-colors hover:bg-secondary text-wine'
+                      'transition-colors hover:bg-white/5 text-wine'
                     )}
                   >
                     <div className="w-7 h-7 rounded-full bg-wine/20 flex items-center justify-center text-sm font-medium">
@@ -188,7 +177,7 @@ export function MobileNav({ onProfilePress, isAuthenticated, userInitial }: Mobi
                     onClick={handleProfilePress}
                     className={cn(
                       'w-full flex items-center gap-3 px-3 py-3 rounded-xl',
-                      'transition-colors hover:bg-secondary text-muted-foreground hover:text-foreground'
+                      'transition-colors hover:bg-white/5 text-muted-foreground hover:text-foreground'
                     )}
                   >
                     <LogIn className="h-5 w-5" />
@@ -225,7 +214,7 @@ function NavItem({
         'flex items-center gap-3 px-3 py-3 rounded-xl transition-colors',
         active
           ? 'bg-wine/10 text-wine'
-          : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+          : 'text-muted-foreground hover:bg-white/5 hover:text-foreground'
       )}
     >
       {icon}

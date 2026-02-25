@@ -521,8 +521,7 @@ export function WineKnowledgePanel({ wineId, wineName }: WineKnowledgePanelProps
                                   }
                                   placeholder={`Inserisci ${field.label.toLowerCase()}`}
                                   className={cn(
-                                    'w-full h-10 px-3 bg-secondary rounded-lg border-0 text-sm',
-                                    'focus:outline-none focus:ring-2 focus:ring-wine',
+                                    'w-full h-10 px-3 glass-input text-sm',
                                     'placeholder:text-muted-foreground'
                                   )}
                                 />

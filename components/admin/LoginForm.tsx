@@ -59,7 +59,7 @@ export function LoginForm({ onSubmit, error }: LoginFormProps) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@ristorante.com"
-                  className="w-full h-11 pl-10 pr-4 bg-secondary rounded-lg border-0 text-sm focus:outline-none focus:ring-2 focus:ring-wine"
+                  className="w-full h-11 pl-10 pr-4 glass-input text-sm"
                   required
                 />
               </div>
@@ -74,7 +74,7 @@ export function LoginForm({ onSubmit, error }: LoginFormProps) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full h-11 pl-10 pr-10 bg-secondary rounded-lg border-0 text-sm focus:outline-none focus:ring-2 focus:ring-wine"
+                  className="w-full h-11 pl-10 pr-10 glass-input text-sm"
                   required
                 />
                 <button

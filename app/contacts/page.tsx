@@ -208,10 +208,8 @@ export default function ContactsPage() {
                         placeholder="Mario Rossi"
                         required
                         className={cn(
-                          'w-full h-11 px-4 rounded-lg',
-                          'bg-secondary border-0',
-                          'text-sm placeholder:text-muted-foreground',
-                          'focus:outline-none focus:ring-2 focus:ring-wine'
+                          'w-full h-11 px-4 glass-input text-sm',
+                          'placeholder:text-muted-foreground'
                         )}
                       />
                     </div>
@@ -228,10 +226,8 @@ export default function ContactsPage() {
                         placeholder="mario@ristorante.it"
                         required
                         className={cn(
-                          'w-full h-11 px-4 rounded-lg',
-                          'bg-secondary border-0',
-                          'text-sm placeholder:text-muted-foreground',
-                          'focus:outline-none focus:ring-2 focus:ring-wine'
+                          'w-full h-11 px-4 glass-input text-sm',
+                          'placeholder:text-muted-foreground'
                         )}
                       />
                     </div>
@@ -248,10 +244,8 @@ export default function ContactsPage() {
                         placeholder="Osteria del Vino"
                         required
                         className={cn(
-                          'w-full h-11 px-4 rounded-lg',
-                          'bg-secondary border-0',
-                          'text-sm placeholder:text-muted-foreground',
-                          'focus:outline-none focus:ring-2 focus:ring-wine'
+                          'w-full h-11 px-4 glass-input text-sm',
+                          'placeholder:text-muted-foreground'
                         )}
                       />
                     </div>
@@ -267,10 +261,8 @@ export default function ContactsPage() {
                         onChange={(e) => handleChange('phone', e.target.value)}
                         placeholder="+39 333 123 4567"
                         className={cn(
-                          'w-full h-11 px-4 rounded-lg',
-                          'bg-secondary border-0',
-                          'text-sm placeholder:text-muted-foreground',
-                          'focus:outline-none focus:ring-2 focus:ring-wine'
+                          'w-full h-11 px-4 glass-input text-sm',
+                          'placeholder:text-muted-foreground'
                         )}
                       />
                     </div>
@@ -286,10 +278,8 @@ export default function ContactsPage() {
                         placeholder="Raccontaci del tuo ristorante e cosa ti piacerebbe ottenere con WYN..."
                         rows={4}
                         className={cn(
-                          'w-full px-4 py-3 rounded-lg resize-none',
-                          'bg-secondary border-0',
-                          'text-sm placeholder:text-muted-foreground',
-                          'focus:outline-none focus:ring-2 focus:ring-wine'
+                          'w-full px-4 py-3 glass-input text-sm resize-none',
+                          'placeholder:text-muted-foreground'
                         )}
                       />
                     </div>

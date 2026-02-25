@@ -220,7 +220,7 @@ export function OtpLoginForm({
                 disabled={isSending}
                 autoComplete="email"
                 autoFocus
-                className="w-full pl-10 pr-4 py-3 bg-background/50 border border-white/10 rounded-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-wine/50 disabled:opacity-50"
+                className="w-full pl-10 pr-4 py-3 glass-input text-foreground placeholder:text-muted-foreground/50 disabled:opacity-50"
               />
             </div>
           </div>
@@ -337,7 +337,7 @@ export function OtpLoginForm({
               onKeyDown={(e) => handleKeyDown(i, e)}
               disabled={isVerifying}
               aria-label={`Cifra ${i + 1}`}
-              className="w-9 h-12 text-center text-lg font-semibold bg-background/50 border border-white/10 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-wine/50 disabled:opacity-50"
+              className="w-9 h-12 text-center text-lg font-semibold glass-input text-foreground disabled:opacity-50"
             />
           ))}
         </div>

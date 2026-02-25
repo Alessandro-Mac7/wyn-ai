@@ -236,7 +236,7 @@ export default function AdminDashboardPage() {
               placeholder="Cerca vini..."
               value={searchQuery}
               onChange={(e) => search(e.target.value)}
-              className="w-full h-10 pl-10 pr-4 bg-secondary rounded-lg border-0 text-sm focus:outline-none focus:ring-2 focus:ring-wine"
+              className="w-full h-10 pl-10 pr-4 glass-input text-sm"
             />
           </div>
           <WineFilters selected={filterType} onChange={setFilter} />

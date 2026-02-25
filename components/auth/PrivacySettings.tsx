@@ -97,7 +97,7 @@ export function PrivacySettings() {
         <h4 className="font-medium text-sm">Impostazioni consenso</h4>
 
         {/* Profiling consent */}
-        <div className="p-4 bg-background/50 border border-white/10 rounded-xl">
+        <div className="p-4 glass-card rounded-xl">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-start gap-3 min-w-0">
               <Eye className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
@@ -119,7 +119,7 @@ export function PrivacySettings() {
               aria-label={displayProfilingConsent ? 'Disattiva profilazione' : 'Attiva profilazione'}
             >
               <span
-                className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow transition-transform ${
+                className={`absolute top-1 left-0 w-5 h-5 bg-white rounded-full shadow transition-transform ${
                   displayProfilingConsent ? 'translate-x-6' : 'translate-x-1'
                 }`}
               />
@@ -131,7 +131,7 @@ export function PrivacySettings() {
         </div>
 
         {/* Marketing consent */}
-        <div className="p-4 bg-background/50 border border-white/10 rounded-xl">
+        <div className="p-4 glass-card rounded-xl">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-start gap-3 min-w-0">
               <Mail className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
@@ -153,7 +153,7 @@ export function PrivacySettings() {
               aria-label={displayMarketingConsent ? 'Disattiva marketing' : 'Attiva marketing'}
             >
               <span
-                className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow transition-transform ${
+                className={`absolute top-1 left-0 w-5 h-5 bg-white rounded-full shadow transition-transform ${
                   displayMarketingConsent ? 'translate-x-6' : 'translate-x-1'
                 }`}
               />
@@ -239,7 +239,7 @@ function DataExportButton() {
       <button
         onClick={handleExport}
         disabled={isExporting}
-        className="w-full flex items-center justify-between p-4 bg-background/50 border border-white/10 rounded-xl hover:bg-white/5 transition-colors disabled:opacity-50"
+        className="w-full flex items-center justify-between p-4 glass-card rounded-xl hover:bg-white/5 transition-colors disabled:opacity-50"
       >
         <div className="flex items-center gap-3">
           <Download className="w-5 h-5 text-muted-foreground" />
