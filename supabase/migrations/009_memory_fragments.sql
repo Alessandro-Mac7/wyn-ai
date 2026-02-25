@@ -70,7 +70,7 @@ CREATE TRIGGER update_memory_fragments_updated_at
 
 -- 11. Create match_memories() function for semantic search over user memories
 CREATE OR REPLACE FUNCTION match_memories(
-  query_embedding TEXT,
+  query_embedding vector(1536),
   match_user_id UUID,
   match_threshold FLOAT DEFAULT 0.4,
   match_count INT DEFAULT 5,
@@ -87,12 +87,7 @@ RETURNS TABLE (
 )
 LANGUAGE plpgsql
 AS $$
-DECLARE
-  query_vec vector(1536);
 BEGIN
-  -- Parse JSON string to vector
-  query_vec := query_embedding::vector(1536);
-
   RETURN QUERY
   SELECT
     mf.id AS fragment_id,
@@ -101,13 +96,13 @@ BEGIN
     mf.content,
     mf.metadata,
     mf.weight,
-    ((1 - (mf.embedding <=> query_vec)) * mf.weight)::float AS similarity
+    ((1 - (mf.embedding <=> query_embedding)) * mf.weight)::float AS similarity
   FROM memory_fragments mf
   WHERE
     mf.user_id = match_user_id
     AND mf.embedding IS NOT NULL
     AND (filter_fragment_type IS NULL OR mf.fragment_type = filter_fragment_type)
-    AND (1 - (mf.embedding <=> query_vec)) > match_threshold
+    AND (1 - (mf.embedding <=> query_embedding)) > match_threshold
   ORDER BY similarity DESC
   LIMIT match_count;
 END;

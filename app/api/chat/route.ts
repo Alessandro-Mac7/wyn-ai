@@ -130,7 +130,14 @@ export async function POST(request: NextRequest) {
         })
 
         console.log(`[CHAT] RAG path: ${wines.length} total wines, ${ragResult.totalMatched} matched in ${ragResult.searchTimeMs}ms`)
-        systemPrompt = getVenueSystemPromptRAG(venue.name, ragResult.ragContext, wines.length)
+
+        // Fallback to full context if RAG returns 0 results (e.g. embeddings not generated yet)
+        if (ragResult.totalMatched === 0) {
+          console.log('[CHAT] RAG returned 0 results, falling back to full context')
+          systemPrompt = getVenueSystemPrompt(venue.name, wines)
+        } else {
+          systemPrompt = getVenueSystemPromptRAG(venue.name, ragResult.ragContext, wines.length)
+        }
       } else {
         // Full context path: all wines fit in prompt
         systemPrompt = getVenueSystemPrompt(venue.name, wines)

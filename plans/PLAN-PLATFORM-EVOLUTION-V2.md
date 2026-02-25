@@ -34,7 +34,7 @@ ChatGPT can answer generic wine questions. WYN must offer what ChatGPT cannot:
 | 1. RAG Foundation | COMPLETATA | ba1e848 | feature/rag-foundation |
 | 2. Deep Wine Knowledge | COMPLETATA | cba8dcf | feature/rag-foundation |
 | 3. User Memory System | COMPLETATA | 4dd0c7d | feature/rag-foundation |
-| 4. Vertical App Features | IN CORSO | - | feature/rag-foundation |
+| 4. Vertical App Features | COMPLETATA | 5a11f63 | feature/rag-foundation |
 | 5. CLAUDE.md Update | DA FARE | - | - |
 
 ### Da applicare su Supabase (migration SQL)
@@ -267,7 +267,7 @@ CRON_SECRET=...
 Phase 1 (RAG):            Tasks 1-10   → COMPLETATA (ba1e848)
 Phase 2 (Knowledge):      Tasks 11-16  → COMPLETATA (cba8dcf)
 Phase 3 (Memory):         Tasks 17-25  → COMPLETATA (4dd0c7d)
-Phase 4 (Vertical App):   Tasks 41-43  → IN CORSO
+Phase 4 (Vertical App):   Tasks 41-43  → COMPLETATA (5a11f63)
 Phase 5 (CLAUDE.md):      Task 40      → DA FARE
 ```
 
