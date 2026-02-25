@@ -112,6 +112,9 @@
   * {
     @apply border-border;
   }
+  html {
+    background-color: hsl(var(--background));
+  }
   body {
     @apply text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
@@ -119,11 +122,15 @@
   }
 
   /* Fixed ambient gradient — pseudo-element instead of background-attachment:fixed
-     (background-attachment:fixed is broken on iOS Safari) */
+     (background-attachment:fixed is broken on iOS Safari).
+     Generous negative insets cover iOS Safari safe-area rendering gaps. */
   body::before {
     content: '';
     position: fixed;
-    inset: 0;
+    top: -100px;
+    left: 0;
+    right: 0;
+    bottom: -100px;
     z-index: -1;
     pointer-events: none;
     background:

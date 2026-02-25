@@ -9,7 +9,7 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const viewport: Viewport = {
-  themeColor: '#8f2436',
+  themeColor: '#171312',
   viewportFit: 'cover',
   maximumScale: 1,
   minimumScale: 1,
