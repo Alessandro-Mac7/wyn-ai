@@ -341,7 +341,23 @@ export function ExampleComponent({ }: ExampleComponentProps) {
 }
 ```
 
-### 6.4 API Route Pattern
+### 6.4 Modal/Panel Pattern
+
+**RULE: All modals and overlays MUST use the slide-in panel pattern (from right).**
+Never use centered modals. This ensures a consistent mobile-first UX across the app.
+
+Reference implementation: `LoginPanel.tsx`, `ProfileModal.tsx`.
+
+```typescript
+// Standard slide-in panel structure:
+// - Backdrop: fixed inset-0 z-[70] bg-black/60
+// - Panel: fixed inset-y-0 right-0, w-full sm:w-[380px]
+// - Animation: spring x: '100%' → 0 (panelVariants)
+// - Header: icon + title + close button
+// - Content: flex-1 overflow-y-auto p-4
+```
+
+### 6.5 API Route Pattern
 
 ```typescript
 // app/api/example/route.ts
@@ -375,7 +391,7 @@ export async function POST(request: NextRequest) {
 }
 ```
 
-### 6.5 Error Handling
+### 6.6 Error Handling
 
 ```typescript
 // ✅ DO: Catch and handle errors gracefully
@@ -394,7 +410,7 @@ try {
 // ❌ DON'T: Expose internal error details to users
 ```
 
-### 6.6 Imports Order
+### 6.7 Imports Order
 
 ```typescript
 // 1. React/Next
