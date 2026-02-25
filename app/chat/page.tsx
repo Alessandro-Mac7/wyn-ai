@@ -351,7 +351,7 @@ function ChatPageContent() {
   return (
     <div className="fixed inset-0 flex flex-col overflow-hidden">
       {/* Main content - no padding on mobile since sidebar is hidden */}
-      <main id="main-content" className="pl-0 sm:pl-20 flex-1 flex flex-col min-h-0 safe-top">
+      <main id="main-content" className="pl-0 sm:pl-20 flex-1 flex flex-col min-h-0">
           {/* Top bar: ModeToggle + VenueHeader */}
         {!venueLoading && (
           <div className="shrink-0 z-20 flex items-center justify-center px-4 py-2">
@@ -571,7 +571,7 @@ function ChatPageContent() {
             )}
 
             {/* Floating glass input - iOS style */}
-            <div className="shrink-0 px-3 sm:px-4 pb-[max(0.25rem,env(safe-area-inset-bottom,0px))] sm:pb-2">
+            <div className="shrink-0 px-3 sm:px-4 pb-1 sm:pb-2">
               <div className="max-w-3xl mx-auto">
                 <motion.div
                   className={cn(

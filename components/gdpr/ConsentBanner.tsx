@@ -107,7 +107,7 @@ export function ConsentBanner({ onConsentChange }: ConsentBannerProps) {
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 100, opacity: 0 }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        className="fixed bottom-0 left-0 right-0 z-50 p-4 safe-bottom"
+        className="fixed bottom-0 left-0 right-0 z-50 p-4"
       >
         <div className="max-w-2xl mx-auto glass-card rounded-xl overflow-hidden">
           {/* Main banner content */}

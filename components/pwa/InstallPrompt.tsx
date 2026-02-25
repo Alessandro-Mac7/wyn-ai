@@ -69,7 +69,7 @@ export function InstallPrompt({ messageCount, isFromQR }: InstallPromptProps) {
       {shouldShow && (
         <motion.div
           className={cn(
-            'fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-80 safe-bottom',
+            'fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-80',
             'p-4 rounded-xl',
             'glass-card',
             'z-50'

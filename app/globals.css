@@ -94,17 +94,6 @@
     --glass-border-subtle: 0 0% 100% / 0.10;
     --glass-highlight: 0 0% 100% / 0.10;
 
-    /* Safe area tokens — 0 in browser, real insets in standalone PWA */
-    --sat: 0px;
-    --sab: 0px;
-  }
-}
-
-/* Standalone PWA: activate real safe area insets */
-@media all and (display-mode: standalone) {
-  :root {
-    --sat: env(safe-area-inset-top, 0px);
-    --sab: env(safe-area-inset-bottom, 0px);
   }
 }
 
@@ -112,9 +101,7 @@
   * {
     @apply border-border;
   }
-  /* Root element background paints the entire canvas (viewport + safe
-     areas). On iOS Safari, fixed elements can't extend beyond the CSS
-     viewport, but the html canvas covers the full screen. */
+  /* Ambient gradient background on root canvas. */
   html {
     background:
       linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, transparent 40%),
@@ -199,22 +186,10 @@
   }
 }
 
-/* Safe area padding — uses --sat / --sab tokens.
-   In browser mode these are 0px (browser handles safe areas).
-   In standalone PWA they resolve to env(safe-area-inset-*). */
-.safe-top {
-  padding-top: var(--sat);
-}
-.safe-bottom {
-  padding-bottom: var(--sab);
-}
-
-/* Fixed full-screen container.
-   Background extends to screen edges; content stays in safe area. */
+/* Fixed full-screen container. */
 .fixed-safe {
   position: fixed;
   inset: 0;
-  padding-top: var(--sat);
 }
 
 /* Message entry animations */
@@ -343,9 +318,7 @@
   }
 
   /* GPU acceleration for glass elements.
-     glass-panel excluded: transform on position:fixed elements
-     breaks viewport coverage on iOS Safari. backdrop-filter
-     already triggers GPU compositing on panels. */
+     glass-panel excluded: backdrop-filter already composites. */
   .glass-ios, .glass-ios-subtle, .glass-card {
     transform: translateZ(0);
   }

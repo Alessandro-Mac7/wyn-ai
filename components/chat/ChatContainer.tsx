@@ -97,7 +97,7 @@ export function ChatContainer({ venueName }: ChatContainerProps) {
 
       {/* Scan result display */}
       {scanResult && (
-        <div className="px-4 py-2 safe-bottom">
+        <div className="px-4 py-2">
           <ScanResultCard
             result={scanResult}
             onClose={handleCloseScanResult}

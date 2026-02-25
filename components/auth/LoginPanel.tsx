@@ -35,7 +35,7 @@ export function LoginPanel({ isOpen, onClose }: LoginPanelProps) {
               'fixed inset-y-0 right-0 z-[70]',
               'w-full sm:w-[380px] max-w-full',
               'glass-panel',
-              'flex flex-col safe-top safe-bottom'
+              'flex flex-col'
             )}
             variants={panelSlideVariants}
             initial="hidden"

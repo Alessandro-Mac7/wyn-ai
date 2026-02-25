@@ -126,7 +126,7 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
         isMobileOpen ? 'left-0' : '-left-14 sm:left-2'
       )}>
         {/* Logo - Home button */}
-        <div className="flex items-center justify-center pt-[max(1.25rem,var(--sat))] pb-3">
+        <div className="flex items-center justify-center pt-5 pb-3">
           <Link
             href="/"
             onClick={handleLogoClick}
@@ -306,7 +306,7 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
         </nav>
 
         {/* Bottom: Accedi / Profilo */}
-        <div className="mt-auto pb-[max(1.5rem,var(--sab))] flex flex-col items-center gap-1 relative">
+        <div className="mt-auto pb-6 flex flex-col items-center gap-1 relative">
           {isAuthenticated ? (
             <Tooltip content="Account" side="right">
               <button

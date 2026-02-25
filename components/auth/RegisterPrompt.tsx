@@ -47,7 +47,7 @@ export function RegisterPrompt({ messageCount, className = '' }: RegisterPromptP
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20 }}
-        className={`fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:max-w-sm z-40 safe-bottom ${className}`}
+        className={`fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:max-w-sm z-40 ${className}`}
       >
         <div className="glass-card rounded-2xl overflow-hidden">
           {/* Dismiss button */}

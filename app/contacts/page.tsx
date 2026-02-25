@@ -66,7 +66,7 @@ export default function ContactsPage() {
   return (
     <div className="min-h-screen">
       {/* Main content */}
-      <main id="main-content" className="pl-0 sm:pl-20 min-h-screen safe-top">
+      <main id="main-content" className="pl-0 sm:pl-20 min-h-screen">
         <div className="max-w-6xl mx-auto px-4 py-12 sm:py-16">
           {/* Header */}
           <motion.div

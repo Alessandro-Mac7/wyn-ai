@@ -49,7 +49,7 @@ export function MobileNav({ onProfilePress, isAuthenticated, userInitial }: Mobi
   return (
     <>
       {/* Toggle button — top-right, below status bar */}
-      <div className="fixed top-0 right-0 z-40 sm:hidden safe-top p-3">
+      <div className="fixed top-0 right-0 z-40 sm:hidden p-3">
         <motion.button
           onClick={() => setIsOpen(v => !v)}
           className={cn(
@@ -88,7 +88,7 @@ export function MobileNav({ onProfilePress, isAuthenticated, userInitial }: Mobi
                 'fixed top-0 bottom-0 right-0 z-[45] sm:hidden',
                 'w-64 max-w-[80vw]',
                 'glass-panel',
-                'flex flex-col safe-top'
+                'flex flex-col'
               )}
               variants={panelSlideVariants}
               initial="hidden"
@@ -158,7 +158,7 @@ export function MobileNav({ onProfilePress, isAuthenticated, userInitial }: Mobi
               </div>
 
               {/* Bottom: Accedi / Profilo */}
-              <div className="px-3 py-4 border-t border-white/[0.08] safe-bottom">
+              <div className="px-3 py-4 border-t border-white/[0.08]">
                 {isAuthenticated ? (
                   <button
                     onClick={handleProfilePress}
