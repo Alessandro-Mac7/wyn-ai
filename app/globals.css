@@ -363,8 +363,11 @@
     backdrop-filter: blur(8px);
   }
 
-  /* GPU acceleration for glass elements */
-  .glass-ios, .glass-ios-subtle, .glass-card, .glass-panel {
+  /* GPU acceleration for glass elements.
+     glass-panel excluded: transform on position:fixed elements
+     breaks viewport coverage on iOS Safari. backdrop-filter
+     already triggers GPU compositing on panels. */
+  .glass-ios, .glass-ios-subtle, .glass-card {
     transform: translateZ(0);
   }
 
