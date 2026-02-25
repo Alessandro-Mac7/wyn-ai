@@ -263,8 +263,7 @@ export default function AboutPage() {
                   <motion.div
                     className={cn(
                       'group relative p-8 rounded-2xl',
-                      'bg-card/50 border border-border/50',
-                      'hover:bg-card hover:border-border',
+                      'glass-card',
                       'transition-all duration-300'
                     )}
                     whileHover={{ y: -4 }}
@@ -402,10 +401,7 @@ export default function AboutPage() {
         <section className="py-24 px-6">
           <div className="max-w-3xl mx-auto">
             <AnimatedSection>
-              <div className="relative rounded-3xl overflow-hidden">
-                {/* Background gradient */}
-                <div className="absolute inset-0 bg-gradient-to-br from-wine/20 via-wine/10 to-purple-500/10" />
-                <div className="absolute inset-0 bg-card/80 backdrop-blur-sm" />
+              <div className="relative rounded-3xl overflow-hidden glass-card">
 
                 {/* Content */}
                 <div className="relative p-8 md:p-12 text-center">

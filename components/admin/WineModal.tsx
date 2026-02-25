@@ -82,12 +82,12 @@ export function WineModal({ onClose, onSave }: WineModalProps) {
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70" onClick={onClose} />
+      <div className="absolute inset-0 glass-backdrop" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative bg-card border border-border rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto scrollbar-thin">
+      <div className="relative glass-card rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto scrollbar-thin">
         {/* Header */}
-        <div className="sticky top-0 bg-card flex items-center justify-between p-5 border-b border-border">
+        <div className="sticky top-0 bg-transparent flex items-center justify-between p-5 border-b border-white/[0.08]">
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center w-10 h-10 rounded-full bg-wine/20">
               <Wine className="h-5 w-5 text-wine" />

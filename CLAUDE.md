@@ -355,10 +355,10 @@ Reference implementation: `LoginPanel.tsx`, `ProfileModal.tsx`.
 
 ```typescript
 // Standard slide-in panel structure:
-// - Backdrop: fixed inset-0 z-[70] bg-black/60
-// - Panel: fixed inset-y-0 right-0, w-full sm:w-[380px]
-// - Animation: spring x: '100%' → 0 (panelVariants)
-// - Header: icon + title + close button
+// - Backdrop: fixed inset-0 z-[70] glass-backdrop
+// - Panel: fixed inset-y-0 right-0, w-full sm:w-[380px], glass-panel
+// - Animation: panelSlideVariants from lib/motion.ts
+// - Header: icon + title + close button, border-b border-white/[0.08]
 // - Content: flex-1 overflow-y-auto p-4
 ```
 
@@ -775,6 +775,31 @@ EXPLORE → PLAN → IMPLEMENT → REVIEW → DEPLOY
 ### 14.4 FE Implementation Plan
 
 See `plans/PLAN-007-frontend-ui-implementation.md` for detailed implementation steps.
+
+### 14.5 Glassmorphism Design System
+
+| Classe | Uso | Spec |
+|--------|-----|------|
+| `glass-ios` | Nav bar, bottom bar, header fissi | blur 40px, bg card/0.55 |
+| `glass-ios-subtle` | Toggle, tab bar | blur 24px, bg card/0.4 |
+| `glass-card` | Card, contenitori | blur 20px, bg card/0.45 |
+| `glass-panel` | Pannelli slide-in | blur 32px, bg card/0.6 |
+| `glass-input` | Input, textarea | blur 12px, bg background/0.4 |
+| `glass-badge` | Badge, pill, chip | blur 8px, bg white/0.06 |
+| `glass-backdrop` | Overlay pannelli/modali | bg black/0.5 + blur 8px |
+| `glow-wine` | Hover accent | box-shadow wine/0.25 |
+| `glow-wine-subtle` | Idle accent | box-shadow wine/0.12 |
+
+Semantic color tokens: `wine-type-{red,white,rose,sparkling,dessert}`, `status-{success,warning}`.
+
+### 14.6 Style Rules
+
+- ALL slide-in panels use `panelSlideVariants` and `backdropVariants` from `lib/motion.ts`
+- NO inline framer-motion variants in components (always import from motion.ts)
+- NO hardcoded colors (use design tokens: wine-type-*, status-*)
+- ALL modals/panels use glass-backdrop + glass-panel
+- Admin dashboard uses same dark glass aesthetic as the main app
+- Wine type badges use `WineTypeBadge` component (`components/ui/wine-type-badge.tsx`)
 
 ---
 

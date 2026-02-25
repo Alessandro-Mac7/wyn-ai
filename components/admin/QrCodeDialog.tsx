@@ -7,6 +7,7 @@ import { Download, Printer, Copy, X, Check, QrCode } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { useRegisterPanel } from '@/contexts/panel-context'
+import { panelSlideVariants, backdropVariants } from '@/lib/motion'
 import {
   getVenueChatUrl,
   downloadQrCode,
@@ -20,43 +21,6 @@ interface QrCodeDialogProps {
   venue: {
     slug: string
     name: string
-  }
-}
-
-// Slide-in panel animation variants (matching VenueSelector/WineSidebar pattern)
-const backdropVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { duration: 0.2 }
-  },
-  exit: {
-    opacity: 0,
-    transition: { duration: 0.2, delay: 0.1 }
-  }
-} as const
-
-const panelVariants = {
-  hidden: {
-    x: '100%',
-    opacity: 0.8
-  },
-  visible: {
-    x: 0,
-    opacity: 1,
-    transition: {
-      type: 'spring' as const,
-      stiffness: 300,
-      damping: 30
-    }
-  },
-  exit: {
-    x: '100%',
-    opacity: 0.8,
-    transition: {
-      duration: 0.25,
-      ease: [0.4, 0, 1, 1] as const
-    }
   }
 }
 
@@ -97,7 +61,7 @@ export function QrCodeDialog({ isOpen, onClose, venue }: QrCodeDialogProps) {
         <>
           {/* Backdrop */}
           <motion.div
-            className="fixed inset-0 z-[70] bg-black/60"
+            className="fixed inset-0 z-[70] glass-backdrop"
             variants={backdropVariants}
             initial="hidden"
             animate="visible"
@@ -110,11 +74,10 @@ export function QrCodeDialog({ isOpen, onClose, venue }: QrCodeDialogProps) {
             className={cn(
               'fixed inset-y-0 right-0 z-[70]',
               'w-full sm:w-[380px] max-w-full',
-              'bg-card border-l border-border',
-              'flex flex-col',
-              'shadow-[-8px_0_32px_rgba(0,0,0,0.3)]'
+              'glass-panel',
+              'flex flex-col'
             )}
-            variants={panelVariants}
+            variants={panelSlideVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
@@ -123,7 +86,7 @@ export function QrCodeDialog({ isOpen, onClose, venue }: QrCodeDialogProps) {
             aria-labelledby="qr-code-title"
           >
             {/* Header */}
-            <div className="shrink-0 flex items-center justify-between p-4 border-b border-border">
+            <div className="shrink-0 flex items-center justify-between p-4 border-b border-white/[0.08]">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-9 h-9 rounded-full bg-wine/20">
                   <QrCode className="h-4 w-4 text-wine" />
@@ -189,7 +152,7 @@ export function QrCodeDialog({ isOpen, onClose, venue }: QrCodeDialogProps) {
                     onClick={handleCopy}
                   >
                     {copied ? (
-                      <Check className="h-4 w-4 text-green-500" />
+                      <Check className="h-4 w-4 text-status-success" />
                     ) : (
                       <Copy className="h-4 w-4" />
                     )}

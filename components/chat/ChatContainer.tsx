@@ -110,7 +110,7 @@ export function ChatContainer({ venueName }: ChatContainerProps) {
 
       {/* Error display */}
       {(error || scanError) && (
-        <div className="px-4 py-2 text-sm text-red-400 bg-red-900/20">
+        <div className="px-4 py-2 text-sm text-destructive bg-destructive/10">
           {error || scanError}
         </div>
       )}

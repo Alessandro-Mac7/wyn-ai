@@ -39,13 +39,13 @@ export function formatWineTypeForBadge(type: WineType): {
   className: string
 } {
   const config: Record<WineType, { label: string; className: string }> = {
-    red: { label: 'Rosso', className: 'bg-red-900 text-red-100' },
-    white: { label: 'Bianco', className: 'bg-amber-800 text-amber-100' },
-    rose: { label: 'Rosé', className: 'bg-pink-900 text-pink-100' },
-    sparkling: { label: 'Spumante', className: 'bg-purple-900 text-purple-100' },
-    dessert: { label: 'Dessert', className: 'bg-orange-900 text-orange-100' },
+    red: { label: 'Rosso', className: 'bg-wine-type-red/20 text-wine-type-red' },
+    white: { label: 'Bianco', className: 'bg-wine-type-white/20 text-wine-type-white' },
+    rose: { label: 'Rosé', className: 'bg-wine-type-rose/20 text-wine-type-rose' },
+    sparkling: { label: 'Spumante', className: 'bg-wine-type-sparkling/20 text-wine-type-sparkling' },
+    dessert: { label: 'Dessert', className: 'bg-wine-type-dessert/20 text-wine-type-dessert' },
   }
-  return config[type] || { label: type, className: 'bg-gray-700 text-gray-100' }
+  return config[type] || { label: type, className: 'bg-muted text-muted-foreground' }
 }
 
 // ============================================

@@ -36,7 +36,7 @@ export function VenueDiscoveryCard({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.3 }}
-      className="relative w-full rounded-lg border border-wine/30 bg-card-bg p-4 shadow-lg"
+      className="relative w-full rounded-lg glass-card glow-wine-subtle p-4"
     >
       {/* Header */}
       <div className="mb-3 flex items-center justify-between">
@@ -61,7 +61,7 @@ export function VenueDiscoveryCard({
           <button
             key={venue.venue_id}
             onClick={() => onVenueSelect(venue.venue_slug)}
-            className="w-full rounded-md border border-wine/20 bg-primary-bg p-3 text-left transition-colors hover:border-wine/40 hover:bg-wine/5"
+            className="w-full rounded-md glass-badge p-3 text-left transition-colors hover:border-wine/40 hover:bg-wine/5"
           >
             {/* Venue Name */}
             <div className="mb-1 flex items-start justify-between gap-2">

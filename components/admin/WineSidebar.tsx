@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { parseGrapeVarieties } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { useRegisterPanel } from '@/contexts/panel-context'
+import { panelSlideVariants, backdropVariants } from '@/lib/motion'
 import type { WineCreateInput, WineType, WineWithRatings } from '@/types'
 
 interface WineSidebarProps {
@@ -23,43 +24,6 @@ const wineTypes: { value: WineType; label: string }[] = [
   { value: 'sparkling', label: 'Spumante' },
   { value: 'dessert', label: 'Dessert' },
 ]
-
-// Animation variants
-const backdropVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { duration: 0.2 }
-  },
-  exit: {
-    opacity: 0,
-    transition: { duration: 0.2, delay: 0.1 }
-  }
-} as const
-
-const sidebarVariants = {
-  hidden: {
-    x: '100%',
-    opacity: 0.8
-  },
-  visible: {
-    x: 0,
-    opacity: 1,
-    transition: {
-      type: 'spring' as const,
-      stiffness: 300,
-      damping: 30
-    }
-  },
-  exit: {
-    x: '100%',
-    opacity: 0.8,
-    transition: {
-      duration: 0.25,
-      ease: [0.4, 0, 1, 1] as const
-    }
-  }
-}
 
 export function WineSidebar({ isOpen, onClose, onSave, editWine }: WineSidebarProps) {
   // Register panel for z-index coordination
@@ -178,7 +142,7 @@ export function WineSidebar({ isOpen, onClose, onSave, editWine }: WineSidebarPr
         <>
           {/* Backdrop */}
           <motion.div
-            className="fixed inset-0 z-[70] bg-black/60"
+            className="fixed inset-0 z-[70] glass-backdrop"
             variants={backdropVariants}
             initial="hidden"
             animate="visible"
@@ -188,8 +152,8 @@ export function WineSidebar({ isOpen, onClose, onSave, editWine }: WineSidebarPr
 
           {/* Sidebar */}
           <motion.div
-            className="fixed top-0 right-0 z-[70] h-full w-full max-w-md bg-card border-l border-border shadow-2xl"
-            variants={sidebarVariants}
+            className="fixed top-0 right-0 z-[70] h-full w-full max-w-md glass-panel"
+            variants={panelSlideVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
@@ -198,7 +162,7 @@ export function WineSidebar({ isOpen, onClose, onSave, editWine }: WineSidebarPr
             aria-labelledby="sidebar-title"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-5 border-b border-border">
+            <div className="flex items-center justify-between p-5 border-b border-white/[0.08]">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-10 h-10 rounded-full bg-wine/20">
                   <Wine className="h-5 w-5 text-wine" />

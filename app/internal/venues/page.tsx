@@ -354,7 +354,7 @@ export default function VenueManagementPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-background shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
+      <header className="sticky top-0 z-10 glass-ios shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Image
@@ -382,7 +382,7 @@ export default function VenueManagementPage() {
 
       <main id="main-content" className="max-w-7xl mx-auto px-4 py-8">
         {/* Settings Card */}
-        <div className="bg-card border border-border rounded-xl p-5 mb-8">
+        <div className="glass-card border-white/[0.08] rounded-xl p-5 mb-8">
           <div className="flex items-start justify-between gap-4 mb-4">
             <div className="flex items-center gap-3">
               <div className="flex items-center justify-center w-10 h-10 rounded-full bg-wine/20">
@@ -400,7 +400,7 @@ export default function VenueManagementPage() {
               className={cn(
                 "transition-all",
                 settingsSaved
-                  ? "bg-green-600 hover:bg-green-700"
+                  ? "bg-status-success hover:bg-status-success/90"
                   : "bg-wine hover:bg-wine-dark"
               )}
             >
@@ -471,7 +471,7 @@ export default function VenueManagementPage() {
         {loadingVenues && (
           <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="bg-card border border-border rounded-xl p-4 animate-pulse">
+              <div key={i} className="glass-card border-white/[0.08] rounded-xl p-4 animate-pulse">
                 <div className="h-5 bg-secondary rounded w-3/4 mb-3" />
                 <div className="h-4 bg-secondary rounded w-1/2 mb-2" />
                 <div className="h-4 bg-secondary rounded w-1/3" />
@@ -486,7 +486,7 @@ export default function VenueManagementPage() {
             {filteredVenues.map((venue) => (
               <div
                 key={venue.id}
-                className="bg-card border border-border rounded-xl p-4 hover:border-wine/50 transition-colors"
+                className="glass-card border-white/[0.08] rounded-xl p-4 hover:border-wine/50 transition-colors"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
@@ -523,9 +523,9 @@ export default function VenueManagementPage() {
                   <div className="flex items-center gap-2">
                     <Navigation className={cn(
                       "h-3.5 w-3.5",
-                      venue.latitude && venue.longitude ? "text-green-500" : "text-muted-foreground/50"
+                      venue.latitude && venue.longitude ? "text-status-success" : "text-muted-foreground/50"
                     )} />
-                    <span className={venue.latitude && venue.longitude ? "text-green-500" : "text-muted-foreground/50"}>
+                    <span className={venue.latitude && venue.longitude ? "text-status-success" : "text-muted-foreground/50"}>
                       {venue.latitude && venue.longitude ? 'GPS configurato' : 'GPS non configurato'}
                     </span>
                   </div>
@@ -573,7 +573,7 @@ export default function VenueManagementPage() {
 
             {/* Sidebar */}
             <motion.div
-              className="fixed top-0 right-0 z-50 h-full w-full max-w-md bg-card border-l border-border shadow-2xl"
+              className="fixed top-0 right-0 z-50 h-full w-full max-w-md glass-card border-l border-white/[0.08] shadow-2xl"
               variants={sidebarVariants}
               initial="hidden"
               animate="visible"
@@ -582,7 +582,7 @@ export default function VenueManagementPage() {
               aria-modal="true"
             >
               {/* Header */}
-              <div className="flex items-center justify-between p-5 border-b border-border">
+              <div className="flex items-center justify-between p-5 border-b border-white/[0.08]">
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-wine/20">
                     <Building2 className="h-5 w-5 text-wine" />
@@ -638,7 +638,7 @@ export default function VenueManagementPage() {
                         />
                       </div>
 
-                      <div className="border-t border-border pt-4">
+                      <div className="border-t border-white/[0.08] pt-4">
                         <p className="text-sm font-medium mb-3 flex items-center gap-2">
                           <MapPin className="h-4 w-4 text-wine" />
                           Posizione
@@ -730,7 +730,7 @@ export default function VenueManagementPage() {
                         </div>
                       </div>
 
-                      <div className="border-t border-border pt-4">
+                      <div className="border-t border-white/[0.08] pt-4">
                         <p className="text-sm font-medium mb-3">Credenziali Admin</p>
                       </div>
 
@@ -776,7 +776,7 @@ export default function VenueManagementPage() {
                         />
                       </div>
 
-                      <div className="border-t border-border pt-4">
+                      <div className="border-t border-white/[0.08] pt-4">
                         <p className="text-sm font-medium mb-3 flex items-center gap-2">
                           <MapPin className="h-4 w-4 text-wine" />
                           Posizione (opzionale)
@@ -837,7 +837,7 @@ export default function VenueManagementPage() {
 
                   {/* Error message */}
                   {saveError && (
-                    <div className="flex items-center gap-2 p-3 bg-red-900/20 text-red-400 rounded-lg text-sm">
+                    <div className="flex items-center gap-2 p-3 bg-destructive/10 text-destructive rounded-lg text-sm">
                       <X className="h-4 w-4 flex-shrink-0" />
                       {saveError}
                     </div>
@@ -845,7 +845,7 @@ export default function VenueManagementPage() {
                 </div>
 
                 {/* Actions - Fixed at bottom */}
-                <div className="p-5 border-t border-border bg-card">
+                <div className="p-5 border-t border-white/[0.08] glass-card">
                   <div className="flex gap-3">
                     <Button
                       type="button"

@@ -56,6 +56,17 @@ const config: Config = {
           light: "hsl(var(--wine-light))",
           dark: "hsl(var(--wine-dark))",
         },
+        'wine-type': {
+          red: "hsl(var(--wine-type-red))",
+          white: "hsl(var(--wine-type-white))",
+          rose: "hsl(var(--wine-type-rose))",
+          sparkling: "hsl(var(--wine-type-sparkling))",
+          dessert: "hsl(var(--wine-type-dessert))",
+        },
+        status: {
+          success: "hsl(var(--status-success))",
+          warning: "hsl(var(--status-warning))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

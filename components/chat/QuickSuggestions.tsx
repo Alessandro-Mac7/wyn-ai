@@ -37,8 +37,8 @@ export function QuickSuggestions({
             whileTap={{ scale: 0.95 }}
             onClick={() => onSelect(suggestion)}
             disabled={disabled}
-            className="px-4 py-2.5 text-sm border border-border rounded-full
-                       hover:border-wine/50 hover:bg-secondary/50
+            className="px-4 py-2.5 text-sm glass-badge rounded-full
+                       hover:border-wine/50
                        transition-colors disabled:opacity-50 disabled:cursor-not-allowed
                        min-h-[44px]"
           >

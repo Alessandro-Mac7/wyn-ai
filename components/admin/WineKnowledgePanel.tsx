@@ -115,9 +115,9 @@ const matchLabels: Record<string, string> = {
 }
 
 const matchColors: Record<string, string> = {
-  eccellente: 'bg-green-900/40 text-green-100 border-green-700',
-  ottimo: 'bg-blue-900/40 text-blue-100 border-blue-700',
-  buono: 'bg-amber-900/40 text-amber-100 border-amber-700',
+  eccellente: 'bg-status-success/20 text-status-success border-status-success/30',
+  ottimo: 'bg-wine/20 text-wine border-wine/30',
+  buono: 'bg-status-warning/20 text-status-warning border-status-warning/30',
 }
 
 export function WineKnowledgePanel({ wineId, wineName }: WineKnowledgePanelProps) {
@@ -319,7 +319,7 @@ export function WineKnowledgePanel({ wineId, wineName }: WineKnowledgePanelProps
   if (error) {
     return (
       <div className="p-6 space-y-4">
-        <div className="flex items-center gap-3 text-red-400">
+        <div className="flex items-center gap-3 text-destructive">
           <AlertCircle className="h-5 w-5" />
           <p className="text-sm">{error}</p>
         </div>
@@ -374,14 +374,14 @@ export function WineKnowledgePanel({ wineId, wineName }: WineKnowledgePanelProps
           </div>
           <div className="flex items-center gap-2">
             {isReviewed ? (
-              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-green-900/30 text-green-100 border border-green-700">
+              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-status-success/20 text-status-success border border-status-success/30">
                 <Check className="h-3 w-3" />
                 <span className="text-xs font-medium">
                   Rivisto {knowledge.reviewed_at ? formatDate(knowledge.reviewed_at) : ''}
                 </span>
               </div>
             ) : (
-              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-amber-900/30 text-amber-100 border border-amber-700">
+              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-status-warning/20 text-status-warning border border-status-warning/30">
                 <AlertCircle className="h-3 w-3" />
                 <span className="text-xs font-medium">AI generato</span>
               </div>
@@ -395,7 +395,7 @@ export function WineKnowledgePanel({ wineId, wineName }: WineKnowledgePanelProps
             <Button
               onClick={handleApprove}
               disabled={isSaving}
-              className="bg-green-700 hover:bg-green-800 text-white"
+              className="bg-status-success hover:bg-status-success/90 text-white"
               size="sm"
             >
               {isSaving ? (

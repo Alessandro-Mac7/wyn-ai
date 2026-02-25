@@ -46,7 +46,7 @@ function ContextualCta({ variant, onAction }: ContextualCtaProps) {
 
   return (
     <motion.button
-      className="mt-2 flex items-center gap-2 text-xs text-muted-foreground hover:text-wine transition-colors px-3 py-1.5 rounded-lg bg-wine/5 border border-wine/10 hover:bg-wine/10 hover:border-wine/20"
+      className="mt-2 flex items-center gap-2 text-xs text-muted-foreground hover:text-wine transition-colors px-3 py-1.5 rounded-lg glass-badge hover:bg-wine/10 hover:border-wine/20"
       initial={{ opacity: 0, y: 5 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.5, duration: 0.3 }}
@@ -105,7 +105,7 @@ export const ChatMessage = forwardRef<HTMLDivElement, ChatMessageProps>(
           {/* Header */}
           <div className="flex items-center gap-1.5 mb-1">
             <span className="font-semibold text-sm">WYN</span>
-            <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+            <Sparkles className="h-3.5 w-3.5 text-wine" />
           </div>
 
           {/* Message */}

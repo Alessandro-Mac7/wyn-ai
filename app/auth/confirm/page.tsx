@@ -164,8 +164,8 @@ function ConfirmPageContent() {
       >
         {/* Success icon */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
-            <CheckCircle className="w-8 h-8 text-green-500" />
+          <div className="w-16 h-16 rounded-full bg-status-success/20 flex items-center justify-center mx-auto mb-4">
+            <CheckCircle className="w-8 h-8 text-status-success" />
           </div>
           <h1 className="text-2xl font-semibold mb-2">Benvenuto in WYN!</h1>
           <p className="text-muted-foreground">

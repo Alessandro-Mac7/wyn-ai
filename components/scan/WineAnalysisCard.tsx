@@ -12,16 +12,16 @@ interface WineAnalysisCardProps {
 }
 
 const wineTypeLabels: Record<string, { label: string; color: string }> = {
-  red: { label: 'Rosso', color: 'bg-red-500/20 text-red-400' },
-  white: { label: 'Bianco', color: 'bg-amber-500/20 text-amber-400' },
-  rose: { label: 'Rosato', color: 'bg-pink-500/20 text-pink-400' },
-  sparkling: { label: 'Spumante', color: 'bg-purple-500/20 text-purple-400' },
-  dessert: { label: 'Dessert', color: 'bg-orange-500/20 text-orange-400' },
+  red: { label: 'Rosso', color: 'bg-wine-type-red/20 text-wine-type-red' },
+  white: { label: 'Bianco', color: 'bg-wine-type-white/20 text-wine-type-white' },
+  rose: { label: 'Rosato', color: 'bg-wine-type-rose/20 text-wine-type-rose' },
+  sparkling: { label: 'Spumante', color: 'bg-wine-type-sparkling/20 text-wine-type-sparkling' },
+  dessert: { label: 'Dessert', color: 'bg-wine-type-dessert/20 text-wine-type-dessert' },
 }
 
 const matchQualityLabels: Record<string, { label: string; color: string }> = {
-  excellent: { label: 'Perfetto', color: 'text-green-400' },
-  very_good: { label: 'Ottimo', color: 'text-blue-400' },
+  excellent: { label: 'Perfetto', color: 'text-status-success' },
+  very_good: { label: 'Ottimo', color: 'text-wine' },
   good: { label: 'Buono', color: 'text-muted-foreground' },
 }
 
@@ -193,7 +193,7 @@ export function WineAnalysisCard({ analysis, imageUrl: scannedImageUrl }: WineAn
             {aromatic_profile.tertiary_aromas && aromatic_profile.tertiary_aromas.length > 0 && (
               <div className="flex flex-wrap gap-1.5">
                 {aromatic_profile.tertiary_aromas.map((a) => (
-                  <span key={a} className="text-xs px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400">
+                  <span key={a} className="text-xs px-2 py-0.5 rounded-full bg-status-warning/10 text-status-warning">
                     {a}
                   </span>
                 ))}
@@ -256,7 +256,7 @@ export function WineAnalysisCard({ analysis, imageUrl: scannedImageUrl }: WineAn
               <div key={i} className="flex items-center justify-between text-xs">
                 <span className="text-muted-foreground">{ur.platform}</span>
                 <div className="flex items-center gap-1.5">
-                  <Star className="h-3 w-3 text-amber-400 fill-amber-400" />
+                  <Star className="h-3 w-3 text-status-warning fill-status-warning" />
                   <span className="font-medium">{ur.rating.toFixed(1)}</span>
                   {ur.review_count && (
                     <span className="text-muted-foreground/60">({ur.review_count})</span>

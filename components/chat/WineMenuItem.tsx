@@ -17,11 +17,11 @@ const wineTypeLabels: Record<WineType, string> = {
 }
 
 const wineTypeColors: Record<WineType, string> = {
-  red: 'bg-red-500/20 text-red-400 border-red-500/30',
-  white: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-  rose: 'bg-pink-500/20 text-pink-400 border-pink-500/30',
-  sparkling: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
-  dessert: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
+  red: 'bg-wine-type-red/20 text-wine-type-red border-wine-type-red/30',
+  white: 'bg-wine-type-white/20 text-wine-type-white border-wine-type-white/30',
+  rose: 'bg-wine-type-rose/20 text-wine-type-rose border-wine-type-rose/30',
+  sparkling: 'bg-wine-type-sparkling/20 text-wine-type-sparkling border-wine-type-sparkling/30',
+  dessert: 'bg-wine-type-dessert/20 text-wine-type-dessert border-wine-type-dessert/30',
 }
 
 export function WineMenuItem({ wine }: WineMenuItemProps) {
@@ -49,7 +49,7 @@ export function WineMenuItem({ wine }: WineMenuItemProps) {
         )}
 
         {bestRating && (
-          <span className="ml-auto flex items-center gap-1 text-xs text-amber-400">
+          <span className="ml-auto flex items-center gap-1 text-xs text-status-warning">
             <Star className="h-3 w-3 fill-current" />
             {bestRating.score}
           </span>

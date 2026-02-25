@@ -202,7 +202,7 @@ export function ImageUploader({ onImageSelect, disabled = false }: ImageUploader
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="flex items-center gap-2 text-xs text-red-400"
+            className="flex items-center gap-2 text-xs text-destructive"
           >
             <X className="h-3 w-3" />
             {error}

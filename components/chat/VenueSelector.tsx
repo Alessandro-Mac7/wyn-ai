@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { MapPin, Search, Wine, X, ArrowRight, AlertCircle, AlertTriangle, Loader2, Navigation, MapPinOff } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useRegisterPanel } from '@/contexts/panel-context'
+import { panelSlideVariants, backdropVariants } from '@/lib/motion'
 import {
   getCurrentPosition,
   fetchNearbyVenues,
@@ -22,43 +23,6 @@ interface VenueSelectorProps {
 }
 
 type LocationStatus = 'idle' | 'requesting' | 'granted' | 'denied' | 'error'
-
-// Slide-in panel animation variants (matching WineSidebar pattern)
-const backdropVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { duration: 0.2 }
-  },
-  exit: {
-    opacity: 0,
-    transition: { duration: 0.2, delay: 0.1 }
-  }
-} as const
-
-const panelVariants = {
-  hidden: {
-    x: '100%',
-    opacity: 0.8
-  },
-  visible: {
-    x: 0,
-    opacity: 1,
-    transition: {
-      type: 'spring' as const,
-      stiffness: 300,
-      damping: 30
-    }
-  },
-  exit: {
-    x: '100%',
-    opacity: 0.8,
-    transition: {
-      duration: 0.25,
-      ease: [0.4, 0, 1, 1] as const
-    }
-  }
-}
 
 export function VenueSelector({
   isOpen,
@@ -252,7 +216,7 @@ export function VenueSelector({
         <>
           {/* Backdrop */}
           <motion.div
-            className="fixed inset-0 z-[70] bg-black/60"
+            className="fixed inset-0 z-[70] glass-backdrop"
             variants={backdropVariants}
             initial="hidden"
             animate="visible"
@@ -265,11 +229,10 @@ export function VenueSelector({
             className={cn(
               'fixed inset-y-0 right-0 z-[70] safe-top safe-bottom',
               'w-full sm:w-[380px] max-w-full',
-              'bg-card border-l border-border',
-              'flex flex-col',
-              'shadow-[-8px_0_32px_rgba(0,0,0,0.3)]'
+              'glass-panel',
+              'flex flex-col'
             )}
-            variants={panelVariants}
+            variants={panelSlideVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
@@ -278,7 +241,7 @@ export function VenueSelector({
             aria-labelledby="venue-selector-title"
           >
             {/* Header */}
-            <div className="shrink-0 flex items-center justify-between p-4 border-b border-border">
+            <div className="shrink-0 flex items-center justify-between p-4 border-b border-white/[0.08]">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-9 h-9 rounded-full bg-wine/20">
                   <MapPin className="h-4 w-4 text-wine" />
@@ -307,7 +270,7 @@ export function VenueSelector({
               )}
 
               {locationStatus === 'denied' && (
-                <div className="flex items-center gap-2 p-3 bg-yellow-900/20 text-yellow-400 rounded-lg text-sm">
+                <div className="flex items-center gap-2 p-3 bg-status-warning/10 text-status-warning rounded-lg text-sm">
                   <MapPinOff className="h-4 w-4 flex-shrink-0" />
                   <span>Posizione non disponibile. Inserisci il codice manualmente.</span>
                 </div>
@@ -442,12 +405,12 @@ export function VenueSelector({
                     initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -5 }}
-                    className="p-4 bg-yellow-900/20 border border-yellow-600/30 rounded-lg"
+                    className="p-4 bg-status-warning/10 border border-status-warning/30 rounded-lg"
                   >
                     <div className="flex items-start gap-3">
-                      <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                      <AlertTriangle className="h-5 w-5 text-status-warning flex-shrink-0 mt-0.5" />
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-yellow-500">
+                        <p className="text-sm font-medium text-status-warning">
                           Locale distante
                         </p>
                         <p className="text-sm text-muted-foreground mt-1">

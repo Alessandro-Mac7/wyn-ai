@@ -173,12 +173,12 @@ export default function ContactsPage() {
                   transition={{ duration: 0.3 }}
                 >
                   <motion.div
-                    className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/10 flex items-center justify-center"
+                    className="w-16 h-16 mx-auto mb-4 rounded-full bg-status-success/10 flex items-center justify-center"
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ duration: 0.4, delay: 0.1, type: 'spring' }}
                   >
-                    <CheckCircle2 className="h-8 w-8 text-green-500" />
+                    <CheckCircle2 className="h-8 w-8 text-status-success" />
                   </motion.div>
                   <h3 className="text-xl font-semibold mb-2">Messaggio Inviato!</h3>
                   <p className="text-muted-foreground mb-6">

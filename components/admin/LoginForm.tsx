@@ -29,7 +29,7 @@ export function LoginForm({ onSubmit, error }: LoginFormProps) {
 
   return (
     <div className="w-full max-w-md">
-      <Card className="border-border">
+      <Card className="glass-card border-white/[0.08]">
         <CardContent className="pt-8 pb-6 px-8">
           {/* Logo */}
           <div className="flex justify-center mb-6">
@@ -93,7 +93,7 @@ export function LoginForm({ onSubmit, error }: LoginFormProps) {
             </div>
 
             {error && (
-              <div className="text-sm text-red-400 bg-red-900/20 p-3 rounded-lg text-center">
+              <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-lg text-center">
                 {error}
               </div>
             )}

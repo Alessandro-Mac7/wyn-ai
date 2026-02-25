@@ -5,46 +5,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X, User, Mail, Loader2, LogOut } from 'lucide-react'
 import { useUserProfile } from '@/hooks/useUserProfile'
 import { useRegisterPanel } from '@/contexts/panel-context'
+import { panelSlideVariants, backdropVariants, tabContentVariants } from '@/lib/motion'
 import { PrivacySettings } from './PrivacySettings'
 import { cn } from '@/lib/utils'
-
-// Slide-in panel animation variants (standard pattern)
-const backdropVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { duration: 0.2 }
-  },
-  exit: {
-    opacity: 0,
-    transition: { duration: 0.2, delay: 0.1 }
-  }
-} as const
-
-const panelVariants = {
-  hidden: {
-    x: '100%',
-    opacity: 0.8
-  },
-  visible: {
-    x: 0,
-    opacity: 1,
-    transition: {
-      type: 'spring' as const,
-      stiffness: 300,
-      damping: 30
-    }
-  },
-  exit: {
-    x: '100%',
-    opacity: 0.8,
-    transition: {
-      type: 'spring' as const,
-      stiffness: 300,
-      damping: 30
-    }
-  }
-} as const
 
 interface ProfileModalProps {
   isOpen: boolean
@@ -116,7 +79,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
         <>
           {/* Backdrop */}
           <motion.div
-            className="fixed inset-0 z-[70] bg-black/60"
+            className="fixed inset-0 z-[70] glass-backdrop"
             variants={backdropVariants}
             initial="hidden"
             animate="visible"
@@ -129,11 +92,10 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
             className={cn(
               'fixed inset-y-0 right-0 z-[70]',
               'w-full sm:w-[380px] max-w-full',
-              'bg-card border-l border-border',
-              'flex flex-col safe-top safe-bottom',
-              'shadow-[-8px_0_32px_rgba(0,0,0,0.3)]'
+              'glass-panel',
+              'flex flex-col safe-top safe-bottom'
             )}
-            variants={panelVariants}
+            variants={panelSlideVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
@@ -142,7 +104,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
             aria-labelledby="profile-panel-title"
           >
             {/* Header */}
-            <div className="shrink-0 flex items-center justify-between p-4 border-b border-border">
+            <div className="shrink-0 flex items-center justify-between p-4 border-b border-white/[0.08]">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-9 h-9 rounded-full bg-wine/20">
                   <User className="h-4 w-4 text-wine" />
@@ -161,7 +123,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
             </div>
 
             {/* Tabs */}
-            <div className="shrink-0 flex border-b border-border">
+            <div className="shrink-0 flex border-b border-white/[0.08]">
               <button
                 onClick={() => setActiveTab('profile')}
                 className={`flex-1 py-3 text-sm font-medium transition-colors ${
@@ -190,9 +152,11 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                 {activeTab === 'profile' ? (
                   <motion.div
                     key="profile"
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 10 }}
+                    custom={-1}
+                    variants={tabContentVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
                     className="space-y-4"
                   >
                     {/* Email (read-only) */}
@@ -262,9 +226,11 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                 ) : (
                   <motion.div
                     key="privacy"
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -10 }}
+                    custom={1}
+                    variants={tabContentVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
                   >
                     <PrivacySettings />
                   </motion.div>

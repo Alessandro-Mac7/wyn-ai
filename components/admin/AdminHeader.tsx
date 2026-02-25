@@ -16,7 +16,7 @@ export function AdminHeader({
   onLogout,
 }: AdminHeaderProps) {
   return (
-    <header className="border-b border-border bg-card">
+    <header className="border-b border-white/[0.08] glass-ios">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Wine className="h-8 w-8 text-primary" />

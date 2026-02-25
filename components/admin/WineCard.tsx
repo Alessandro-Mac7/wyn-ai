@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Wine as WineIcon, MapPin, Grape, Star, Pencil, Sparkles, RefreshCw, Trash2 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch'
+import { WineTypeBadge } from '@/components/ui/wine-type-badge'
 import { formatPrice } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import type { WineWithRatings, WineType } from '@/types'
@@ -17,13 +18,7 @@ interface WineCardProps {
   onRefresh: () => Promise<boolean>
 }
 
-const typeConfig: Record<WineType, { label: string; className: string }> = {
-  red: { label: 'Rosso', className: 'bg-red-900/80 text-red-100' },
-  white: { label: 'Bianco', className: 'bg-amber-700/80 text-amber-100' },
-  rose: { label: 'Rosé', className: 'bg-pink-800/80 text-pink-100' },
-  sparkling: { label: 'Spumante', className: 'bg-purple-800/80 text-purple-100' },
-  dessert: { label: 'Dessert', className: 'bg-orange-800/80 text-orange-100' },
-}
+// Wine type config removed - now using WineTypeBadge component
 
 export function WineCard({ wine, onToggle, onToggleRecommended, onEdit, onDelete, onRefresh }: WineCardProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
@@ -33,7 +28,6 @@ export function WineCard({ wine, onToggle, onToggleRecommended, onEdit, onDelete
   const [optimisticAvailable, setOptimisticAvailable] = useState(wine.available)
   const [optimisticRecommended, setOptimisticRecommended] = useState(wine.recommended)
 
-  const typeInfo = typeConfig[wine.wine_type]
   const topRating = wine.ratings?.[0]
 
   const handleRefresh = async () => {
@@ -62,9 +56,9 @@ export function WineCard({ wine, onToggle, onToggleRecommended, onEdit, onDelete
   const displayYear = wine.year && !yearInName
 
   return (
-    <Card className={cn(
+    <Card variant="glass" className={cn(
       'transition-all duration-200',
-      'hover:shadow-lg hover:shadow-wine/10 hover:border-wine/30',
+      'hover:glow-wine-subtle hover:border-wine/30',
       !optimisticAvailable && 'opacity-60'
     )}>
       <CardContent className="p-5">
@@ -72,26 +66,19 @@ export function WineCard({ wine, onToggle, onToggleRecommended, onEdit, onDelete
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-2 flex-wrap">
             {/* Type Badge */}
-            <span
-              className={cn(
-                'text-xs font-medium px-2.5 py-1 rounded',
-                typeInfo.className
-              )}
-            >
-              {typeInfo.label}
-            </span>
+            <WineTypeBadge type={wine.wine_type} size="md" />
 
             {/* Rating Badge */}
             {topRating && (
-              <span className="flex items-center gap-1 text-xs bg-secondary px-2.5 py-1 rounded">
-                <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
+              <span className="flex items-center gap-1 text-xs glass-badge px-2.5 py-1 rounded">
+                <Star className="h-3 w-3 text-status-warning fill-status-warning" />
                 {topRating.score}
               </span>
             )}
 
             {/* Recommended Badge */}
             {optimisticRecommended && (
-              <span className="flex items-center gap-1 text-xs bg-amber-500/20 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded border border-amber-500/30">
+              <span className="flex items-center gap-1 text-xs bg-status-warning/20 text-status-warning px-2.5 py-1 rounded border border-status-warning/30">
                 <Sparkles className="h-3 w-3" />
                 Consigliato
               </span>
@@ -138,7 +125,7 @@ export function WineCard({ wine, onToggle, onToggleRecommended, onEdit, onDelete
               className={cn(
                 'p-1.5 rounded-md transition-colors',
                 optimisticRecommended
-                  ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400'
+                  ? 'bg-status-warning/20 text-status-warning'
                   : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
               )}
               title={optimisticRecommended ? 'Rimuovi da consigliati' : 'Aggiungi ai consigliati'}

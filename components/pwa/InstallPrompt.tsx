@@ -71,8 +71,8 @@ export function InstallPrompt({ messageCount, isFromQR }: InstallPromptProps) {
           className={cn(
             'fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-80 safe-bottom',
             'p-4 rounded-xl',
-            'bg-card border border-border',
-            'shadow-lg z-50'
+            'glass-card',
+            'z-50'
           )}
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}

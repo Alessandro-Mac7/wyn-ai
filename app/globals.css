@@ -77,6 +77,22 @@
     --blur-glass: 12px;
     --glow-wine: 0 0 20px hsl(345 52% 33% / 0.3);
     --shadow-message: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+    /* Wine type semantic colors */
+    --wine-type-red: 0 60% 35%;
+    --wine-type-white: 42 60% 55%;
+    --wine-type-rose: 340 45% 55%;
+    --wine-type-sparkling: 280 40% 50%;
+    --wine-type-dessert: 25 55% 45%;
+
+    /* Status semantic colors */
+    --status-success: 145 60% 42%;
+    --status-warning: 42 90% 55%;
+
+    /* Glass-specific */
+    --glass-border: 0 0% 100% / 0.08;
+    --glass-border-subtle: 0 0% 100% / 0.05;
+    --glass-highlight: 0 0% 100% / 0.06;
   }
 }
 
@@ -256,6 +272,66 @@
     box-shadow:
       0 4px 16px rgba(0, 0, 0, 0.2),
       inset 0 0.5px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  /* Glass card — cards, containers */
+  .glass-card {
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    backdrop-filter: blur(20px) saturate(150%);
+    background: hsl(var(--card) / 0.45);
+    border: 1px solid hsl(0 0% 100% / 0.07);
+    box-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.2),
+      inset 0 0.5px 0 hsl(var(--glass-highlight));
+  }
+
+  /* Glass panel — slide-in panels */
+  .glass-panel {
+    -webkit-backdrop-filter: blur(32px) saturate(170%);
+    backdrop-filter: blur(32px) saturate(170%);
+    background: hsl(var(--card) / 0.6);
+    border: 1px solid hsl(0 0% 100% / 0.08);
+    box-shadow:
+      -8px 0 32px rgba(0, 0, 0, 0.3),
+      inset 0 0.5px 0 hsl(var(--glass-highlight));
+  }
+
+  /* Glass input — inputs, textareas */
+  .glass-input {
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    background: hsl(var(--background) / 0.4);
+    border: 1px solid hsl(0 0% 100% / 0.08);
+  }
+
+  .glass-input:focus {
+    border-color: hsl(var(--ring));
+    box-shadow: 0 0 0 2px hsl(var(--ring) / 0.3);
+  }
+
+  /* Glass badge — badges, pills, chips */
+  .glass-badge {
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    background: hsl(0 0% 100% / 0.06);
+    border: 1px solid hsl(0 0% 100% / 0.06);
+  }
+
+  /* Glass backdrop — overlay behind panels/modals */
+  .glass-backdrop {
+    background: rgba(0, 0, 0, 0.5);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+
+  /* Glow effects */
+  .glow-wine {
+    box-shadow: 0 0 24px hsl(var(--wine) / 0.25);
+    transition: box-shadow 0.2s ease-out;
+  }
+
+  .glow-wine-subtle {
+    box-shadow: 0 0 16px hsl(var(--wine) / 0.12);
   }
 
   /* Button press feedback */

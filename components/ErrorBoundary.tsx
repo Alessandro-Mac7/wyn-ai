@@ -125,14 +125,14 @@ export class ScanErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center gap-3">
-          <AlertTriangle className="h-4 w-4 text-amber-400 flex-shrink-0" />
-          <p className="text-sm text-amber-200 flex-1">
+        <div className="p-3 rounded-xl bg-status-warning/10 border border-status-warning/30 flex items-center gap-3">
+          <AlertTriangle className="h-4 w-4 text-status-warning flex-shrink-0" />
+          <p className="text-sm text-foreground/80 flex-1">
             Errore nella scansione. Riprova.
           </p>
           <button
             onClick={this.handleRetry}
-            className="text-sm text-amber-400 hover:text-amber-300 transition-colors"
+            className="text-sm text-status-warning hover:text-status-warning/80 transition-colors"
           >
             Riprova
           </button>

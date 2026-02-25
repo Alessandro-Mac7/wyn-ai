@@ -4,45 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { LogIn, X } from 'lucide-react'
 import { OtpLoginForm } from '@/components/auth/OtpLoginForm'
 import { useRegisterPanel } from '@/contexts/panel-context'
+import { panelSlideVariants, backdropVariants } from '@/lib/motion'
 import { cn } from '@/lib/utils'
-
-// Slide-in panel animation variants
-const backdropVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { duration: 0.2 }
-  },
-  exit: {
-    opacity: 0,
-    transition: { duration: 0.2, delay: 0.1 }
-  }
-} as const
-
-const panelVariants = {
-  hidden: {
-    x: '100%',
-    opacity: 0.8
-  },
-  visible: {
-    x: 0,
-    opacity: 1,
-    transition: {
-      type: 'spring' as const,
-      stiffness: 300,
-      damping: 30
-    }
-  },
-  exit: {
-    x: '100%',
-    opacity: 0.8,
-    transition: {
-      type: 'spring' as const,
-      stiffness: 300,
-      damping: 30
-    }
-  }
-} as const
 
 interface LoginPanelProps {
   isOpen: boolean
@@ -58,7 +21,7 @@ export function LoginPanel({ isOpen, onClose }: LoginPanelProps) {
         <>
           {/* Backdrop */}
           <motion.div
-            className="fixed inset-0 z-[70] bg-black/60"
+            className="fixed inset-0 z-[70] glass-backdrop"
             variants={backdropVariants}
             initial="hidden"
             animate="visible"
@@ -71,11 +34,10 @@ export function LoginPanel({ isOpen, onClose }: LoginPanelProps) {
             className={cn(
               'fixed inset-y-0 right-0 z-[70]',
               'w-full sm:w-[380px] max-w-full',
-              'bg-card border-l border-border',
-              'flex flex-col safe-top safe-bottom',
-              'shadow-[-8px_0_32px_rgba(0,0,0,0.3)]'
+              'glass-panel',
+              'flex flex-col safe-top safe-bottom'
             )}
-            variants={panelVariants}
+            variants={panelSlideVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
@@ -84,7 +46,7 @@ export function LoginPanel({ isOpen, onClose }: LoginPanelProps) {
             aria-labelledby="login-panel-title"
           >
             {/* Header */}
-            <div className="shrink-0 flex items-center justify-between p-4 border-b border-border">
+            <div className="shrink-0 flex items-center justify-between p-4 border-b border-white/[0.08]">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-9 h-9 rounded-full bg-wine/20">
                   <LogIn className="h-4 w-4 text-wine" />

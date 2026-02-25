@@ -75,10 +75,10 @@ export function PrivacySettings() {
   return (
     <div className="space-y-6">
       {/* GDPR Status */}
-      <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-xl">
+      <div className="p-4 bg-status-success/10 border border-status-success/20 rounded-xl">
         <div className="flex items-start gap-3">
-          <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
-            <Shield className="w-4 h-4 text-green-500" />
+          <div className="w-8 h-8 rounded-full bg-status-success/20 flex items-center justify-center flex-shrink-0">
+            <Shield className="w-4 h-4 text-status-success" />
           </div>
           <div>
             <h4 className="font-medium text-sm">Consenso GDPR attivo</h4>
@@ -99,9 +99,9 @@ export function PrivacySettings() {
         {/* Profiling consent */}
         <div className="p-4 bg-background/50 border border-white/10 rounded-xl">
           <div className="flex items-start justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <Eye className="w-5 h-5 text-muted-foreground mt-0.5" />
-              <div>
+            <div className="flex items-start gap-3 min-w-0">
+              <Eye className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+              <div className="min-w-0">
                 <h5 className="font-medium text-sm">Profilazione</h5>
                 <p className="text-xs text-muted-foreground mt-1">
                   Consente a WYN di apprendere i tuoi gusti dalle conversazioni per offrirti consigli personalizzati
@@ -113,8 +113,8 @@ export function PrivacySettings() {
               disabled={isUpdating === 'profiling'}
               role="switch"
               aria-checked={displayProfilingConsent}
-              className={`relative w-12 h-7 rounded-full transition-colors ${
-                displayProfilingConsent ? 'bg-green-500' : 'bg-muted'
+              className={`relative w-12 h-7 rounded-full transition-colors flex-shrink-0 ${
+                displayProfilingConsent ? 'bg-status-success' : 'bg-white/10'
               } ${isUpdating === 'profiling' ? 'opacity-50' : ''}`}
               aria-label={displayProfilingConsent ? 'Disattiva profilazione' : 'Attiva profilazione'}
             >
@@ -133,9 +133,9 @@ export function PrivacySettings() {
         {/* Marketing consent */}
         <div className="p-4 bg-background/50 border border-white/10 rounded-xl">
           <div className="flex items-start justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <Mail className="w-5 h-5 text-muted-foreground mt-0.5" />
-              <div>
+            <div className="flex items-start gap-3 min-w-0">
+              <Mail className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+              <div className="min-w-0">
                 <h5 className="font-medium text-sm">Comunicazioni marketing</h5>
                 <p className="text-xs text-muted-foreground mt-1">
                   Ricevi novità, offerte speciali e suggerimenti via email
@@ -147,8 +147,8 @@ export function PrivacySettings() {
               disabled={isUpdating === 'marketing'}
               role="switch"
               aria-checked={displayMarketingConsent}
-              className={`relative w-12 h-7 rounded-full transition-colors ${
-                displayMarketingConsent ? 'bg-green-500' : 'bg-muted'
+              className={`relative w-12 h-7 rounded-full transition-colors flex-shrink-0 ${
+                displayMarketingConsent ? 'bg-status-success' : 'bg-white/10'
               } ${isUpdating === 'marketing' ? 'opacity-50' : ''}`}
               aria-label={displayMarketingConsent ? 'Disattiva marketing' : 'Attiva marketing'}
             >
@@ -253,7 +253,7 @@ function DataExportButton() {
         {isExporting ? (
           <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
         ) : exportSuccess ? (
-          <CheckCircle className="w-5 h-5 text-green-500" />
+          <CheckCircle className="w-5 h-5 text-status-success" />
         ) : null}
       </button>
       {exportError && (

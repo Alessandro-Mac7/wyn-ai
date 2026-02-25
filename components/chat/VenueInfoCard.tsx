@@ -25,7 +25,7 @@ export function VenueInfoCard({ venue, isExpanded }: VenueInfoCardProps) {
     <AnimatePresence>
       {isExpanded && (
         <motion.div
-          className="overflow-hidden bg-card/50 border-b border-border"
+          className="overflow-hidden glass-card border-b border-white/[0.08]"
           initial="collapsed"
           animate="expanded"
           exit="collapsed"

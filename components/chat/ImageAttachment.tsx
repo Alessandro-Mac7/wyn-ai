@@ -361,8 +361,8 @@ export function ImageAttachment({
               onClick={handleGalleryClick}
               className="flex items-center gap-3 w-full px-4 py-3 hover:bg-secondary transition-colors text-left focus:bg-secondary focus:outline-none"
             >
-              <div className="p-2 bg-blue-500/10 rounded-lg">
-                <ImagePlus className="h-4 w-4 text-blue-400" />
+              <div className="p-2 bg-wine/10 rounded-lg">
+                <ImagePlus className="h-4 w-4 text-wine" />
               </div>
               <div>
                 <p className="text-sm font-medium text-foreground">

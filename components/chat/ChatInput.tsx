@@ -174,7 +174,7 @@ export function ChatInput({
           <span className={cn(
             'tabular-nums',
             isOverLimit && 'text-destructive font-medium',
-            isNearLimit && !isOverLimit && 'text-amber-500'
+            isNearLimit && !isOverLimit && 'text-status-warning'
           )}>
             {input.length}/{CHAT_MAX_CHARACTERS}
           </span>

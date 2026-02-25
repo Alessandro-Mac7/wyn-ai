@@ -109,7 +109,7 @@ export function ConsentBanner({ onConsentChange }: ConsentBannerProps) {
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         className="fixed bottom-0 left-0 right-0 z-50 p-4 safe-bottom"
       >
-        <div className="max-w-2xl mx-auto bg-card border border-border rounded-xl shadow-2xl overflow-hidden">
+        <div className="max-w-2xl mx-auto glass-card rounded-xl overflow-hidden">
           {/* Main banner content */}
           <div className="p-4 sm:p-6">
             <div className="flex items-start gap-3">
@@ -150,7 +150,7 @@ export function ConsentBanner({ onConsentChange }: ConsentBannerProps) {
                         <p className="font-medium text-foreground text-sm">Cookie tecnici</p>
                         <p className="text-xs text-muted-foreground">Necessari per il funzionamento del sito</p>
                       </div>
-                      <div className="px-3 py-1 bg-green-900/30 text-green-400 text-xs font-medium rounded border border-green-700">
+                      <div className="px-3 py-1 bg-status-success/20 text-status-success text-xs font-medium rounded border border-status-success/30">
                         Sempre attivi
                       </div>
                     </div>

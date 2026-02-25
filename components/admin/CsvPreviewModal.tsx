@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { useRegisterPanel } from '@/contexts/panel-context'
 import type { CsvParseResult, ParsedCsvWine, BulkImportResponse } from '@/types'
 import { cn } from '@/lib/utils'
+import { backdropVariants } from '@/lib/motion'
 
 interface CsvPreviewModalProps {
   isOpen: boolean
@@ -85,21 +86,21 @@ export function CsvPreviewModal({
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 backdrop-blur-sm"
+        className="fixed inset-0 z-[70] flex items-center justify-center glass-backdrop"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={handleClose}
       >
         <motion.div
-          className="w-full max-w-4xl mx-4 bg-card rounded-xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+          className="w-full max-w-4xl mx-4 glass-card rounded-xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-border flex-shrink-0">
+          <div className="flex items-center justify-between p-4 border-b border-white/[0.08] flex-shrink-0">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-wine/20 flex items-center justify-center">
                 <Upload className="h-5 w-5 text-wine" />
@@ -120,15 +121,15 @@ export function CsvPreviewModal({
           </div>
 
           {/* Summary */}
-          <div className="p-4 border-b border-border flex-shrink-0">
+          <div className="p-4 border-b border-white/[0.08] flex-shrink-0">
             <div className="flex gap-4">
               <div className="flex items-center gap-2 px-3 py-2 bg-secondary rounded-lg">
                 <span className="text-sm text-muted-foreground">Totale righe:</span>
                 <span className="font-semibold">{parseResult.totalRows}</span>
               </div>
-              <div className="flex items-center gap-2 px-3 py-2 bg-green-500/10 border border-green-500/30 rounded-lg">
-                <CheckCircle2 className="h-4 w-4 text-green-500" />
-                <span className="text-sm text-green-600">Validi: {parseResult.validCount}</span>
+              <div className="flex items-center gap-2 px-3 py-2 bg-status-success/10 border border-status-success/30 rounded-lg">
+                <CheckCircle2 className="h-4 w-4 text-status-success" />
+                <span className="text-sm text-status-success">Validi: {parseResult.validCount}</span>
               </div>
               {parseResult.errorCount > 0 && (
                 <div className="flex items-center gap-2 px-3 py-2 bg-destructive/10 border border-destructive/30 rounded-lg">
@@ -157,10 +158,10 @@ export function CsvPreviewModal({
 
             {importState === 'success' && importResult && (
               <div className="flex flex-col items-center justify-center py-12">
-                <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mb-4">
-                  <CheckCircle2 className="h-8 w-8 text-green-500" />
+                <div className="w-16 h-16 rounded-full bg-status-success/20 flex items-center justify-center mb-4">
+                  <CheckCircle2 className="h-8 w-8 text-status-success" />
                 </div>
-                <p className="text-lg font-medium text-green-600">Importazione completata!</p>
+                <p className="text-lg font-medium text-status-success">Importazione completata!</p>
                 <p className="text-sm text-muted-foreground mt-2">
                   {importResult.imported} vini importati con successo
                 </p>
@@ -184,7 +185,7 @@ export function CsvPreviewModal({
           </div>
 
           {/* Footer */}
-          <div className="p-4 border-t border-border flex-shrink-0">
+          <div className="p-4 border-t border-white/[0.08] flex-shrink-0">
             <div className="flex justify-end gap-3">
               {importState === 'preview' && (
                 <>
@@ -242,7 +243,7 @@ function WinePreviewTable({ wines }: { wines: ParsedCsvWine[] }) {
             <div>€{wine.data.price.toFixed(2)}</div>
             <div>
               {wine.isValid ? (
-                <span className="inline-flex items-center gap-1 text-green-600">
+                <span className="inline-flex items-center gap-1 text-status-success">
                   <CheckCircle2 className="h-4 w-4" />
                   Valido
                 </span>

@@ -151,7 +151,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-background shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
+      <header className="sticky top-0 z-10 glass-ios shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Image

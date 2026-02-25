@@ -3,6 +3,7 @@
 import { ScanLabelResponse, ScanResult, WineWithRatings, WineType } from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { WineTypeBadge } from '@/components/ui/wine-type-badge'
 import { cn } from '@/lib/utils'
 import { X, CheckCircle2, AlertCircle, Sparkles, MessageCircle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -15,21 +16,7 @@ interface ScanResultCardProps {
   isVenueMode?: boolean
 }
 
-const wineTypeColors: Record<WineType, string> = {
-  red: '#dc2626',
-  white: '#d97706',
-  rose: '#db2777',
-  sparkling: '#7c3aed',
-  dessert: '#f59e0b',
-}
-
-const wineTypeLabels: Record<WineType, string> = {
-  red: 'Rosso',
-  white: 'Bianco',
-  rose: 'Rosé',
-  sparkling: 'Spumante',
-  dessert: 'Dolce',
-}
+// Wine type colors/labels removed - now using WineTypeBadge component
 
 export function ScanResultCard({
   result,
@@ -50,7 +37,7 @@ export function ScanResultCard({
           exit={{ opacity: 0, y: 20 }}
           transition={{ duration: 0.3 }}
         >
-          <Card className="relative bg-card border-border">
+          <Card variant="glass" className="relative">
             <Button
               variant="ghost"
               size="icon"
@@ -61,7 +48,7 @@ export function ScanResultCard({
             </Button>
 
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-amber-500">
+              <CardTitle className="flex items-center gap-2 text-status-warning">
                 <AlertCircle className="h-5 w-5" />
                 Non riesco a leggere bene l&apos;etichetta
               </CardTitle>
@@ -109,15 +96,10 @@ export function ScanResultCard({
             </CardTitle>
             <div className="flex flex-wrap gap-2 mt-2">
               {scannedType && (
-                <span
-                  className="px-2 py-1 rounded text-xs font-medium text-white"
-                  style={{ backgroundColor: wineTypeColors[scannedType] }}
-                >
-                  {wineTypeLabels[scannedType]}
-                </span>
+                <WineTypeBadge type={scannedType} size="md" />
               )}
               {scannedYear && (
-                <span className="px-2 py-1 rounded text-xs font-medium bg-secondary text-muted-foreground">
+                <span className="px-2 py-1 rounded text-xs font-medium glass-badge text-muted-foreground">
                   {scannedYear}
                 </span>
               )}
@@ -154,8 +136,8 @@ export function ScanResultCard({
               match ? (
                 <div className="border-t border-border pt-4">
                   <div className="flex items-center gap-2 mb-3">
-                    <CheckCircle2 className="h-5 w-5 text-green-500" />
-                    <h3 className="text-green-400 font-semibold">Questo vino è in carta!</h3>
+                    <CheckCircle2 className="h-5 w-5 text-status-success" />
+                    <h3 className="text-status-success font-semibold">Questo vino è in carta!</h3>
                   </div>
 
                   <WineMatchCard
@@ -167,8 +149,8 @@ export function ScanResultCard({
               ) : alternatives && alternatives.length > 0 ? (
                 <div className="border-t border-border pt-4">
                   <div className="flex items-center gap-2 mb-3">
-                    <Sparkles className="h-5 w-5 text-blue-400" />
-                    <h3 className="text-blue-400 font-semibold">Non in carta, ma ti consiglio:</h3>
+                    <Sparkles className="h-5 w-5 text-wine" />
+                    <h3 className="text-wine font-semibold">Non in carta, ma ti consiglio:</h3>
                   </div>
 
                   <div className="space-y-3">
@@ -185,7 +167,7 @@ export function ScanResultCard({
                 </div>
               ) : (
                 <div className="border-t border-border pt-4">
-                  <p className="text-amber-400 text-sm flex items-center gap-2">
+                  <p className="text-status-warning text-sm flex items-center gap-2">
                     <AlertCircle className="h-4 w-4" />
                     Questo vino non è nella carta di questo locale.
                   </p>
@@ -227,7 +209,7 @@ function WineMatchCard({ wine, matchQuality, onSelect, isAlternative }: WineMatc
   }
 
   return (
-    <div className="bg-secondary rounded-lg p-4 space-y-2">
+    <div className="glass-card rounded-lg p-4 space-y-2">
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1">
           <h4 className="font-semibold text-foreground">{wine.name}</h4>
@@ -244,19 +226,14 @@ function WineMatchCard({ wine, matchQuality, onSelect, isAlternative }: WineMatc
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <span
-          className="px-2 py-1 rounded text-xs font-medium text-white"
-          style={{ backgroundColor: wineTypeColors[wine.wine_type] }}
-        >
-          {wineTypeLabels[wine.wine_type]}
-        </span>
+        <WineTypeBadge type={wine.wine_type} size="md" />
         {wine.year && (
-          <span className="px-2 py-1 rounded text-xs font-medium bg-card text-muted-foreground">
+          <span className="px-2 py-1 rounded text-xs font-medium glass-badge text-muted-foreground">
             {wine.year}
           </span>
         )}
         {!isAlternative && (
-          <span className="px-2 py-1 rounded text-xs font-medium bg-green-900/30 text-green-400 border border-green-700">
+          <span className="px-2 py-1 rounded text-xs font-medium bg-status-success/20 text-status-success border border-status-success/30">
             {matchLabels[matchQuality]}
           </span>
         )}
@@ -273,7 +250,7 @@ function WineMatchCard({ wine, matchQuality, onSelect, isAlternative }: WineMatc
           {wine.ratings.map((rating) => (
             <span
               key={rating.id}
-              className="px-2 py-1 rounded text-xs font-medium bg-card/50 text-yellow-400 border border-border"
+              className="px-2 py-1 rounded text-xs font-medium glass-badge text-status-warning"
             >
               ⭐ {rating.guide_name}: {rating.score}
             </span>

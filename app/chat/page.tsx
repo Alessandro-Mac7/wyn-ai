@@ -396,8 +396,8 @@ function ChatPageContent() {
               exit={{ opacity: 0, y: -10 }}
             >
               <div className="max-w-3xl mx-auto">
-                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-4">
-                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
+                <div className="p-4 rounded-xl bg-status-warning/10 border border-status-warning/30 flex items-start gap-4">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-status-warning/20 flex items-center justify-center">
                     <Image
                       src="/wyn-icon.ico"
                       alt="WYN"
@@ -407,7 +407,7 @@ function ChatPageContent() {
                     />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-amber-200">Locale non trovato</h3>
+                    <h3 className="font-semibold text-status-warning">Locale non trovato</h3>
                     <p className="text-sm text-muted-foreground mt-1">
                       Il codice del locale non è valido o il locale non esiste più.
                       Puoi continuare in modalità generale o cercare un altro locale.
@@ -514,7 +514,7 @@ function ChatPageContent() {
                     exit={{ opacity: 0, y: -10 }}
                   >
                     <div className="flex-1">
-                      <p className="text-sm text-red-300">{error}</p>
+                      <p className="text-sm text-destructive">{error}</p>
                       <p className="text-xs text-muted-foreground mt-1">
                         Riprova o contatta il supporto se il problema persiste.
                       </p>
@@ -542,7 +542,7 @@ function ChatPageContent() {
                     exit={{ opacity: 0, y: -10 }}
                   >
                     <div className="flex-1">
-                      <p className="text-sm text-red-300">{scanError}</p>
+                      <p className="text-sm text-destructive">{scanError}</p>
                     </div>
                     <button
                       onClick={() => setScanError(null)}

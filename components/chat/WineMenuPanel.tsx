@@ -10,11 +10,11 @@ import type { WineWithRatings, WineType } from '@/types'
 
 // Wine type display config
 const wineTypeConfig: Record<WineType, { label: string; color: string; bg: string }> = {
-  red: { label: 'Rosso', color: 'text-red-400', bg: 'bg-red-500/20 border-red-500/30' },
-  white: { label: 'Bianco', color: 'text-amber-400', bg: 'bg-amber-500/20 border-amber-500/30' },
-  rose: { label: 'Rosé', color: 'text-pink-400', bg: 'bg-pink-500/20 border-pink-500/30' },
-  sparkling: { label: 'Bollicine', color: 'text-purple-400', bg: 'bg-purple-500/20 border-purple-500/30' },
-  dessert: { label: 'Dessert', color: 'text-orange-400', bg: 'bg-orange-500/20 border-orange-500/30' },
+  red: { label: 'Rosso', color: 'text-wine-type-red', bg: 'bg-wine-type-red/20 border-wine-type-red/30' },
+  white: { label: 'Bianco', color: 'text-wine-type-white', bg: 'bg-wine-type-white/20 border-wine-type-white/30' },
+  rose: { label: 'Rosé', color: 'text-wine-type-rose', bg: 'bg-wine-type-rose/20 border-wine-type-rose/30' },
+  sparkling: { label: 'Bollicine', color: 'text-wine-type-sparkling', bg: 'bg-wine-type-sparkling/20 border-wine-type-sparkling/30' },
+  dessert: { label: 'Dessert', color: 'text-wine-type-dessert', bg: 'bg-wine-type-dessert/20 border-wine-type-dessert/30' },
 }
 
 interface WineMenuPanelProps {

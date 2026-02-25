@@ -25,7 +25,7 @@ export default function CookiePolicyPage() {
           </Link>
         </motion.div>
 
-        <article className="prose prose-invert prose-wine max-w-none">
+        <article className="prose prose-invert prose-wine max-w-none glass-card rounded-2xl p-6 sm:p-8">
           <motion.div variants={itemVariants}>
             <h1>Cookie Policy</h1>
             <p className="text-muted-foreground">Ultimo aggiornamento: 26 gennaio 2026</p>

@@ -64,7 +64,7 @@ export function VenueHeader({
           <AnimatePresence>
             {showQRBadge && (
               <motion.span
-                className="shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-500/20"
+                className="shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-status-success/20"
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: [0, 1.2, 1], opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -73,7 +73,7 @@ export function VenueHeader({
                   opacity: { duration: 0.3 }
                 }}
               >
-                <Check className="h-3 w-3 text-green-500" />
+                <Check className="h-3 w-3 text-status-success" />
               </motion.span>
             )}
           </AnimatePresence>
@@ -118,31 +118,31 @@ export function VenueHeader({
           {wineStats && wineStats.byType && (
             <>
               {wineStats.byType.red > 0 && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-500/10 text-red-400 text-xs">
+                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-wine-type-red/10 text-wine-type-red text-xs">
                   <Wine className="h-3 w-3" />
                   {wineStats.byType.red}
                 </span>
               )}
               {wineStats.byType.white > 0 && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-amber-500/10 text-amber-400 text-xs">
+                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-wine-type-white/10 text-wine-type-white text-xs">
                   <Wine className="h-3 w-3" />
                   {wineStats.byType.white}
                 </span>
               )}
               {wineStats.byType.rose > 0 && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-pink-500/10 text-pink-400 text-xs">
+                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-wine-type-rose/10 text-wine-type-rose text-xs">
                   <Wine className="h-3 w-3" />
                   {wineStats.byType.rose}
                 </span>
               )}
               {wineStats.byType.sparkling > 0 && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-purple-500/10 text-purple-400 text-xs">
+                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-wine-type-sparkling/10 text-wine-type-sparkling text-xs">
                   <Wine className="h-3 w-3" />
                   {wineStats.byType.sparkling}
                 </span>
               )}
               {wineStats.byType.dessert > 0 && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-orange-500/10 text-orange-400 text-xs">
+                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-wine-type-dessert/10 text-wine-type-dessert text-xs">
                   <Wine className="h-3 w-3" />
                   {wineStats.byType.dessert}
                 </span>
