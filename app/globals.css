@@ -113,13 +113,10 @@
     @apply border-border;
   }
   /* Root element background paints the entire canvas (viewport + safe
-     areas + iOS Safari chrome gaps). The top/bottom edge strips simulate
-     the glass-panel appearance so the gap between Safari chrome and the
-     web viewport blends seamlessly with any open panel. */
+     areas). On iOS Safari, fixed elements can't extend beyond the CSS
+     viewport, but the html canvas covers the full screen. */
   html {
     background:
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 0, transparent 30px),
-      linear-gradient(to top, rgba(255, 255, 255, 0.08) 0, transparent 30px),
       linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, transparent 40%),
       radial-gradient(ellipse 80% 50% at 20% 80%, hsla(350, 60%, 20%, 0.15), transparent),
       radial-gradient(ellipse 50% 50% at 50% 50%, hsla(30, 30%, 15%, 0.10), transparent),
