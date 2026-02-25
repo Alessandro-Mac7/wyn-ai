@@ -493,8 +493,9 @@ docs(readme): add deployment instructions
 ```
 
 **Important:**
-- NEVER add "Co-Authored-By: Claude" or any Claude/AI mention in commits
-- Keep commits clean and professional
+- NEVER mention Claude, Claude Code, AI, or any AI tool in commits, PRs, merge messages, branch names, or any git-related content
+- NEVER add "Co-Authored-By" or "Generated with" lines
+- Keep all git history clean and professional
 
 ### 8.2 Branch Strategy
 
