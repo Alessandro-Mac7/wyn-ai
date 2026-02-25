@@ -352,7 +352,7 @@ function ChatPageContent() {
   return (
     <div className="fixed inset-0 flex flex-col overflow-hidden">
       {/* Main content - no padding on mobile since sidebar is hidden */}
-      <main id="main-content" className="pl-0 sm:pl-16 flex-1 flex flex-col min-h-0 pt-[env(safe-area-inset-top)]">
+      <main id="main-content" className="pl-0 sm:pl-20 flex-1 flex flex-col min-h-0 pt-[env(safe-area-inset-top)]">
           {/* Top bar: ModeToggle + VenueHeader */}
         {!venueLoading && (
           <div className="shrink-0 z-20 flex items-center justify-center px-4 py-2">
