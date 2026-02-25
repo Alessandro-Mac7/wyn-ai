@@ -16,7 +16,6 @@ import {
   VenueSelector,
   WineMenuPanel,
 } from '@/components/chat'
-import { ImageAttachment } from '@/components/chat/ImageAttachment'
 import { ScanResultCard } from '@/components/scan/ScanResultCard'
 import { InstallPrompt } from '@/components/pwa'
 import { RegisterPrompt } from '@/components/auth'
@@ -583,17 +582,6 @@ function ChatPageContent() {
                   variants={inputVariants}
                   animate={error && !errorDismissed ? 'error' : isFocused ? 'focused' : 'idle'}
                 >
-                  {/* Image attachment button - left side */}
-                  <div className="absolute left-2 bottom-2 z-10">
-                    <ImageAttachment
-                      onImageSelect={handleScan}
-                      onImageClear={handleClearImage}
-                      imagePreview={imagePreview}
-                      isLoading={isScanLoading}
-                      disabled={isLoading || isScanLoading}
-                    />
-                  </div>
-
                   <textarea
                     ref={textareaRef}
                     value={input}
@@ -607,7 +595,7 @@ function ChatPageContent() {
                     aria-label="Scrivi un messaggio"
                     aria-multiline="true"
                     className={cn(
-                      'flex-1 resize-none bg-transparent rounded-2xl py-2.5 pl-16 pr-12',
+                      'flex-1 resize-none bg-transparent rounded-2xl py-2.5 pl-4 pr-12',
                       'text-[15px] leading-relaxed focus:outline-none disabled:opacity-50',
                       'min-h-[48px] max-h-[100px] sm:max-h-[120px]',
                       'transition-[height] duration-150 ease-out motion-reduce:transition-none',

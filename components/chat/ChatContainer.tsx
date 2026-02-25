@@ -122,7 +122,7 @@ export function ChatContainer({ venueName }: ChatContainerProps) {
         isLoading={isLoading}
         isScanLoading={isScanLoading}
         hasError={!!error || !!scanError}
-        showImageAttachment={true}
+        showImageAttachment={false}
         placeholder={
           venueSlug
             ? `Chiedimi dei vini di ${venueName || 'questo ristorante'}...`

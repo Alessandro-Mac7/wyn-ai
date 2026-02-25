@@ -30,7 +30,7 @@ export function ChatInput({
   placeholder,
   hasError = false,
   autoFocus = false,
-  showImageAttachment = true,
+  showImageAttachment = false,
   attachedImage = null,
   onImageAttach,
   onImageClear,
