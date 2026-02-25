@@ -183,23 +183,6 @@ export function QrScanner({ onScanSuccess, onClose }: QrScannerProps) {
         </div>
       )}
 
-      {/* Scan frame overlay (when scanning) */}
-      {state === 'scanning' && (
-        <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-          {/* Scanning animation line */}
-          <motion.div
-            className="absolute left-1/2 -translate-x-1/2 w-[220px] h-0.5 bg-wine/80 rounded-full"
-            animate={{ y: [-100, 100] }}
-            transition={{
-              repeat: Infinity,
-              repeatType: 'reverse',
-              duration: 2,
-              ease: 'easeInOut',
-            }}
-          />
-        </div>
-      )}
-
       {/* Instructions */}
       {state === 'scanning' && (
         <p className="text-sm text-muted-foreground text-center">
