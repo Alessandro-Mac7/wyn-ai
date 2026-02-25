@@ -33,6 +33,7 @@ CREATE INDEX IF NOT EXISTS idx_wine_embeddings_venue_id ON wine_embeddings(venue
 CREATE INDEX IF NOT EXISTS idx_wine_embeddings_wine_type ON wine_embeddings(wine_type);
 CREATE INDEX IF NOT EXISTS idx_wine_embeddings_available ON wine_embeddings(available);
 CREATE INDEX IF NOT EXISTS idx_wine_embeddings_price ON wine_embeddings(price);
+CREATE INDEX IF NOT EXISTS idx_wine_embeddings_content_hash ON wine_embeddings(content_hash);
 
 -- 5. Enable RLS on wine_embeddings
 ALTER TABLE wine_embeddings ENABLE ROW LEVEL SECURITY;
