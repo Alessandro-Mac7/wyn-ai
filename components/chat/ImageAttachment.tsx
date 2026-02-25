@@ -254,7 +254,7 @@ export function ImageAttachment({
             transition={{ duration: 0.2, ease: [0, 0, 0.2, 1] }}
             className="absolute bottom-full mb-2 left-0 max-h-[40vh]"
           >
-            <div className="relative rounded-lg overflow-hidden border border-border bg-card shadow-lg">
+            <div className="relative rounded-lg overflow-hidden glass-card shadow-lg">
               <NextImage
                 src={imagePreview}
                 alt="Anteprima etichetta"
@@ -299,7 +299,7 @@ export function ImageAttachment({
               ? 'bg-wine/20 text-wine'
               : imagePreview
                 ? 'bg-wine/20 text-wine hover:bg-wine/30'
-                : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+                : 'text-muted-foreground hover:text-foreground glass-hover'
         )}
         whileTap={!isDisabled ? { scale: 0.95 } : undefined}
         animate={showOptions ? { rotate: 45 } : { rotate: 0 }}
@@ -323,10 +323,10 @@ export function ImageAttachment({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.15 }}
-            className="absolute bottom-full mb-2 left-0 bg-card border border-border rounded-xl shadow-xl overflow-hidden min-w-[200px] z-50"
+            className="absolute bottom-full mb-2 left-0 glass-ios rounded-xl shadow-xl overflow-hidden min-w-[200px] z-50"
           >
             {/* Header */}
-            <div className="px-4 py-2 bg-secondary/50 border-b border-border">
+            <div className="px-4 py-2 bg-white/[0.03] border-b border-white/[0.08]">
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Wine className="h-3.5 w-3.5" />
                 <span>Scansiona etichetta vino</span>
@@ -340,7 +340,7 @@ export function ImageAttachment({
                   ref={firstMenuItemRef}
                   role="menuitem"
                   onClick={handleCameraClick}
-                  className="flex items-center gap-3 w-full px-4 py-3 hover:bg-secondary transition-colors text-left focus:bg-secondary focus:outline-none"
+                  className="flex items-center gap-3 w-full px-4 py-3 glass-hover transition-colors text-left focus:bg-white/[0.08] focus:outline-none"
                 >
                   <div className="p-2 bg-wine/10 rounded-lg">
                     <Camera className="h-4 w-4 text-wine" />
@@ -359,7 +359,7 @@ export function ImageAttachment({
               ref={isMobile ? undefined : firstMenuItemRef}
               role="menuitem"
               onClick={handleGalleryClick}
-              className="flex items-center gap-3 w-full px-4 py-3 hover:bg-secondary transition-colors text-left focus:bg-secondary focus:outline-none"
+              className="flex items-center gap-3 w-full px-4 py-3 glass-hover transition-colors text-left focus:bg-white/[0.08] focus:outline-none"
             >
               <div className="p-2 bg-wine/10 rounded-lg">
                 <ImagePlus className="h-4 w-4 text-wine" />

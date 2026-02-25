@@ -65,7 +65,7 @@ export class ErrorBoundary extends Component<Props, State> {
               <summary className="text-sm text-muted-foreground cursor-pointer hover:text-foreground">
                 Dettagli errore (solo sviluppo)
               </summary>
-              <pre className="mt-2 p-4 bg-secondary rounded-lg text-xs overflow-auto">
+              <pre className="mt-2 p-4 glass-card rounded-lg text-xs overflow-auto">
                 {this.state.error.message}
                 {'\n\n'}
                 {this.state.error.stack}

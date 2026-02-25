@@ -53,7 +53,7 @@ export function RegisterPrompt({ messageCount, className = '' }: RegisterPromptP
           {/* Dismiss button */}
           <button
             onClick={handleDismiss}
-            className="absolute top-3 right-3 p-1.5 text-muted-foreground hover:text-foreground rounded-full hover:bg-white/5 transition-colors z-10"
+            className="absolute top-3 right-3 p-1.5 text-muted-foreground hover:text-foreground rounded-full glass-hover z-10"
             aria-label="Chiudi"
           >
             <X className="w-4 h-4" />

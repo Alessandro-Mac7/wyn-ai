@@ -29,8 +29,8 @@ export function WineFilters({ selected, onChange }: WineFiltersProps) {
           className={cn(
             'px-3 py-1.5 text-sm rounded-lg transition-colors',
             selected === filter.value
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-secondary hover:bg-secondary/80'
+              ? 'bg-wine/20 text-wine border border-wine/30'
+              : 'glass-badge glass-hover'
           )}
         >
           {filter.label}

@@ -21,7 +21,7 @@ export function TypingIndicator({ visible }: TypingIndicatorProps) {
           animate="visible"
           exit="exit"
         >
-          <div className="bg-secondary rounded-2xl px-4 py-3">
+          <div className="glass-card rounded-2xl px-4 py-3">
             <div className="flex gap-1.5" role="status" aria-label="Digitando...">
               {[0, 1, 2].map((i) => (
                 <motion.span

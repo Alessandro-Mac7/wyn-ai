@@ -90,9 +90,9 @@
     --status-warning: 42 90% 55%;
 
     /* Glass-specific */
-    --glass-border: 0 0% 100% / 0.08;
-    --glass-border-subtle: 0 0% 100% / 0.05;
-    --glass-highlight: 0 0% 100% / 0.06;
+    --glass-border: 0 0% 100% / 0.15;
+    --glass-border-subtle: 0 0% 100% / 0.10;
+    --glass-highlight: 0 0% 100% / 0.10;
   }
 }
 
@@ -101,8 +101,14 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    background-color: hsl(var(--background));
+    background-image:
+      radial-gradient(ellipse 80% 50% at 20% 80%, hsla(350, 60%, 20%, 0.15), transparent),
+      radial-gradient(ellipse 60% 60% at 80% 20%, hsla(280, 30%, 18%, 0.12), transparent),
+      radial-gradient(ellipse 50% 50% at 50% 50%, hsla(30, 30%, 15%, 0.10), transparent);
+    background-attachment: fixed;
   }
 }
 
@@ -254,32 +260,32 @@
 @layer utilities {
   /* Glass effect — iOS-style frosted glass */
   .glass-ios {
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
-    backdrop-filter: blur(40px) saturate(180%);
-    background: hsl(var(--card) / 0.55);
-    border: 1px solid hsl(0 0% 100% / 0.08);
+    -webkit-backdrop-filter: blur(20px) saturate(180%) brightness(1.1);
+    backdrop-filter: blur(20px) saturate(180%) brightness(1.1);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid hsl(var(--glass-border));
     box-shadow:
       0 8px 32px rgba(0, 0, 0, 0.25),
-      inset 0 0.5px 0 rgba(255, 255, 255, 0.06),
+      inset 0 0.5px 0 rgba(255, 255, 255, 0.10),
       inset 0 -0.5px 0 rgba(0, 0, 0, 0.1);
   }
 
   .glass-ios-subtle {
-    -webkit-backdrop-filter: blur(24px) saturate(150%);
-    backdrop-filter: blur(24px) saturate(150%);
-    background: hsl(var(--card) / 0.4);
-    border: 1px solid hsl(0 0% 100% / 0.06);
+    -webkit-backdrop-filter: blur(16px) saturate(150%) brightness(1.05);
+    backdrop-filter: blur(16px) saturate(150%) brightness(1.05);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid hsl(var(--glass-border-subtle));
     box-shadow:
       0 4px 16px rgba(0, 0, 0, 0.2),
-      inset 0 0.5px 0 rgba(255, 255, 255, 0.04);
+      inset 0 0.5px 0 rgba(255, 255, 255, 0.08);
   }
 
   /* Glass card — cards, containers */
   .glass-card {
-    -webkit-backdrop-filter: blur(20px) saturate(150%);
-    backdrop-filter: blur(20px) saturate(150%);
-    background: hsl(var(--card) / 0.45);
-    border: 1px solid hsl(0 0% 100% / 0.07);
+    -webkit-backdrop-filter: blur(16px) saturate(150%) brightness(1.08);
+    backdrop-filter: blur(16px) saturate(150%) brightness(1.08);
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid hsl(var(--glass-border-subtle));
     box-shadow:
       0 4px 24px rgba(0, 0, 0, 0.2),
       inset 0 0.5px 0 hsl(var(--glass-highlight));
@@ -287,10 +293,10 @@
 
   /* Glass panel — slide-in panels */
   .glass-panel {
-    -webkit-backdrop-filter: blur(32px) saturate(170%);
-    backdrop-filter: blur(32px) saturate(170%);
-    background: hsl(var(--card) / 0.6);
-    border: 1px solid hsl(0 0% 100% / 0.08);
+    -webkit-backdrop-filter: blur(24px) saturate(170%) brightness(1.1);
+    backdrop-filter: blur(24px) saturate(170%) brightness(1.1);
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid hsl(var(--glass-border));
     box-shadow:
       -8px 0 32px rgba(0, 0, 0, 0.3),
       inset 0 0.5px 0 hsl(var(--glass-highlight));
@@ -298,10 +304,10 @@
 
   /* Glass input — inputs, textareas */
   .glass-input {
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
-    background: hsl(var(--background) / 0.4);
-    border: 1px solid hsl(0 0% 100% / 0.08);
+    -webkit-backdrop-filter: blur(12px) brightness(1.05);
+    backdrop-filter: blur(12px) brightness(1.05);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid hsl(var(--glass-border-subtle));
   }
 
   .glass-input:focus {
@@ -313,8 +319,8 @@
   .glass-badge {
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
-    background: hsl(0 0% 100% / 0.06);
-    border: 1px solid hsl(0 0% 100% / 0.06);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
   }
 
   /* Glass backdrop — overlay behind panels/modals */
@@ -322,6 +328,22 @@
     background: rgba(0, 0, 0, 0.5);
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
+  }
+
+  /* GPU acceleration for glass elements */
+  .glass-ios, .glass-ios-subtle, .glass-card, .glass-panel {
+    transform: translateZ(0);
+  }
+
+  /* Glass hover — consistent interactive hover state */
+  .glass-hover {
+    transition: background-color 0.15s ease-out;
+  }
+  .glass-hover:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .glass-hover:active {
+    background: rgba(255, 255, 255, 0.05);
   }
 
   /* Glow effects */

@@ -161,17 +161,17 @@ export const cardVariants: Variants = {
 export const glassCardVariants: Variants = {
   idle: {
     scale: 1,
-    boxShadow: '0 4px 24px rgba(0, 0, 0, 0.2), inset 0 0.5px 0 rgba(255, 255, 255, 0.06)',
+    boxShadow: '0 4px 24px rgba(0, 0, 0, 0.2), inset 0 0.5px 0 rgba(255, 255, 255, 0.10)',
   },
   hover: {
     scale: 1.01,
     y: -1,
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25), 0 0 24px rgba(143, 36, 54, 0.2), inset 0 0.5px 0 rgba(255, 255, 255, 0.06)',
+    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25), 0 0 24px rgba(143, 36, 54, 0.2), inset 0 0.5px 0 rgba(255, 255, 255, 0.10)',
     transition: { duration: 0.2 },
   },
   tap: {
     scale: 0.99,
-    boxShadow: '0 2px 16px rgba(0, 0, 0, 0.15), inset 0 0.5px 0 rgba(255, 255, 255, 0.06)',
+    boxShadow: '0 2px 16px rgba(0, 0, 0, 0.15), inset 0 0.5px 0 rgba(255, 255, 255, 0.10)',
   },
 }
 

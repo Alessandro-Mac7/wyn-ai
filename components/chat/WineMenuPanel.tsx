@@ -103,7 +103,7 @@ export function WineMenuPanel({ isOpen, onClose, wines, venueName }: WineMenuPan
 
           {/* Panel */}
           <motion.div
-            className="fixed top-0 right-0 z-[70] h-full w-full sm:max-w-md bg-card border-l border-border shadow-2xl flex flex-col"
+            className="fixed top-0 right-0 z-[70] h-full w-full sm:max-w-md glass-panel flex flex-col"
             variants={panelVariants}
             initial="hidden"
             animate="visible"
@@ -127,7 +127,7 @@ export function WineMenuPanel({ isOpen, onClose, wines, venueName }: WineMenuPan
               </div>
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-secondary rounded-lg transition-colors"
+                className="p-2 glass-hover rounded-lg"
                 aria-label="Chiudi"
               >
                 <X className="h-5 w-5" />
@@ -187,7 +187,7 @@ export function WineMenuPanel({ isOpen, onClose, wines, venueName }: WineMenuPan
             </div>
 
             {/* Footer with count */}
-            <div className="p-4 border-t border-border flex-shrink-0 bg-card">
+            <div className="p-4 border-t border-white/[0.08] flex-shrink-0">
               <p className="text-sm text-muted-foreground text-center">
                 {selectedType
                   ? `${filteredWines.length} di ${availableWines.length} vini`

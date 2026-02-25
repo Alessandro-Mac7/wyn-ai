@@ -62,7 +62,7 @@ export function Tooltip({ content, children, side = 'right', className }: Toolti
           role="tooltip"
           className={cn(
             'absolute z-50 px-2 py-1 text-xs font-medium',
-            'bg-popover text-popover-foreground rounded-md shadow-md',
+            'glass-ios text-popover-foreground rounded-md shadow-md',
             'whitespace-nowrap animate-in fade-in-0 zoom-in-95 duration-100',
             positionClasses[side],
             className

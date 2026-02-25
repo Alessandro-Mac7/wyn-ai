@@ -64,7 +64,7 @@ export function ScanPanel({ isOpen, onClose }: ScanPanelProps) {
             className={cn(
               'fixed inset-y-0 right-0 z-[70]',
               'w-full sm:w-[400px] max-w-full',
-              'bg-card border-l border-border',
+              'glass-panel',
               'flex flex-col safe-top safe-bottom',
               'shadow-[-8px_0_32px_rgba(0,0,0,0.3)]'
             )}
@@ -88,7 +88,7 @@ export function ScanPanel({ isOpen, onClose }: ScanPanelProps) {
               </div>
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-secondary rounded-lg transition-colors"
+                className="p-2 glass-hover rounded-lg"
                 aria-label="Chiudi"
               >
                 <X className="h-5 w-5" />

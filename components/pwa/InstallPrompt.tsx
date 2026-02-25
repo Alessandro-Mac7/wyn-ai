@@ -82,7 +82,7 @@ export function InstallPrompt({ messageCount, isFromQR }: InstallPromptProps) {
           {/* Dismiss button */}
           <button
             onClick={handleDismiss}
-            className="absolute top-2 right-2 p-1 rounded-full hover:bg-secondary transition-colors"
+            className="absolute top-2 right-2 p-1 rounded-full glass-hover"
             aria-label="Chiudi"
           >
             <X className="h-4 w-4 text-muted-foreground" />

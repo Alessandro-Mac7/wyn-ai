@@ -145,7 +145,7 @@ export function ConsentBanner({ onConsentChange }: ConsentBannerProps) {
                 >
                   <div className="mt-4 pt-4 border-t border-border space-y-3">
                     {/* Essential cookies - always on */}
-                    <div className="flex items-center justify-between p-3 bg-secondary rounded-lg">
+                    <div className="flex items-center justify-between p-3 glass-card rounded-lg">
                       <div>
                         <p className="font-medium text-foreground text-sm">Cookie tecnici</p>
                         <p className="text-xs text-muted-foreground">Necessari per il funzionamento del sito</p>
@@ -156,7 +156,7 @@ export function ConsentBanner({ onConsentChange }: ConsentBannerProps) {
                     </div>
 
                     {/* Analytics cookies - toggleable */}
-                    <div className="flex items-center justify-between p-3 bg-secondary rounded-lg">
+                    <div className="flex items-center justify-between p-3 glass-card rounded-lg">
                       <div>
                         <p className="font-medium text-foreground text-sm">Cookie analitici</p>
                         <p className="text-xs text-muted-foreground">Per migliorare l&apos;esperienza utente</p>
@@ -165,7 +165,7 @@ export function ConsentBanner({ onConsentChange }: ConsentBannerProps) {
                         onClick={() => setAnalyticsEnabled(!analyticsEnabled)}
                         className={cn(
                           'relative w-11 h-6 rounded-full transition-colors',
-                          analyticsEnabled ? 'bg-wine' : 'bg-secondary border border-border'
+                          analyticsEnabled ? 'bg-wine' : 'bg-white/10 border border-white/15'
                         )}
                       >
                         <div
@@ -228,7 +228,7 @@ export function ConsentBanner({ onConsentChange }: ConsentBannerProps) {
           </div>
 
           {/* Legal links */}
-          <div className="px-4 sm:px-6 py-3 bg-secondary/50 border-t border-border flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+          <div className="px-4 sm:px-6 py-3 bg-white/[0.03] border-t border-white/[0.08] flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
             <Link href="/privacy" className="hover:text-foreground transition-colors">
               Privacy Policy
             </Link>

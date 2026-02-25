@@ -57,7 +57,7 @@ export function LoginPanel({ isOpen, onClose }: LoginPanelProps) {
               </div>
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-secondary rounded-lg transition-colors"
+                className="p-2 glass-hover rounded-lg"
                 aria-label="Chiudi"
               >
                 <X className="h-5 w-5" />

@@ -164,7 +164,7 @@ export function MobileNav({ onProfilePress, isAuthenticated, userInitial }: Mobi
                     onClick={handleProfilePress}
                     className={cn(
                       'w-full flex items-center gap-3 px-3 py-3 rounded-xl',
-                      'transition-colors hover:bg-white/5 text-wine'
+                      'transition-colors glass-hover text-wine'
                     )}
                   >
                     <div className="w-7 h-7 rounded-full bg-wine/20 flex items-center justify-center text-sm font-medium">
@@ -177,7 +177,7 @@ export function MobileNav({ onProfilePress, isAuthenticated, userInitial }: Mobi
                     onClick={handleProfilePress}
                     className={cn(
                       'w-full flex items-center gap-3 px-3 py-3 rounded-xl',
-                      'transition-colors hover:bg-white/5 text-muted-foreground hover:text-foreground'
+                      'transition-colors glass-hover text-muted-foreground hover:text-foreground'
                     )}
                   >
                     <LogIn className="h-5 w-5" />
@@ -214,7 +214,7 @@ function NavItem({
         'flex items-center gap-3 px-3 py-3 rounded-xl transition-colors',
         active
           ? 'bg-wine/10 text-wine'
-          : 'text-muted-foreground hover:bg-white/5 hover:text-foreground'
+          : 'text-muted-foreground glass-hover hover:text-foreground'
       )}
     >
       {icon}

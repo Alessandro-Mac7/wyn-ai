@@ -89,7 +89,7 @@ export function WineCard({ wine, onToggle, onToggleRecommended, onEdit, onDelete
             {/* Edit Button */}
             <button
               onClick={onEdit}
-              className="p-1.5 rounded-md hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+              className="p-1.5 rounded-md glass-hover text-muted-foreground hover:text-foreground transition-colors"
               title="Modifica vino"
             >
               <Pencil className="h-4 w-4" />
@@ -112,7 +112,7 @@ export function WineCard({ wine, onToggle, onToggleRecommended, onEdit, onDelete
                 'p-1.5 rounded-md transition-colors',
                 isRefreshing
                   ? 'text-wine cursor-not-allowed'
-                  : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                  : 'text-muted-foreground glass-hover hover:text-foreground'
               )}
               title="Aggiorna valutazioni"
             >
@@ -126,7 +126,7 @@ export function WineCard({ wine, onToggle, onToggleRecommended, onEdit, onDelete
                 'p-1.5 rounded-md transition-colors',
                 optimisticRecommended
                   ? 'bg-status-warning/20 text-status-warning'
-                  : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                  : 'text-muted-foreground glass-hover hover:text-foreground'
               )}
               title={optimisticRecommended ? 'Rimuovi da consigliati' : 'Aggiungi ai consigliati'}
             >
@@ -219,7 +219,7 @@ export function WineCard({ wine, onToggle, onToggleRecommended, onEdit, onDelete
               </button>
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="px-3 py-1.5 text-sm rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors"
+                className="px-3 py-1.5 text-sm rounded-md glass-badge text-secondary-foreground glass-hover"
               >
                 Annulla
               </button>

@@ -115,7 +115,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
               </div>
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-secondary rounded-lg transition-colors"
+                className="p-2 glass-hover rounded-lg"
                 aria-label="Chiudi"
               >
                 <X className="h-5 w-5" />
@@ -217,7 +217,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                     {/* Sign out button */}
                     <button
                       onClick={handleSignOut}
-                      className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-white/10 text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors"
+                      className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-white/[0.15] text-muted-foreground hover:text-foreground glass-hover"
                     >
                       <LogOut className="w-4 h-4" />
                       <span>Esci</span>

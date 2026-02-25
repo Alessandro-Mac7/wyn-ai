@@ -165,7 +165,7 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
               className={cn(
                 'flex flex-col items-center justify-center',
                 'w-[52px] h-[52px] rounded-lg transition-colors relative',
-                'hover:bg-white/5 btn-press',
+                'glass-hover btn-press',
                 'text-muted-foreground hover:text-foreground',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine'
               )}
@@ -183,14 +183,14 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
               className={cn(
                 'flex flex-col items-center justify-center',
                 'w-[52px] h-[52px] rounded-lg transition-colors relative',
-                'hover:bg-white/5 btn-press',
+                'glass-hover btn-press',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine'
               )}
             >
               {isOnChatPage && (
                 <motion.div
                   layoutId="sidebar-active"
-                  className="absolute inset-0 bg-white/5 rounded-lg"
+                  className="absolute inset-0 bg-white/[0.08] rounded-lg"
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 />
               )}
@@ -206,9 +206,9 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
               className={cn(
                 'flex flex-col items-center justify-center',
                 'w-[52px] h-[52px] rounded-lg transition-colors relative',
-                'hover:bg-white/5 btn-press',
+                'glass-hover btn-press',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine',
-                showHistoryPanel ? 'bg-secondary text-wine' : 'text-muted-foreground hover:text-foreground'
+                showHistoryPanel ? 'bg-white/[0.08] text-wine' : 'text-muted-foreground hover:text-foreground'
               )}
             >
               <History className="h-5 w-5" />
@@ -224,7 +224,7 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
               className={cn(
                 'flex flex-col items-center justify-center',
                 'w-[52px] h-[52px] rounded-lg transition-colors relative',
-                'hover:bg-white/5 btn-press',
+                'glass-hover btn-press',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine',
                 pathname === '/scan' ? 'text-wine' : 'text-muted-foreground hover:text-foreground'
               )}
@@ -232,7 +232,7 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
               {pathname === '/scan' && (
                 <motion.div
                   layoutId="sidebar-active"
-                  className="absolute inset-0 bg-white/5 rounded-lg"
+                  className="absolute inset-0 bg-white/[0.08] rounded-lg"
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 />
               )}
@@ -249,9 +249,9 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
                 className={cn(
                   'flex flex-col items-center justify-center',
                   'w-[52px] h-[52px] rounded-lg transition-colors relative',
-                  'hover:bg-white/5 btn-press',
+                  'glass-hover btn-press',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine',
-                  isMoreActive || showMoreMenu ? 'bg-secondary text-wine' : 'text-muted-foreground hover:text-foreground'
+                  isMoreActive || showMoreMenu ? 'bg-white/[0.08] text-wine' : 'text-muted-foreground hover:text-foreground'
                 )}
               >
                 <MoreHorizontal className="h-5 w-5" />
@@ -281,7 +281,7 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
                       onClick={() => setShowMoreMenu(false)}
                       className={cn(
                         'flex items-center gap-3 px-4 py-3 text-sm transition-colors',
-                        isAbout ? 'text-wine' : 'text-foreground hover:bg-white/5'
+                        isAbout ? 'text-wine' : 'text-foreground glass-hover'
                       )}
                     >
                       <Sparkles className="h-4 w-4" />
@@ -293,7 +293,7 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
                       onClick={() => setShowMoreMenu(false)}
                       className={cn(
                         'flex items-center gap-3 px-4 py-3 text-sm transition-colors',
-                        isContacts ? 'text-wine' : 'text-foreground hover:bg-white/5'
+                        isContacts ? 'text-wine' : 'text-foreground glass-hover'
                       )}
                     >
                       <Mail className="h-4 w-4" />
@@ -315,7 +315,7 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
                 className={cn(
                   'flex flex-col items-center justify-center',
                   'w-[52px] h-[52px] rounded-lg transition-colors relative',
-                  'hover:bg-white/5 btn-press',
+                  'glass-hover btn-press',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine',
                   'text-wine'
                 )}
@@ -332,7 +332,7 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
                 className={cn(
                   'flex flex-col items-center justify-center',
                   'w-[52px] h-[52px] rounded-lg transition-colors relative',
-                  'hover:bg-white/5 btn-press',
+                  'glass-hover btn-press',
                   'text-muted-foreground hover:text-foreground',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine'
                 )}
@@ -459,7 +459,7 @@ function HistoryPanel({
               </div>
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-white/5 rounded-lg transition-colors"
+                className="p-2 glass-hover rounded-lg"
                 aria-label="Chiudi"
               >
                 <X className="h-5 w-5" />

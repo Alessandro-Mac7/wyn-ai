@@ -96,7 +96,7 @@ export function WineModal({ onClose, onSave }: WineModalProps) {
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-secondary rounded-lg transition-colors"
+            className="p-2 glass-hover rounded-lg"
           >
             <X className="h-5 w-5" />
           </button>

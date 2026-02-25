@@ -252,7 +252,7 @@ export function VenueSelector({
               </div>
               <button
                 onClick={handleClose}
-                className="p-2 hover:bg-secondary rounded-lg transition-colors"
+                className="p-2 glass-hover rounded-lg"
                 aria-label="Chiudi"
               >
                 <X className="h-5 w-5" />
@@ -297,7 +297,7 @@ export function VenueSelector({
                           disabled={isValidating}
                           className={cn(
                             'w-full flex items-center justify-between p-3 rounded-lg',
-                            'hover:bg-secondary transition-colors text-left',
+                            'glass-hover transition-colors text-left',
                             'disabled:opacity-50'
                           )}
                         >
@@ -423,7 +423,7 @@ export function VenueSelector({
                           </button>
                           <button
                             onClick={handleCancelDistanceWarning}
-                            className="px-3 py-1.5 text-sm bg-secondary hover:bg-secondary/80 rounded-md transition-colors"
+                            className="px-3 py-1.5 text-sm glass-badge glass-hover rounded-md"
                           >
                             Annulla
                           </button>
@@ -446,7 +446,7 @@ export function VenueSelector({
                         disabled={isValidating}
                         className={cn(
                           'w-full flex items-center gap-3 p-3 rounded-lg',
-                          'hover:bg-secondary transition-colors text-left',
+                          'glass-hover transition-colors text-left',
                           'disabled:opacity-50'
                         )}
                       >

@@ -80,7 +80,7 @@ export function ScanResultCard({
         exit={{ opacity: 0, y: 20 }}
         transition={{ duration: 0.3 }}
       >
-        <Card className="relative bg-card border-border">
+        <Card variant="glass" className="relative">
           <Button
             variant="ghost"
             size="icon"

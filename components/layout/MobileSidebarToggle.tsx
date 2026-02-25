@@ -26,7 +26,7 @@ export function MobileSidebarToggle({ isOpen, onToggle, position = 'center' }: M
         'fixed left-0 z-30',
         'p-2 rounded-r-xl',
         'glass-card border border-l-0 border-white/[0.08]',
-        'shadow-lg hover:bg-white/5 transition-colors duration-200',
+        'shadow-lg glass-hover',
         'sm:hidden',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wine'
       )}

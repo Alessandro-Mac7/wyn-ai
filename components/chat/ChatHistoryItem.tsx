@@ -42,7 +42,7 @@ export function ChatHistoryItem({
     <motion.button
       className={cn(
         'w-full text-left px-3 py-2 rounded-lg transition-colors relative group',
-        'hover:bg-white/5',
+        'glass-hover',
         isActive && 'bg-wine/20 border-l-2 border-wine',
         isDeleting && 'opacity-50 pointer-events-none'
       )}
