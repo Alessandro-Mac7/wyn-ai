@@ -13,7 +13,8 @@ interface OtpLoginFormProps {
   showConsent?: boolean
 }
 
-const OTP_LENGTH = 6
+const OTP_LENGTH = 8
+const OTP_EXPIRY_MINUTES = 10
 const RESEND_COOLDOWN = 60
 
 export function OtpLoginForm({
@@ -34,6 +35,7 @@ export function OtpLoginForm({
   const [digits, setDigits] = useState<string[]>(Array(OTP_LENGTH).fill(''))
   const [isVerifying, setIsVerifying] = useState(false)
   const [countdown, setCountdown] = useState(0)
+  const [expiryCountdown, setExpiryCountdown] = useState(0)
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
 
   // Shared
@@ -45,6 +47,13 @@ export function OtpLoginForm({
     const timer = setTimeout(() => setCountdown(c => c - 1), 1000)
     return () => clearTimeout(timer)
   }, [countdown])
+
+  // Countdown timer for OTP expiry
+  useEffect(() => {
+    if (expiryCountdown <= 0) return
+    const timer = setTimeout(() => setExpiryCountdown(c => c - 1), 1000)
+    return () => clearTimeout(timer)
+  }, [expiryCountdown])
 
   // Auto-focus first digit input when entering code step
   useEffect(() => {
@@ -85,6 +94,7 @@ export function OtpLoginForm({
     if (result.success) {
       setStep('code')
       setCountdown(RESEND_COOLDOWN)
+      setExpiryCountdown(OTP_EXPIRY_MINUTES * 60)
     } else {
       setError(result.error || 'Errore durante l\'invio del codice')
       localStorage.removeItem('wyn_pending_gdpr_consent')
@@ -174,6 +184,7 @@ export function OtpLoginForm({
 
     if (result.success) {
       setCountdown(RESEND_COOLDOWN)
+      setExpiryCountdown(OTP_EXPIRY_MINUTES * 60)
       setDigits(Array(OTP_LENGTH).fill(''))
     } else {
       setError(result.error || 'Errore durante il rinvio')
@@ -298,6 +309,18 @@ export function OtpLoginForm({
             Codice inviato a
           </p>
           <p className="text-sm font-medium">{email}</p>
+          {expiryCountdown > 0 ? (
+            <p className="text-xs text-muted-foreground mt-1">
+              Il codice scade tra{' '}
+              <span className={expiryCountdown <= 60 ? 'text-destructive font-medium' : ''}>
+                {Math.floor(expiryCountdown / 60)}:{String(expiryCountdown % 60).padStart(2, '0')}
+              </span>
+            </p>
+          ) : (
+            <p className="text-xs text-destructive mt-1 font-medium">
+              Codice scaduto — rinvia un nuovo codice
+            </p>
+          )}
         </div>
 
         {/* 6-digit input */}
@@ -314,7 +337,7 @@ export function OtpLoginForm({
               onKeyDown={(e) => handleKeyDown(i, e)}
               disabled={isVerifying}
               aria-label={`Cifra ${i + 1}`}
-              className="w-11 h-13 text-center text-xl font-semibold bg-background/50 border border-white/10 rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-wine/50 disabled:opacity-50"
+              className="w-9 h-12 text-center text-lg font-semibold bg-background/50 border border-white/10 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-wine/50 disabled:opacity-50"
             />
           ))}
         </div>
