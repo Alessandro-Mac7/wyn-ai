@@ -93,6 +93,18 @@
     --glass-border: 0 0% 100% / 0.15;
     --glass-border-subtle: 0 0% 100% / 0.10;
     --glass-highlight: 0 0% 100% / 0.10;
+
+    /* Safe area tokens — 0 in browser, real insets in standalone PWA */
+    --sat: 0px;
+    --sab: 0px;
+  }
+}
+
+/* Standalone PWA: activate real safe area insets */
+@media all and (display-mode: standalone) {
+  :root {
+    --sat: env(safe-area-inset-top, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
   }
 }
 
@@ -183,30 +195,22 @@
   }
 }
 
-/* Safe area padding for notched devices (iPhone X+, etc.)
-   Uses env() directly for iOS PWA standalone compatibility. */
-.safe-bottom {
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-}
+/* Safe area padding — uses --sat / --sab tokens.
+   In browser mode these are 0px (browser handles safe areas).
+   In standalone PWA they resolve to env(safe-area-inset-*). */
 .safe-top {
-  padding-top: 0;
+  padding-top: var(--sat);
 }
-.safe-left {
-  padding-left: env(safe-area-inset-left, 0px);
-}
-.safe-right {
-  padding-right: env(safe-area-inset-right, 0px);
-}
-.safe-all {
-  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+.safe-bottom {
+  padding-bottom: var(--sab);
 }
 
-/* Fixed full-screen container that respects top safe area.
-   Bottom safe area is handled per-component (e.g. chat input).
-   Background extends to screen edges (dark theme, no visible gap). */
+/* Fixed full-screen container.
+   Background extends to screen edges; content stays in safe area. */
 .fixed-safe {
   position: fixed;
   inset: 0;
+  padding-top: var(--sat);
 }
 
 /* Message entry animations */
