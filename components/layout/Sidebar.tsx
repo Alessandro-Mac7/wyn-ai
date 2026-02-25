@@ -126,7 +126,7 @@ export function Sidebar({ onHomeClick, onOpenScan, onOpenLogin, onOpenProfile, i
         isMobileOpen ? 'left-0' : '-left-14 sm:left-2'
       )}>
         {/* Logo - Home button */}
-        <div className="flex items-center justify-center pt-[max(1.25rem,env(safe-area-inset-top,0px))] pb-3">
+        <div className="flex items-center justify-center pt-5 pb-3">
           <Link
             href="/"
             onClick={handleLogoClick}
@@ -437,7 +437,7 @@ function HistoryPanel({
               'left-0',
               'w-72 sm:w-80 max-w-[calc(100vw-3.5rem)]',
               'glass-panel border-r border-white/[0.08]',
-              'flex flex-col pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)]'
+              'flex flex-col'
             )}
             variants={historyPanelVariants}
             initial="hidden"
