@@ -208,7 +208,7 @@ wyn/
 ├── app/
 │   ├── layout.tsx, page.tsx, globals.css
 │   ├── chat/page.tsx            # Main chat (general + venue, label scan, CTAs)
-│   ├── scan/page.tsx            # Standalone label scanner
+│   ├── scan/page.tsx            # Label scanner + QR scanner (tabbed)
 │   ├── v/[slug]/page.tsx        # Venue entry via QR
 │   ├── admin/
 │   │   ├── page.tsx             # Login
@@ -242,15 +242,19 @@ wyn/
 │   │   ├── VenueSelector.tsx     # Venue search/select modal
 │   │   └── ...
 │   ├── scan/
-│   │   └── ScanResultCard.tsx    # Label scan result display
+│   │   ├── ScanResultCard.tsx    # Label scan result display
+│   │   └── QrScanner.tsx         # In-app QR scanner (html5-qrcode)
 │   ├── admin/
 │   │   └── WineKnowledgePanel.tsx  # Knowledge review UI
 │   ├── auth/
+│   │   ├── OtpLoginForm.tsx      # OTP login (email → 8-digit code)
+│   │   ├── LoginPanel.tsx        # Slide-in login panel
+│   │   ├── ProfileModal.tsx      # Slide-in profile panel
 │   │   └── PrivacySettings.tsx   # User memory management
 │   └── ui/
 ├── lib/
 │   ├── supabase.ts              # Legacy client + wine CRUD
-│   ├── supabase-auth.ts         # Browser auth client
+│   ├── supabase-auth.ts         # Browser auth client (OTP + magic link)
 │   ├── supabase-auth-server.ts  # Server client + admin ops
 │   ├── llm.ts                   # LLM client (Groq/Anthropic)
 │   ├── prompts.ts               # System prompts (general + venue + RAG)
@@ -265,6 +269,7 @@ wyn/
 │   ├── vision.ts                # Vision API for label scanning
 │   ├── wine-matcher.ts          # Match scanned label to venue wines
 │   ├── geolocation.ts           # Browser geolocation helpers
+│   ├── qr-scanner.ts            # QR URL parsing (extractVenueSlug)
 │   └── rate-limit.ts            # In-memory rate limiting
 ├── config/
 │   ├── constants.ts             # RAG_THRESHOLD, RAG_TOP_K, MEMORY_* constants
@@ -666,10 +671,14 @@ jobs:
 └─────────────────────────────────────────────────────────────────┘
 
 Key Files:
-- lib/supabase-auth.ts         → Browser client
+- lib/supabase-auth.ts         → Browser client (OTP: sendOtpCode/verifyOtpCode)
 - lib/supabase-auth-server.ts  → Server client + admin operations
+- components/auth/OtpLoginForm.tsx → 2-step OTP login (email → 8-digit code)
 - middleware.ts                → Route protection
 - hooks/useAdmin.ts            → Dashboard auth (self-contained)
+
+User Auth Method: OTP code via email (PWA-compatible, no redirects)
+Admin Auth Method: Password-based (unchanged)
 
 RLS Policies:
 - venues: read public, write owner/super_admin
@@ -905,6 +914,9 @@ All migrations are **additive** (no destructive changes). After 007-009: run `PO
 | Wine Knowledge | `lib/wine-knowledge.ts` |
 | Memory System | `lib/memory.ts` |
 | Vision (label scan) | `lib/vision.ts` |
+| QR Scanner Utils | `lib/qr-scanner.ts` |
+| OTP Login Form | `components/auth/OtpLoginForm.tsx` |
+| QR Scanner Component | `components/scan/QrScanner.tsx` |
 | RAG Constants | `config/constants.ts` |
 | Wine Guides | `config/wine-guides.config.ts` |
 | Architecture Docs | `docs/ARCHITECTURE-RAG-MEMORY.md` |
@@ -937,6 +949,7 @@ pnpm typecheck    # TypeScript check
 | 1.1.0 | 2025-01-05 | - | Supabase Auth migration, two-tier roles, RLS policies |
 | 1.2.0 | 2025-01-09 | - | Added mandatory pre-push checklist (lint, tsc, build) |
 | 2.0.0 | 2026-02-25 | - | v2 architecture: RAG, pgvector, wine knowledge, user memory, vertical app features, label scan, venue discovery, CTAs |
+| 2.1.0 | 2026-02-25 | - | OTP login (replace magic link), in-app QR scanner, slide-in panel pattern, CI workflow |
 
 ---
 
