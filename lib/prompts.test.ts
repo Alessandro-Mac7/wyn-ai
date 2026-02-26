@@ -72,7 +72,7 @@ function makeWineWithRatings(
 
 describe('SYSTEM_PROMPT_GENERAL', () => {
   it('should contain NO PRICE rule (RULE-004)', () => {
-    expect(SYSTEM_PROMPT_GENERAL).toContain('NIENTE PREZZI O VINI SPECIFICI')
+    expect(SYSTEM_PROMPT_GENERAL).toContain('VINI REALI, NIENTE PREZZI')
     expect(SYSTEM_PROMPT_GENERAL.toLowerCase()).toContain('mai inventare')
   })
 
@@ -201,7 +201,7 @@ describe('getVenueSystemPrompt', () => {
 
     expect(prompt).toContain('VINI PREMIATI')
     expect(prompt).toContain('Tre Bicchieri')
-    expect(prompt).toContain('SOMMELIER REALI')
+    expect(prompt).toContain('esperti reali')
   })
 
   it('should include recommended wines section when present', () => {
@@ -265,7 +265,7 @@ describe('getVenueSystemPromptRAG', () => {
     const prompt = getVenueSystemPromptRAG('Osteria', 'RAG_CONTEXT', 100)
 
     expect(prompt).toContain('selezionati dal catalogo')
-    expect(prompt).toContain('più rilevanti')
+    expect(prompt).toContain('piu\' rilevanti')
   })
 
   it('should include core rules (budget, price, one wine)', () => {
