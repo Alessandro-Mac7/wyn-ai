@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { useAuth } from '@/contexts/auth-context'
+import { useUser } from '@/contexts/user-context'
 import {
   SCAN_LOCAL_STORAGE_LIMIT,
   SCAN_LOCAL_STORAGE_KEY,
@@ -89,7 +89,7 @@ interface UseScanHistoryReturn {
 }
 
 export function useScanHistory(): UseScanHistoryReturn {
-  const { user } = useAuth()
+  const { user } = useUser()
   const [scans, setScans] = useState<WineScan[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
