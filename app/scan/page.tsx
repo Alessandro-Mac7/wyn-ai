@@ -3,8 +3,9 @@
 import { useState, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
-import { ScanLine, QrCode } from 'lucide-react'
+import { ScanLine, QrCode, History } from 'lucide-react'
 import { LabelScanner } from '@/components/scan/LabelScanner'
+import { ScanHistoryList } from '@/components/scan/ScanHistoryList'
 import { cn } from '@/lib/utils'
 
 // Code-split QR scanner (camera + html5-qrcode not needed on initial load)
@@ -13,7 +14,7 @@ const QrScanner = dynamic(
   { ssr: false }
 )
 
-type Tab = 'label' | 'qr'
+type Tab = 'label' | 'qr' | 'history'
 
 export default function ScanPage() {
   const [activeTab, setActiveTab] = useState<Tab>('label')
@@ -53,6 +54,18 @@ export default function ScanPage() {
               <QrCode className="h-4 w-4" />
               <span>QR Ristorante</span>
             </button>
+            <button
+              onClick={() => setActiveTab('history')}
+              className={cn(
+                'flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-colors',
+                activeTab === 'history'
+                  ? 'bg-wine/20 text-wine'
+                  : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              <History className="h-4 w-4" />
+              <span>Storico</span>
+            </button>
           </div>
         </div>
 
@@ -63,6 +76,7 @@ export default function ScanPage() {
             {activeTab === 'qr' && (
               <QrScanner onScanSuccess={handleQrSuccess} />
             )}
+            {activeTab === 'history' && <ScanHistoryList />}
           </div>
         </div>
       </main>

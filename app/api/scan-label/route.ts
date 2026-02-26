@@ -3,11 +3,66 @@ import { scanWineLabel, validateImageData, validateWineImage } from '@/lib/visio
 import { findMatchingWine, findSimilarWines } from '@/lib/wine-matcher'
 import { getVenueBySlug, getWinesWithRatings } from '@/lib/supabase'
 import { checkRateLimit, getClientIdentifier, RATE_LIMITS } from '@/lib/rate-limit'
-import type { ScanLabelResponse } from '@/types'
+import { createSupabaseServerClient, supabaseAdmin } from '@/lib/supabase-auth-server'
+import { SCAN_HISTORY_MAX_PER_USER } from '@/config/constants'
+import type { ScanLabelResponse, ScanResult, WineScanData } from '@/types'
 
 interface ScanLabelRequest {
   image: string // Base64 data URL
   venue_slug?: string
+}
+
+/** Fire-and-forget: persist scan for authenticated users */
+async function persistScan(
+  scanResult: ScanResult,
+  venueId: string | null,
+  matchedWineId: string | null,
+  matchConfidence: number | null
+) {
+  try {
+    const supabase = await createSupabaseServerClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
+    const extracted_data: WineScanData = {
+      name: scanResult.name ?? undefined,
+      producer: scanResult.producer ?? undefined,
+      year: scanResult.year ?? undefined,
+      wine_type: scanResult.wine_type ?? undefined,
+      region: scanResult.region ?? undefined,
+      denomination: scanResult.denomination ?? undefined,
+      grape_varieties: scanResult.grape_varieties ?? undefined,
+      scan_type: 'quick',
+      confidence: scanResult.confidence,
+    }
+
+    await supabaseAdmin
+      .from('wine_scans')
+      .insert({
+        user_id: user.id,
+        venue_id: venueId,
+        extracted_data,
+        matched_wine_id: matchedWineId,
+        match_confidence: matchConfidence,
+      })
+
+    // Cleanup: delete oldest scans if over limit
+    const { data: scans } = await supabaseAdmin
+      .from('wine_scans')
+      .select('id')
+      .eq('user_id', user.id)
+      .order('scanned_at', { ascending: false })
+      .range(SCAN_HISTORY_MAX_PER_USER, SCAN_HISTORY_MAX_PER_USER + 50)
+
+    if (scans && scans.length > 0) {
+      await supabaseAdmin
+        .from('wine_scans')
+        .delete()
+        .in('id', scans.map(s => s.id))
+    }
+  } catch (err) {
+    console.error('Scan persistence error (non-blocking):', err)
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -85,6 +140,9 @@ export async function POST(request: NextRequest) {
 
     // If no venue_slug provided, return scan result only
     if (!body.venue_slug) {
+      // Fire-and-forget persistence
+      persistScan(scanResult, null, null, null)
+
       const response: ScanLabelResponse = {
         success: true,
         scanned: scanResult,
@@ -129,6 +187,14 @@ export async function POST(request: NextRequest) {
     if (match && match.confidence >= 0.7) {
       alternatives = []
     }
+
+    // Fire-and-forget persistence
+    persistScan(
+      scanResult,
+      venue.id,
+      match?.wine.id ?? null,
+      match?.confidence ?? null
+    )
 
     const response: ScanLabelResponse = {
       success: true,

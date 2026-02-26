@@ -70,7 +70,7 @@ export const CSV_MAX_FILE_SIZE = 5 * 1024 * 1024
 export const RAG_THRESHOLD = 50
 
 /** Number of wines to retrieve in RAG search */
-export const RAG_TOP_K = 8
+export const RAG_TOP_K = 12
 
 /** Minimum similarity score for RAG results */
 export const RAG_SIMILARITY_THRESHOLD = 0.4
@@ -113,6 +113,22 @@ export const RATE_LIMITS = {
   /** User profile: requests per minute */
   profile: { limit: 30, windowSeconds: 60 },
 } as const
+
+// ============================================
+// SCAN HISTORY
+// ============================================
+
+/** Max scans displayed in history UI */
+export const SCAN_HISTORY_LIMIT = 20
+
+/** Max scans stored per user in DB */
+export const SCAN_HISTORY_MAX_PER_USER = 50
+
+/** Max scans stored in localStorage for anonymous users */
+export const SCAN_LOCAL_STORAGE_LIMIT = 5
+
+/** localStorage key for anonymous scans */
+export const SCAN_LOCAL_STORAGE_KEY = 'wyn_scan_history'
 
 // ============================================
 // MEMORY SYSTEM

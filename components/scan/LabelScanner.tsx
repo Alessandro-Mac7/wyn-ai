@@ -6,11 +6,16 @@ import { Loader2, RefreshCw, Wine } from 'lucide-react'
 import { ImageUploader } from './ImageUploader'
 import { WineAnalysisCard } from './WineAnalysisCard'
 import { cn } from '@/lib/utils'
-import type { WineAnalysis } from '@/types'
+import { SCAN_LOCAL_STORAGE_KEY, SCAN_LOCAL_STORAGE_LIMIT } from '@/config/constants'
+import type { WineAnalysis, WineScan } from '@/types'
 
 type ScannerState = 'idle' | 'analyzing' | 'results' | 'error'
 
-export function LabelScanner() {
+interface LabelScannerProps {
+  onScanComplete?: (scan: WineScan) => void
+}
+
+export function LabelScanner({ onScanComplete }: LabelScannerProps = {}) {
   const [state, setState] = useState<ScannerState>('idle')
   const [analysis, setAnalysis] = useState<WineAnalysis | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -66,6 +71,66 @@ export function LabelScanner() {
 
       setAnalysis(data.analysis)
       setState('results')
+
+      // Save to localStorage for anonymous history
+      if (data.analysis) {
+        try {
+          const a = data.analysis as WineAnalysis
+          const entry = {
+            extracted_data: {
+              name: a.basic.name ?? undefined,
+              producer: a.basic.producer ?? undefined,
+              year: a.basic.year ?? undefined,
+              wine_type: a.basic.wine_type ?? undefined,
+              region: a.basic.region ?? undefined,
+              denomination: a.basic.denomination ?? undefined,
+              grape_varieties: a.basic.grape_varieties ?? undefined,
+              scan_type: 'deep' as const,
+              confidence: a.confidence,
+              analysis: a,
+              image_url: a.image_url,
+            },
+            venue_id: null,
+            matched_wine_id: null,
+            match_confidence: null,
+            scanned_at: new Date().toISOString(),
+          }
+          const raw = localStorage.getItem(SCAN_LOCAL_STORAGE_KEY)
+          const existing = raw ? JSON.parse(raw) : []
+          localStorage.setItem(
+            SCAN_LOCAL_STORAGE_KEY,
+            JSON.stringify([entry, ...existing].slice(0, SCAN_LOCAL_STORAGE_LIMIT))
+          )
+        } catch {
+          // Storage full or unavailable
+        }
+
+        if (onScanComplete) {
+          const a = data.analysis as WineAnalysis
+          onScanComplete({
+            id: crypto.randomUUID(),
+            user_id: null,
+            venue_id: null,
+            extracted_data: {
+              name: a.basic.name ?? undefined,
+              producer: a.basic.producer ?? undefined,
+              year: a.basic.year ?? undefined,
+              wine_type: a.basic.wine_type ?? undefined,
+              region: a.basic.region ?? undefined,
+              denomination: a.basic.denomination ?? undefined,
+              grape_varieties: a.basic.grape_varieties ?? undefined,
+              scan_type: 'deep',
+              confidence: a.confidence,
+              analysis: a,
+              image_url: a.image_url,
+            },
+            matched_wine_id: null,
+            match_confidence: null,
+            scanned_at: new Date().toISOString(),
+            created_at: new Date().toISOString(),
+          })
+        }
+      }
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') return
       setError(err instanceof Error ? err.message : 'Errore nell\'analisi del vino')
@@ -73,7 +138,7 @@ export function LabelScanner() {
     } finally {
       abortRef.current = null
     }
-  }, [])
+  }, [onScanComplete])
 
   const handleReset = useCallback(() => {
     if (abortRef.current) {

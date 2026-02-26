@@ -2,7 +2,59 @@ import { NextRequest, NextResponse } from 'next/server'
 import { validateImageData, validateWineImage, scanWineLabel } from '@/lib/vision'
 import { analyzeWine } from '@/lib/wine-analysis'
 import { checkRateLimit, getClientIdentifier, RATE_LIMITS } from '@/lib/rate-limit'
-import type { AnalyzeWineResponse } from '@/types'
+import { createSupabaseServerClient, supabaseAdmin } from '@/lib/supabase-auth-server'
+import { SCAN_HISTORY_MAX_PER_USER } from '@/config/constants'
+import type { AnalyzeWineResponse, WineAnalysis, WineScanData } from '@/types'
+
+/** Fire-and-forget: persist deep scan for authenticated users */
+async function persistDeepScan(analysis: WineAnalysis) {
+  try {
+    const supabase = await createSupabaseServerClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
+    const extracted_data: WineScanData = {
+      name: analysis.basic.name ?? undefined,
+      producer: analysis.basic.producer ?? undefined,
+      year: analysis.basic.year ?? undefined,
+      wine_type: analysis.basic.wine_type ?? undefined,
+      region: analysis.basic.region ?? undefined,
+      denomination: analysis.basic.denomination ?? undefined,
+      grape_varieties: analysis.basic.grape_varieties ?? undefined,
+      scan_type: 'deep',
+      confidence: analysis.confidence,
+      analysis,
+      image_url: analysis.image_url,
+    }
+
+    await supabaseAdmin
+      .from('wine_scans')
+      .insert({
+        user_id: user.id,
+        venue_id: null,
+        extracted_data,
+        matched_wine_id: null,
+        match_confidence: null,
+      })
+
+    // Cleanup oldest if over limit
+    const { data: scans } = await supabaseAdmin
+      .from('wine_scans')
+      .select('id')
+      .eq('user_id', user.id)
+      .order('scanned_at', { ascending: false })
+      .range(SCAN_HISTORY_MAX_PER_USER, SCAN_HISTORY_MAX_PER_USER + 50)
+
+    if (scans && scans.length > 0) {
+      await supabaseAdmin
+        .from('wine_scans')
+        .delete()
+        .in('id', scans.map(s => s.id))
+    }
+  } catch (err) {
+    console.error('Deep scan persistence error (non-blocking):', err)
+  }
+}
 
 export async function POST(request: NextRequest) {
   // Rate limiting
@@ -71,6 +123,9 @@ export async function POST(request: NextRequest) {
 
     // Step 2: Full analysis via LLM
     const analysis = await analyzeWine(scanResult)
+
+    // Fire-and-forget persistence
+    persistDeepScan(analysis)
 
     const response: AnalyzeWineResponse = {
       success: true,

@@ -2,7 +2,7 @@
 // WYN - User Profile Types
 // ============================================
 
-import type { WineType } from './index'
+import type { WineType, WineAnalysis } from './index'
 
 // ============================================
 // USER PROFILE
@@ -143,6 +143,10 @@ export interface WineScanData {
   region?: string
   denomination?: string
   grape_varieties?: string[]
+  scan_type?: 'quick' | 'deep'
+  confidence?: number
+  analysis?: WineAnalysis
+  image_url?: string | null
 }
 
 // ============================================
